@@ -42,6 +42,20 @@
           </a>
         </li>
 
+        <li class="nav-item">
+          <a href="{{url('/master-data/fasilitas/daftar')}}" class="nav-link @if($menu == 'Fasilitas') active @endif">
+            <i class="nav-icon fas fa-user"></i>
+            <p>User</p>
+          </a>
+        </li>
+
+        <li class="nav-item">
+          <a href="{{url('/master-data/jenis-alat/daftar')}}" class="nav-link @if($menu == 'JenisAlat') active @endif">
+            <i class="nav-icon fas fa-user"></i>
+            <p>User</p>
+          </a>
+        </li>
+
         <!-- agar menu terakhir tidak tertutup -->
         <li class="nav-item">
           <a class="nav-link"></a>
