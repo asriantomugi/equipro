@@ -7,18 +7,17 @@ use Illuminate\Support\Facades\Schema;
 return new class extends Migration
 {
     /**
-     * Function untuk membuat tabel Perusahaan
+     * Function untuk membuat tabel Lokasi Tingkat II
      *
-     * @return tabel Perusahaan di database
+     * @return tabel lokasi_tk_2 di database
      */
     public function up(): void
     {
-        Schema::create('perusahaan', function (Blueprint $table) {
+        Schema::create('lokasi_tk_2', function (Blueprint $table) {
             $table->id();
+            $table->bigInteger('lokasi_tk_1_id');
+            $table->string('kode');
             $table->string('nama');
-            $table->string('email')->unique();
-            $table->string('alamat');
-            $table->string('telepon',15);
             $table->boolean('status')->default(true);
             $table->bigInteger('created_by')->nullable();
             $table->bigInteger('updated_by')->nullable();
@@ -31,6 +30,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('perusahaan');
+        Schema::dropIfExists('lokasi_tk_2');
     }
 };

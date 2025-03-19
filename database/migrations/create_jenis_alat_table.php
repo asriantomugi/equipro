@@ -7,18 +7,16 @@ use Illuminate\Support\Facades\Schema;
 return new class extends Migration
 {
     /**
-     * Function untuk membuat tabel Perusahaan
+     * Function untuk membuat tabel Jenis Alat
      *
-     * @return tabel Perusahaan di database
+     * @return tabel jenis_alat di database
      */
     public function up(): void
     {
-        Schema::create('perusahaan', function (Blueprint $table) {
+        Schema::create('jenis_alat', function (Blueprint $table) {
             $table->id();
+            $table->string('kode');
             $table->string('nama');
-            $table->string('email')->unique();
-            $table->string('alamat');
-            $table->string('telepon',15);
             $table->boolean('status')->default(true);
             $table->bigInteger('created_by')->nullable();
             $table->bigInteger('updated_by')->nullable();
@@ -31,6 +29,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('perusahaan');
+        Schema::dropIfExists('jenis_alat');
     }
 };

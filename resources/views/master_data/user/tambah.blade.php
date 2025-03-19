@@ -51,7 +51,7 @@
                            class="form-control"
                            value=""
                            required>
-                    <div class="invalid-feedback">Nama wajib diisi.</div>
+                    <div class="invalid-feedback">Nama wajib diisi</div>
                   </div>
                 </div>
 
@@ -63,7 +63,7 @@
                            class="form-control"
                            value=""
                            required>
-                    <div class="invalid-feedback">Email wajib diisi.</div>
+                    <div class="invalid-feedback">Email wajib diisi</div>
                   </div>
                 </div>
 
@@ -90,7 +90,7 @@
   @endforeach
                     </select>
                   </div>
-                  <div class="invalid-feedback">Perusahaan wajib diisi.</div>
+                  <div class="invalid-feedback">Perusahaan wajib diisi</div>
                 </div>
 
                 <div class="form-group row">
@@ -104,14 +104,14 @@
                 </div>
 
                 <div class="form-group row">
-                        <label class="col-sm-4 col-form-label">Alamat</label>
-                        <div class="col-sm-8">
-                          <textarea class="form-control" 
-                                    rows="3"
-                                    name="alamat" 
-                                    placeholder=""></textarea>
-                        </div>
-                      </div>
+                  <label class="col-sm-4 col-form-label">Alamat</label>
+                  <div class="col-sm-8">
+                    <textarea class="form-control" 
+                              rows="3"
+                              name="alamat" 
+                              placeholder=""></textarea>
+                  </div>
+                </div>
 
                 <div class="form-group row">
                   <label class="col-sm-4 col-form-label">Telepon/HP</label>
@@ -145,7 +145,7 @@
                            class="form-control"
                            value=""
                            required>
-                    <div class="invalid-feedback">Password wajib diisi.</div>
+                    <div class="invalid-feedback">Password wajib diisi</div>
                   </div>
                 </div>
 
@@ -157,7 +157,7 @@
                            class="form-control"
                            value=""
                            required>
-                    <div class="invalid-feedback">Konfirmasi Password wajib diisi.</div>
+                    <div class="invalid-feedback">Konfirmasi Password wajib diisi</div>
                   </div>
                 </div>
 

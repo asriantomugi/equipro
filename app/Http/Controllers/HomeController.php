@@ -83,7 +83,7 @@ class HomeController extends Controller
             return redirect('/logout');
         }
 
-        // cek role user, hanya bisa diakses oleh admin AP1
+        // cek role user
         if(session()->get('role_id') != config('constants.role.super_admin') 
             && session()->get('role_id') != config('constants.role.admin')
 			&& session()->get('role_id') != config('constants.role.teknisi')){
