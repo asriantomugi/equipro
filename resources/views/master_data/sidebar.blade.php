@@ -45,6 +45,14 @@
           </a>
         </li>
 
+        <!-- MENU PERUSAHAAN -->
+        <li class="nav-item">
+          <a href="{{url('/master-data/perusahaan/daftar')}}" class="nav-link @if($menu == 'Perusahaan') active @endif">
+            <i class="nav-icon fas fa-briefcase"></i>
+            <p>Perusahaan</p>
+          </a>
+        </li>
+
         <!-- MENU FASILITAS -->
         <li class="nav-item">
           <a href="{{url('/master-data/fasilitas/daftar')}}" class="nav-link @if($menu == 'Fasilitas') active @endif">
@@ -55,7 +63,7 @@
 
         <!-- MENU JENIS ALAT -->
         <li class="nav-item">
-          <a href="{{url('/master-data/jenis-alat/daftar')}}" class="nav-link @if($menu == 'JenisAlat') active @endif">
+          <a href="{{url('/master-data/jenis-alat/daftar')}}" class="nav-link @if($menu == 'Jenis Alat') active @endif">
             <i class="nav-icon fas fa-tools"></i>
             <p>Jenis Alat</p>
           </a>
@@ -64,30 +72,30 @@
         <!-- MENU LOKASI -->
         <li class="nav-item @if($menu == 'Lokasi') menu-open @endif">
           <a href="#" class="nav-link @if($menu == 'Lokasi') active @endif">
-            <i class="nav-icon fas fa-building"></i>
+            <i class="nav-icon fas fa-city"></i>
             <p>Lokasi<i class="right fas fa-angle-left"></i></p>
           </a>
 
           <ul class="nav nav-treeview">
 
             <li class="nav-item">
-              <a href="{{url('/master-data/lokasi-tk-1/daftar')}}" class="nav-link @if($page == 'LokasiTk1') active @endif">
+              <a href="{{url('/master-data/lokasi-tk-1/daftar')}}" class="nav-link @if($page == 'Lokasi Tingkat I') active @endif">
                 <i class="fas fa-caret-right nav-icon"></i>
-                <p>Lokasi Tk. I</p>
+                <p>Lokasi Tingkat I</p>
               </a>
             </li>
 
             <li class="nav-item">
-              <a href="{{url('/master-data/lokasi-tk-2/daftar')}}" class="nav-link @if($page == 'LokasiTk2') active @endif">
+              <a href="{{url('/master-data/lokasi-tk-2/daftar')}}" class="nav-link @if($page == 'Lokasi Tingkat II') active @endif">
                 <i class="fas fa-caret-right nav-icon"></i>
-                <p>Lokasi Tk. II</p>
+                <p>Lokasi Tingkat II</p>
               </a>
             </li>
 
             <li class="nav-item">
-              <a href="{{url('/master-data/lokasi-tk-3/daftar')}}" class="nav-link @if($page == 'LokasiTk3') active @endif">
+              <a href="{{url('/master-data/lokasi-tk-3/daftar')}}" class="nav-link @if($page == 'Lokasi Tingkat III') active @endif">
                 <i class="fas fa-caret-right nav-icon"></i>
-                <p>Lokasi Tk. III</p>
+                <p>Lokasi Tingkat III</p>
               </a>
             </li>
 

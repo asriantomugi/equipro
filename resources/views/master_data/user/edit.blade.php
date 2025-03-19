@@ -53,7 +53,7 @@
                            class="form-control"
                            value="{{ strtoupper($user->name) }}"
                            required>
-                    <div class="invalid-feedback">Nama wajib diisi.</div>
+                    <div class="invalid-feedback">Nama wajib diisi</div>
                   </div>
                 </div>
 
@@ -63,9 +63,9 @@
                     <input type="email" 
                            name="email" 
                            class="form-control"
-                           value="{{ $user->email }}"
+                           value="{{ strtolower($user->email) }}"
                            readonly>
-                    <div class="invalid-feedback">Email wajib diisi.</div>
+                    <div class="invalid-feedback">Email wajib diisi</div>
                   </div>
                 </div>
 
@@ -83,7 +83,7 @@
   @endforeach
                     </select>
                   </div>
-                  <div class="invalid-feedback">Role wajib diisi.</div>
+                  <div class="invalid-feedback">Role wajib diisi</div>
                 </div>
 
                 <div class="form-group row">
@@ -100,7 +100,7 @@
   @endforeach
                     </select>
                   </div>
-                  <div class="invalid-feedback">Perusahaan wajib diisi.</div>
+                  <div class="invalid-feedback">Perusahaan wajib diisi</div>
                 </div>
 
                 <div class="form-group row">
@@ -114,17 +114,17 @@
                 </div>
 
                 <div class="form-group row">
-                        <label class="col-sm-4 col-form-label">Alamat</label>
-                        <div class="col-sm-8">
-                          <textarea class="form-control" 
-                                    rows="3"
-                                    name="alamat" 
-                                    placeholder="">{{ strtoupper($user->detail->alamat) }}</textarea>
-                        </div>
-                      </div>
+                  <label class="col-sm-4 col-form-label">Alamat</label>
+                  <div class="col-sm-8">
+                    <textarea class="form-control" 
+                              rows="3"
+                              name="alamat" 
+                              placeholder="">{{ strtoupper($user->detail->alamat) }}</textarea>
+                  </div>
+                </div>
 
                 <div class="form-group row">
-                  <label class="col-sm-4 col-form-label required">Telepon/HP</label>
+                  <label class="col-sm-4 col-form-label">Telepon/HP</label>
                   <div class="col-sm-8">
                     <input type="text" 
                            name="telepon" 
@@ -147,7 +147,7 @@
   @endif
                     </select>
                   </div>
-                  <div class="invalid-feedback">Status wajib diisi.</div>
+                  <div class="invalid-feedback">Status wajib diisi</div>
                 </div>
 
               </div>

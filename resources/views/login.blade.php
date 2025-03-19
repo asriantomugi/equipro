@@ -154,13 +154,13 @@
       $(document).Toasts('create', {
           class: 'bg-danger',
           title: 'Login Gagal!',
-          body: 'Email/Password tidak sesuai.'
+          body: 'Email/Password tidak sesuai'
         })
     @elseif(session()->get('notif') == 'tidak_aktif')
       $(document).Toasts('create', {
           class: 'bg-danger',
           title: 'Login Gagal!',
-          body: 'User tidak aktif.'
+          body: 'User tidak aktif'
         })
     @endif
   @endif

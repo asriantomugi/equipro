@@ -17,9 +17,9 @@ return new class extends Migration
             $table->id();
             $table->bigInteger('user_id');
             $table->bigInteger('perusahaan_id');
-            $table->string('alamat');
-            $table->string('telepon',15);
-            $table->string('jabatan');         
+            $table->string('alamat')->nullable();
+            $table->string('telepon',15)->nullable();
+            $table->string('jabatan')->nullable();         
             $table->bigInteger('created_by')->nullable();
             $table->bigInteger('updated_by')->nullable();
             $table->timestamps();

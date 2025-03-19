@@ -30,75 +30,60 @@
             
             <div class="card">
               <div class="card-header">
-                <h3 class="card-title">FORM RESET PASSWORD USER</h3>
+                <h3 class="card-title">FORM TAMBAH PERUSAHAAN</h3>
               </div>
               <!-- /.card-header -->
 
 <!-- form start -->
 <form class="form-horizontal needs-validation" 
-      action="{{url('/master-data/user/password/reset')}}"
+      action="{{url('/master-data/perusahaan/tambah')}}"
       method="post" 
       novalidate>
 @csrf
 
               <div class="card-body">
 
-                <input type="text" name="id" value="{{ $user->id }}" hidden>
- 
                 <div class="form-group row">
-                  <label class="col-sm-4 col-form-label required">Nama</label>
-                  <div class="col-sm-8">
+                  <label class="col-sm-3 col-form-label required">Nama</label>
+                  <div class="col-sm-9">
                     <input type="text" 
                            name="nama" 
                            class="form-control"
-                           value="{{ strtoupper($user->name) }}"
-                           readonly>
+                           value=""
+                           required>
+                    <div class="invalid-feedback">Nama wajib diisi</div>
                   </div>
                 </div>
 
                 <div class="form-group row">
-                  <label class="col-sm-4 col-form-label required">Email</label>
-                  <div class="col-sm-8">
+                  <label class="col-sm-3 col-form-label required">Email</label>
+                  <div class="col-sm-9">
                     <input type="email" 
                            name="email" 
                            class="form-control"
-                           value="{{ $user->email }}"
-                           readonly>
-                  </div>
-                </div>
-				
-				<div class="form-group row">
-                  <label class="col-sm-4 col-form-label required">Peran/Unit</label>
-                  <div class="col-sm-8">
-                    <input type="text" 
-                           name="role" 
-                           class="form-control"
-                           value="{{ $user->role->nama }}"
-                           readonly>
-                  </div>
-                </div>
-				
-				<div class="form-group row">
-                  <label class="col-sm-4 col-form-label required">Password</label>
-                  <div class="col-sm-8">
-                    <input type="password" 
-                           name="password" 
-                           class="form-control"
                            value=""
                            required>
-                    <div class="invalid-feedback">Password wajib diisi</div>
+                    <div class="invalid-feedback">Email wajib diisi</div>
                   </div>
                 </div>
 
                 <div class="form-group row">
-                  <label class="col-sm-4 col-form-label required">Konfirmasi Password</label>
-                  <div class="col-sm-8">
-                    <input type="password" 
-                           name="password_confirmation" 
+                  <label class="col-sm-3 col-form-label">Alamat</label>
+                  <div class="col-sm-9">
+                    <textarea class="form-control" 
+                              rows="3"
+                              name="alamat" 
+                              placeholder=""></textarea>
+                  </div>
+                </div>
+
+                <div class="form-group row">
+                  <label class="col-sm-3 col-form-label">Telepon</label>
+                  <div class="col-sm-9">
+                    <input type="text" 
+                           name="telepon" 
                            class="form-control"
-                           value=""
-                           required>
-                    <div class="invalid-feedback">Konfirmasi Password wajib diisi</div>
+                           value="">
                   </div>
                 </div>
 
@@ -107,7 +92,7 @@
 
               <div class="card-footer">
                 <a class="btn btn-default" 
-                   href="{{url('/master-data/user/daftar')}}" 
+                   href="{{url('/master-data/perusahaan/daftar')}}" 
                    role="button">Batal</a>
                 <button type="submit" class="btn btn-primary float-right">Simpan</button>
               </div>
