@@ -3,7 +3,7 @@
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\OtentikasiController;
-use App\Http\Controllers\MasterData\MasterDataController;
+use App\Http\Controllers\MasterData\MasterDataModuleController;
 use App\Http\Controllers\MasterData\UserController;
 use App\Http\Controllers\MasterData\PerusahaanController;
 use App\Http\Controllers\MasterData\FasilitasController;
@@ -11,6 +11,7 @@ use App\Http\Controllers\MasterData\JenisAlatController;
 use App\Http\Controllers\MasterData\LokasiTk1Controller;
 use App\Http\Controllers\MasterData\LokasiTk2Controller;
 use App\Http\Controllers\MasterData\LokasiTk3Controller;
+use App\Http\Controllers\Fasilitas\FasilitasModuleController;
 
 /*
 Route::get('/', function () {
@@ -40,7 +41,7 @@ Route::get('/logout', [OtentikasiController::class, 'logout']);
  */ 
 
 // Menampilkan halaman utama module Master Data
-Route::get('/master-data/home', [MasterDataController::class, 'home']);
+Route::get('/master-data/home', [MasterDataModuleController::class, 'home']);
 
 /* ============================== MENU USER ==================================== */
 // Menampilkan daftar user
@@ -201,5 +202,20 @@ Route::post('/master-data/lokasi-tk-3/detail', [LokasiTk3Controller::class, 'det
 /** 
  * ------------------------------------------------------------------------------------
  *                             END OF MODULE MASTER DATA
+ * ------------------------------------------------------------------------------------
+ */ 
+
+ /** 
+ * ------------------------------------------------------------------------------------
+ *                             MODULE FASILITAS
+ * ------------------------------------------------------------------------------------
+ */ 
+
+// Menampilkan halaman utama module Fasilitas
+Route::get('/fasilitas/home', [FasilitasModuleController::class, 'home']);
+
+/** 
+ * ------------------------------------------------------------------------------------
+ *                             END OF MODULE FASILITAS
  * ------------------------------------------------------------------------------------
  */ 

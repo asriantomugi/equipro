@@ -56,18 +56,18 @@ class LokasiTk2Controller extends Controller
        
         // variabel untuk dikirim ke halaman view
         $judul = "Lokasi Tingkat II";
-        $menu = "Lokasi";
-        $page = "Lokasi Tingkat II";
-        $subpage = "Daftar";
-        $page_url = "#";
+        $module = "Master Data";
+        $menu = "Lokasi Tingkat II";
+        $menu_url = "/master-data/lokasi-tk-2/daftar";
+        $submenu = "Daftar";
         
         // menampilkan halaman view
         return view('master_data.lokasi_tk_2.daftar')
         ->with('judul', $judul)
-        ->with('menu', $menu)
-        ->with('page', $page)
-        ->with('subpage', $subpage)
-        ->with('page_url', $page_url)
+        ->with('module', $module)
+		->with('menu', $menu)
+        ->with('menu_url', $menu_url)	
+        ->with('submenu', $submenu)
         ->with('daftar', $daftar)
         ;
     }
@@ -109,18 +109,18 @@ class LokasiTk2Controller extends Controller
 
         // variabel untuk dikirim ke halaman view
         $judul = "Lokasi Tingkat II";
-        $menu = "Lokasi";
-        $page = "Lokasi Tingkat II";
-        $subpage = "Tambah";
-        $page_url = "/master-data/lokasi-tk-2/daftar";
+        $module = "Master Data";
+        $menu = "Lokasi Tingkat II";
+        $menu_url = "/master-data/lokasi-tk-2/daftar";
+        $submenu = "Tambah";
         
         // menampilkan halaman view
         return view('master_data.lokasi_tk_2.tambah')
         ->with('judul', $judul)
-        ->with('menu', $menu)
-        ->with('page', $page)
-        ->with('subpage', $subpage)
-        ->with('page_url', $page_url)
+        ->with('module', $module)
+		->with('menu', $menu)
+        ->with('submenu', $submenu)
+        ->with('menu_url', $menu_url)
         ->with('lokasi_tk_1', $lokasi_tk_1)
         ;
     }
@@ -271,18 +271,18 @@ class LokasiTk2Controller extends Controller
 
         // variabel untuk dikirim ke halaman view
         $judul = "Lokasi Tingkat II";
-        $menu = "Lokasi";
-        $page = "Lokasi Tingkat II";
-        $subpage = "Edit Data";
-        $page_url = "/master-data/lokasi-tk-2/daftar";
+        $module = "Master Data";
+        $menu = "Lokasi Tingkat II";
+        $menu_url = "/master-data/lokasi-tk-2/daftar";
+        $submenu = "Edit Data";
         
         // menampilkan halaman view
         return view('master_data.lokasi_tk_2.edit')
         ->with('judul', $judul)
-        ->with('menu', $menu)
-        ->with('page', $page)
-        ->with('subpage', $subpage)
-        ->with('page_url', $page_url)
+        ->with('module', $module)
+		->with('menu', $menu)
+        ->with('submenu', $submenu)
+        ->with('menu_url', $menu_url)
         ->with('lokasi_tk_2', $lokasi_tk_2)
         ;
     }

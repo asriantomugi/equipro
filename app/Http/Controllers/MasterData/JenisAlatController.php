@@ -56,14 +56,17 @@ class JenisAlatController extends Controller
        
         // variabel untuk dikirim ke halaman view
         $judul = "Jenis Alat";
+        $module = "Master Data";
         $menu = "Jenis Alat";
-        $page = "Daftar";
+        $menu_url = "/master-data/jenis-alat/daftar";
+        $submenu = "Daftar";
         
         // menampilkan halaman view
         return view('master_data.jenis_alat.daftar')
         ->with('judul', $judul)
-        ->with('menu', $menu)
-        ->with('page', $page)
+		->with('module', $module)
+		->with('menu', $menu)
+        ->with('menu_url', $menu_url)	
         ->with('daftar', $daftar)
         ;
     }
@@ -102,14 +105,18 @@ class JenisAlatController extends Controller
 
         // variabel untuk dikirim ke halaman view
         $judul = "Jenis Alat";
+        $module = "Master Data";
         $menu = "Jenis Alat";
-        $page = "Tambah";
+        $menu_url = "/master-data/jenis-alat/daftar";
+        $submenu = "Tambah";
         
         // menampilkan halaman view
         return view('master_data.jenis_alat.tambah')
         ->with('judul', $judul)
-        ->with('menu', $menu)
-        ->with('page', $page)
+		->with('module', $module)
+		->with('menu', $menu)
+        ->with('submenu', $submenu)
+        ->with('menu_url', $menu_url)
         ;
     }
 
@@ -258,14 +265,18 @@ class JenisAlatController extends Controller
 
         // variabel untuk dikirim ke halaman view
         $judul = "Jenis Alat";
+        $module = "Master Data";
         $menu = "Jenis Alat";
-        $page = "Edit Data";
+        $menu_url = "/master-data/jenis-alat/daftar";
+        $submenu = "Edit Data";
         
         // menampilkan halaman view
         return view('master_data.jenis_alat.edit')
         ->with('judul', $judul)
-        ->with('menu', $menu)
-        ->with('page', $page)
+        ->with('module', $module)
+		->with('menu', $menu)
+        ->with('menu_url', $menu_url)
+        ->with('submenu', $submenu)
         ->with('jenis_alat', $jenis_alat)
         ;
     }

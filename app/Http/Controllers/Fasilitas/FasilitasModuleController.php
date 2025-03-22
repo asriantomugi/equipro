@@ -3,7 +3,7 @@
 namespace App\Http\Controllers\MasterData;
 
 /**
- * MasterDataController.php
+ * FasilitasModuleController.php
  * Controller ini digunakan untuk menangani akses ke halaman utama
  * module Master Data
  *
@@ -21,17 +21,17 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Auth;
 use App\Http\Controllers\Controller;
 
-class MasterDataController extends Controller
+class FasilitasModuleController extends Controller
 {
 	/**
-     * Function untuk menampilkan halaman utama module Master Data
+     * Function untuk menampilkan halaman utama module Fasilitas
 	 * 
      * Akses:
      * - Super Admin
 	 * - Admin
      * 
 	 * Method: GET
-     * URL: /home/master-data
+     * URL: /fasilitas/home
      * 
      * @param  Request  $request
      * @return void
@@ -84,15 +84,17 @@ class MasterDataController extends Controller
         // ===================== AKHIR PROSES PENGAMBILAN DATA USER =======================
 
 		// buat variabel untuk dikirim ke halaman view
-		$judul = "Master Data";
-		$menu = "Master Data";
-        $page = "Home";
+		$judul = "Home";
+		$module = "Master Data";
+        $menu = "Home";
+        $menu_url = "#";
 			
 		// alihkan ke halaman view untuk user non BUAU/BUGH
 		return view('master_data.home')
 		->with('judul', $judul)
+		->with('module', $module)
 		->with('menu', $menu)
-		->with('page', $page)		
+        ->with('menu_url', $menu_url)	
         ->with('dataChartRoleUser', $dataChartRoleUser)
 		;
     }	

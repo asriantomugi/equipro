@@ -93,15 +93,17 @@ class HomeController extends Controller
         // ===================== AKHIR PROSES VERIFIKASI =======================
 		
 		// buat variabel untuk dikirim ke halaman view
-		$judul = "Module";
-		$menu = "Module";
-        $page = "Daftar";
+        $judul = "Module";
+		$module = "Module";
+        $menu = "Daftar";
+        $menu_url = "#";
 			
 		// alihkan ke halaman view untuk user non BUAU/BUGH
 		return view('module')
 		->with('judul', $judul)
+		->with('module', $module)
 		->with('menu', $menu)
-		->with('page', $page)		
+        ->with('menu_url', $menu_url)		
 		;
     }	
 

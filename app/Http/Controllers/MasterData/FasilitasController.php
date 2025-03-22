@@ -55,15 +55,18 @@ class FasilitasController extends Controller
         $daftar = Fasilitas::all();
        
         // variabel untuk dikirim ke halaman view
-        $judul = "Fasilitas";
+		$judul = "Fasilitas";
+		$module = "Master Data";
         $menu = "Fasilitas";
-        $page = "Daftar";
+        $menu_url = "/master-data/fasilitas/daftar";
+        $submenu = "Daftar";
         
         // menampilkan halaman view
         return view('master_data.fasilitas.daftar')
         ->with('judul', $judul)
-        ->with('menu', $menu)
-        ->with('page', $page)
+		->with('module', $module)
+		->with('menu', $menu)
+        ->with('menu_url', $menu_url)	
         ->with('daftar', $daftar)
         ;
     }
@@ -102,14 +105,18 @@ class FasilitasController extends Controller
 
         // variabel untuk dikirim ke halaman view
         $judul = "Fasilitas";
+		$module = "Master Data";
         $menu = "Fasilitas";
-        $page = "Tambah";
+        $menu_url = "/master-data/fasilitas/daftar";
+        $submenu = "Tambah";
         
         // menampilkan halaman view
         return view('master_data.fasilitas.tambah')
         ->with('judul', $judul)
-        ->with('menu', $menu)
-        ->with('page', $page)
+        ->with('module', $module)
+		->with('menu', $menu)
+        ->with('menu_url', $menu_url)
+        ->with('submenu', $submenu)
         ;
     }
 
@@ -258,14 +265,18 @@ class FasilitasController extends Controller
 
         // variabel untuk dikirim ke halaman view
         $judul = "Fasilitas";
+		$module = "Master Data";
         $menu = "Fasilitas";
-        $page = "Edit Data";
+        $menu_url = "/master-data/fasilitas/daftar";
+        $submenu = "Edit Data";
         
         // menampilkan halaman view
         return view('master_data.fasilitas.edit')
         ->with('judul', $judul)
-        ->with('menu', $menu)
-        ->with('page', $page)
+        ->with('module', $module)
+		->with('menu', $menu)
+        ->with('menu_url', $menu_url)
+        ->with('submenu', $submenu)
         ->with('fasilitas', $fasilitas)
         ;
     }

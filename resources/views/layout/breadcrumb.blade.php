@@ -8,14 +8,14 @@
           <div class="col-sm-6">
             <ol class="breadcrumb float-sm-right">
               
-              <li class="breadcrumb-item"><a href="#">{{$menu}}</a></li>
+              <li class="breadcrumb-item"><a href="#">{{$module}}</a></li>
 
-@if(isset($page))
-  @if(isset($subpage))
-              <li class="breadcrumb-item"><a href="{{url($page_url)}}">{{$page}}</a></li>
-              <li class="breadcrumb-item active" aria-current="page">{{$subpage}}</li>
+@if(isset($menu))
+  @if(isset($submenu))
+              <li class="breadcrumb-item"><a href="{{url($menu_url)}}">{{$menu}}</a></li>
+              <li class="breadcrumb-item active" aria-current="page">{{$submenu}}</li>
   @else
-              <li class="breadcrumb-item active" aria-current="page">{{$page}}</a></li>
+              <li class="breadcrumb-item active" aria-current="page">{{$menu}}</a></li>
   @endif
 @endif    
             </ol>

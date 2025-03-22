@@ -101,7 +101,7 @@
 
               <div class="card-footer">
                 <a class="btn btn-default" 
-                   href="{{url('/master-data/lokasi-tk-2/daftar')}}" 
+                   href="{{url('/master-data/lokasi-tk-3/daftar')}}" 
                    role="button">Batal</a>
                 <button type="submit" class="btn btn-primary float-right">Simpan</button>
               </div>

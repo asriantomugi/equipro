@@ -31,7 +31,7 @@
 
         <!-- MENU HOME -->
         <li class="nav-item">
-          <a href="{{url('/master-data/home')}}" class="nav-link @if($menu == 'Master Data') active @endif">
+          <a href="{{url('/master-data/home')}}" class="nav-link @if($menu == 'Home') active @endif">
             <i class="nav-icon fas fa-home"></i>
             <p>Home</p>
           </a>
@@ -70,8 +70,8 @@
         </li>
 
         <!-- MENU LOKASI -->
-        <li class="nav-item @if($menu == 'Lokasi') menu-open @endif">
-          <a href="#" class="nav-link @if($menu == 'Lokasi') active @endif">
+        <li class="nav-item @if($menu == 'Lokasi Tingkat I' || $menu == 'Lokasi Tingkat II' || $menu == 'Lokasi Tingkat III') menu-open @endif">
+          <a href="#" class="nav-link @if($menu == 'Lokasi Tingkat I' || $menu == 'Lokasi Tingkat II' || $menu == 'Lokasi Tingkat III') active @endif">
             <i class="nav-icon fas fa-city"></i>
             <p>Lokasi<i class="right fas fa-angle-left"></i></p>
           </a>
@@ -79,21 +79,33 @@
           <ul class="nav nav-treeview">
 
             <li class="nav-item">
-              <a href="{{url('/master-data/lokasi-tk-1/daftar')}}" class="nav-link @if($page == 'Lokasi Tingkat I') active @endif">
+@if(isset($submenu))
+              <a href="{{url('/master-data/lokasi-tk-1/daftar')}}" class="nav-link @if($menu == 'Lokasi Tingkat I') active @endif">
+@else
+              <a href="{{url('/master-data/lokasi-tk-1/daftar')}}" class="nav-link">
+@endif
                 <i class="fas fa-caret-right nav-icon"></i>
                 <p>Lokasi Tingkat I</p>
               </a>
             </li>
 
             <li class="nav-item">
-              <a href="{{url('/master-data/lokasi-tk-2/daftar')}}" class="nav-link @if($page == 'Lokasi Tingkat II') active @endif">
+@if(isset($submenu))
+              <a href="{{url('/master-data/lokasi-tk-2/daftar')}}" class="nav-link @if($menu == 'Lokasi Tingkat II') active @endif">
+@else
+              <a href="{{url('/master-data/lokasi-tk-2/daftar')}}" class="nav-link">
+@endif
                 <i class="fas fa-caret-right nav-icon"></i>
                 <p>Lokasi Tingkat II</p>
               </a>
             </li>
 
             <li class="nav-item">
-              <a href="{{url('/master-data/lokasi-tk-3/daftar')}}" class="nav-link @if($page == 'Lokasi Tingkat III') active @endif">
+@if(isset($submenu))
+              <a href="{{url('/master-data/lokasi-tk-3/daftar')}}" class="nav-link @if($menu == 'Lokasi Tingkat III') active @endif">
+@else
+              <a href="{{url('/master-data/lokasi-tk-3/daftar')}}" class="nav-link">
+@endif
                 <i class="fas fa-caret-right nav-icon"></i>
                 <p>Lokasi Tingkat III</p>
               </a>
@@ -101,7 +113,6 @@
 
           </ul>
         </li>
-        <!----- END OF MENU USER ----->
 
         <!-- agar menu terakhir tidak tertutup -->
         <li class="nav-item">
