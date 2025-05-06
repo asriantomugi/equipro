@@ -8,11 +8,12 @@
 
         <div class="row">
 
-          <!-- =====================  Dashboard User ====================== -->
-          <div class="col-md-6">
+          <!-- =====================  Dashboard ====================== -->
+          
+@php $index = 1; @endphp
 
 @foreach($fasilitas as $satu)
-            
+          <div class="col-md-6">
             <div class="card card-primary">
 
               <div class="card-header">
@@ -30,21 +31,19 @@
 
                 <div class="row">
 
-                  <!-- chart jumlah user berdasarkan role -->
-  @php
-    // Buat array untuk data chart
+                  <!-- chart -->
+  @php    
+    // buat array untuk data chart
     $dataChart = [
         'labels' => ['Serviceable', 'Unserviceable'],
         'data' => [$satu->getJlhLayananServ(), $satu->getJlhLayananUnserv()]
     ];
-
-    //dd($dataChart);
   @endphp
                   <div class="col-md-6">
-                    <canvas id="chartRoleUser" style="min-height: 250px; height: 250px; max-height: 90%; max-width: 100%;"></canvas>
+                    <canvas id="chart{{ $index }}" style="min-height: 250px; height: 250px; max-height: 90%; max-width: 100%;"></canvas>
                   </div><!-- /.col -->
                   
-                  <!-- info box jumlah user berdasarkan role -->
+                  <!-- info box jumlah -->
                   <div class="col-md-6">
                    
                     <div class="info-box mb-3 bg-success">
@@ -75,10 +74,33 @@
               <!-- /.card-body -->
             </div>
             <!-- /.card -->
+
+            <!-- JavaScript untuk memproses tampilan chart -->
+            <script>
+              // Ambil data dari PHP (yang dipassing melalui Blade)
+              var data = @json($dataChart); // data berisi labels dan data
+
+              // Konfigurasi untuk pie chart
+              var ctx = document.getElementById('chart{{ $index }}').getContext('2d');
+              var chartRoleUser = new Chart(ctx, {
+                  type: 'pie', // Jenis chart
+                  data: {
+                      labels: data.labels, // Label untuk pie chart
+                      datasets: [{
+                          data: data.data, // Data untuk pie chart
+                          backgroundColor: ['#00a65a', '#f56954'], // Warna untuk masing-masing bagian pie
+                      }]
+                  },
+                  options: {
+                      responsive: true,
+                  }
+              });
+            </script>
+          </div><!-- /.col -->
+  @php $index++; @endphp
 @endforeach
 
-          </div><!-- /.col -->
-          <!-- =====================  End of Dashboard User ====================== -->
+          <!-- =====================  End of Dashboard ====================== -->
 
 
         </div><!-- /.row -->
@@ -88,26 +110,6 @@
 
       </div><!-- /.container-fluid -->
   
-    <!-- JavaScript untuk memproses tampilan chart jumlah user berdasarkan role -->
-    <script>
-      // Ambil data dari PHP (yang dipassing melalui Blade)
-      var data = @json($dataChart); // data berisi labels dan data
-
-      // Konfigurasi untuk pie chart
-      var ctx = document.getElementById('chartRoleUser').getContext('2d');
-      var chartRoleUser = new Chart(ctx, {
-          type: 'pie', // Jenis chart
-          data: {
-              labels: data.labels, // Label untuk pie chart
-              datasets: [{
-                  data: data.data, // Data untuk pie chart
-                  backgroundColor: ['#00a65a', '#f56954'], // Warna untuk masing-masing bagian pie
-              }]
-          },
-          options: {
-              responsive: true,
-          }
-      });
-    </script>
+    
     
 @endsection   
