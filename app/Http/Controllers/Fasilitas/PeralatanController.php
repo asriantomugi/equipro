@@ -1,10 +1,10 @@
 <?php
 
-namespace App\Http\Controllers\MasterData;
+namespace App\Http\Controllers\Fasilitas;
 
 /**
- * JenisAlatController.php
- * Controller ini digunakan untuk menangani proses CRUD Jenis Alat
+ * PeralatanController.php
+ * Controller ini digunakan untuk menangani proses CRUD peralatan
  *
  * @author Mugi Asrianto
  */
@@ -15,20 +15,22 @@ namespace App\Http\Controllers\MasterData;
  use Illuminate\Database\QueryException;
  use Illuminate\Support\MessageBag;
  use App\Models\User;
+ use App\Models\Peralatan;
  use App\Models\JenisAlat;
+ use App\Models\Perusahaan;
  use App\Http\Controllers\Controller;
 
-class JenisAlatController extends Controller
+class PeralatanController extends Controller
 {
     /**
-     * Function untuk menampilkan daftar jenis alat.
+     * Function untuk menampilkan daftar peralatan.
      *
      * Akses:
      * - Super Admin
      * - Admin
      * 
      * Method: GET
-     * URL: /master-data/jenis-alat/daftar
+     * URL: /fasilitas/peralatan/daftar
      *
      * @return \Illuminate\Http\Response
      */
@@ -52,18 +54,18 @@ class JenisAlatController extends Controller
         }
         // ===================== AKHIR PROSES VERIFIKASI =======================
 
-        // ambil daftar jenis alat
-        $daftar = JenisAlat::all();
+        // ambil daftar peralatan
+        $daftar = Peralatan::all();
        
         // variabel untuk dikirim ke halaman view
-        $judul = "Jenis Alat";
-        $module = "Master Data";
-        $menu = "Jenis Alat";
-        $menu_url = "/master-data/jenis-alat/daftar";
+		$judul = "Peralatan";
+		$module = "Fasilitas";
+        $menu = "Peralatan";
+        $menu_url = "/fasilitas/peralatan/daftar";
         $submenu = "Daftar";
         
         // menampilkan halaman view
-        return view('master_data.jenis_alat.daftar')
+        return view('fasilitas.peralatan.daftar')
         ->with('judul', $judul)
 		->with('module', $module)
 		->with('menu', $menu)
@@ -73,14 +75,14 @@ class JenisAlatController extends Controller
     }
 
     /**
-     * Function untuk menampilkan form tambah jenis alat.
+     * Function untuk menampilkan form tambah peralatan.
      *
      * Akses:
      * - Super Admin
      * - Admin
      * 
      * Method: GET
-     * URL: /master-data/jneis-alat/tambah
+     * URL: /fasilitas/peralatan/tambah
      *
      * @return \Illuminate\Http\Response
      */
@@ -104,32 +106,41 @@ class JenisAlatController extends Controller
         }
         // ===================== AKHIR PROSES VERIFIKASI =======================
 
+        // ambil daftar jenis alat yang aktif
+        $jenis_alat = JenisAlat::where('status', 1)->get();
+
+        // ambil daftar perusahaan yang aktif
+        $perusahaan = Perusahaan::where('status', 1)->get();
+
         // variabel untuk dikirim ke halaman view
-        $judul = "Jenis Alat";
-        $module = "Master Data";
-        $menu = "Jenis Alat";
-        $menu_url = "/master-data/jenis-alat/daftar";
+        $judul = "Peralatan";
+		$module = "Fasilitas";
+        $menu = "Peralatan";
+        $menu_url = "/fasilitas/peralatan/daftar";
         $submenu = "Tambah";
         
         // menampilkan halaman view
-        return view('master_data.jenis_alat.tambah')
+        return view('fasilitas.peralatan.tambah')
         ->with('judul', $judul)
-		->with('module', $module)
+        ->with('module', $module)
 		->with('menu', $menu)
-        ->with('submenu', $submenu)
         ->with('menu_url', $menu_url)
+        ->with('submenu', $submenu)
+        ->with('jenis_alat', $jenis_alat)
+        ->with('perusahaan', $perusahaan)
         ;
     }
 
+
     /**
-     * Function untuk menambahkan jenis alat.
+     * Function untuk menambahkan peralatan.
      *
      * Akses:
      * - Super Admin
      * - Admin
      * 
      * Method: POST
-     * URL: /master-data/jenis-alat/tambah
+     * URL: /fasilitas/peralatan/tambah
      *
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
@@ -158,19 +169,28 @@ class JenisAlatController extends Controller
         // jika tidak sesuai parameter, maka akan muncul error
         $validasi  = $request->validate([
             // parameter validasi
-            'kode' => 'unique:fasilitas,kode',
-            'nama' => 'unique:fasilitas,nama',
+            'kode' => 'unique:peralatan,kode'
         ],[
             // pesan error
-            'kode.unique' => 'Kode yang dimasukkan sudah terdaftar',
-            'nama.unique' => 'Nama yang dimasukkan sudah terdaftar'
+            'kode.unique' => 'Kode yang dimasukkan sudah terdaftar'
         ]);
 
         try{
-            // tambah row di tabel jenis alat
-            $jenis_alat = JenisAlat::create([
+            // tambah row di tabel peralatan
+            $peralatan = Peralatan::create([
                 'kode' => strtoupper($request->kode),
                 'nama' => strtoupper($request->nama),
+                'merk' => strtoupper($request->merk),
+                'tipe' => strtoupper($request->tipe),
+                'model' => strtoupper($request->model),
+                'serial_number' => strtoupper($request->serial_number),
+                'thn_produksi' => $request->thn_produksi,
+                'thn_pengadaan' => $request->thn_pengadaan,
+                'keterangan' => strtoupper($request->keterangan),
+                'sewa' => $request->sewa,
+                'jenis_id' => $request->jenis,
+                'perusahaan_id' => $request->perusahaan,
+                'kondisi' => $request->kondisi,
                 'status' => 1, // aktif
                 'created_by' => session()->get('id')
             ]);
@@ -179,57 +199,63 @@ class JenisAlatController extends Controller
         catch(QueryException $ex){
             //dd($ex->getMessage());
             // kembali ke halaman daftar dan tampilkan pesan error
-            return redirect('/master-data/jenis-alat/daftar')->with('notif', 'tambah_gagal');
+            return redirect('/fasilitas/peralatan/daftar')->with('notif', 'tambah_gagal');
         }
 
         // jika proses insert berhasil
-        return redirect('/master-data/jenis-alat/daftar')->with('notif', 'tambah_sukses');
+        return redirect('/fasilitas/peralatan/daftar')->with('notif', 'tambah_sukses');
     }
 
+
     /**
-     * Menampilkan JSON data jenis alat berdasarkan id
+     * Menampilkan JSON data peralatan berdasarkan id
      *
      * Akses:
      * - Super Admin
      * - Admin
      * 
      * Method: POST
-     * URL: /master-data/jenis-alat/detail
+     * URL: /fasilitas/peralatan/detail
      *
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
     public function detail(Request $request)
     {
-        // ambil id jenis alat
+        // ambil id peralatan
         $id = $request->id;
 
-        // ambil data jenis alat
-        $jenis_alat = JenisAlat::find($id);
+        // ambil data peralatan
+        $peralatan = Peralatan::find($id);
 
         // ambil data relationship
-        $created_by = User::find($jenis_alat->created_by);
-        $updated_by = User::find($jenis_alat->updated_by);
+        $jenis = JenisAlat::find($peralatan->jenis_id);
+        $perusahaan = Perusahaan::find($peralatan->perusahaan_id);
+        $created_by = User::find($peralatan->created_by);
+        $updated_by = User::find($peralatan->updated_by);
 
-        //dd($jenis_alat->nama);
+        //dd($peralatan->jenis->nama);
 
         //return response()->json($user);
         return response()->json([
-            'jenis_alat'=>$jenis_alat,
+            'peralatan'=>$peralatan,
+            'jenis'=>$jenis,
+            'perusahaan'=>$perusahaan,
             'created_by'=>$created_by, 
             'updated_by'=>$updated_by
         ]);
     }
 
+
     /**
-     * Function untuk menampilkan halaman form edit jenis alat.
+     * Function untuk menampilkan halaman form edit peralatan.
      * 
      * Akses:
      * - Super Admin
      * - Admin
      * 
      * Method: GET
-     * URL: /master-data/jenis-alat/edit
+     * URL: /fasilitas/peralatan/edit
      *
      * @param  int  $id
      * @return \Illuminate\Http\Response
@@ -254,43 +280,52 @@ class JenisAlatController extends Controller
         }
         // ===================== AKHIR PROSES VERIFIKASI =======================
 
-        // ambil data jenis alat
-        $jenis_alat = JenisAlat::where('id', $id)
+        // ambil data peralatan
+        $peralatan = Peralatan::where('id', $id)
             ->first();
 
-        // jika jenis alat dengan id tersebut tidak ada
-        if($jenis_alat == null){
+        // jika peralatan dengan id tersebut tidak ada
+        if($peralatan == null){
             // kembali ke halaman daftar dan kirim notif
-            return redirect('/master-data/jenis-alat/daftar')->with('notif', 'item_null');
+            return redirect('/fasilitas/peralatan/daftar')->with('notif', 'item_null');
         }
 
+        // ambil daftar jenis alat yang aktif
+        $jenis_alat = JenisAlat::where('status', 1)->get();
+
+        // ambil daftar perusahaan yang aktif
+        $perusahaan = Perusahaan::where('status', 1)->get();
+
         // variabel untuk dikirim ke halaman view
-        $judul = "Jenis Alat";
-        $module = "Master Data";
-        $menu = "Jenis Alat";
-        $menu_url = "/master-data/jenis-alat/daftar";
+        $judul = "Peralatan";
+		$module = "Fasilitas";
+        $menu = "Peralatan";
+        $menu_url = "/fasilitas/peralatan/daftar";
         $submenu = "Edit Data";
         
         // menampilkan halaman view
-        return view('master_data.jenis_alat.edit')
+        return view('fasilitas.peralatan.edit')
         ->with('judul', $judul)
         ->with('module', $module)
 		->with('menu', $menu)
         ->with('menu_url', $menu_url)
         ->with('submenu', $submenu)
+        ->with('peralatan', $peralatan)
         ->with('jenis_alat', $jenis_alat)
+        ->with('perusahaan', $perusahaan)
         ;
     }
 
+
     /**
-     * Function untuk mengubah data jenis alat.
+     * Function untuk mengubah data peralatan.
      * 
      * Akses:
      * - Super Admin
      * - Admin
      * 
      * Method: POST
-     * URL: /master-data/jenis-alat/edit
+     * URL: /fasilitas/peralatan/edit
      *
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
@@ -316,13 +351,13 @@ class JenisAlatController extends Controller
         // ===================== AKHIR PROSES VERIFIKASI =======================
 
         // ===================== CEK DUPLIKASI KODE ============================
-        // ambil data jenis alat sebelumnya berdasarkan id
-        $jenis_alat = JenisAlat::where('id', $request->id)
+        // ambil data peralatan sebelumnya berdasarkan id
+        $peralatan = Peralatan::where('id', $request->id)
             ->first();
         // cek apakah ada perubahan kode
-        if($jenis_alat->kode != $request->kode){
+        if($peralatan->kode != $request->kode){
             // jika ada, cek apakah kode yang baru sudah terdaftar
-            $cekKode = JenisAlat::where('kode', $request->kode)->first();
+            $cekKode = Peralatan::where('kode', $request->kode)->first();
             // jika kode sudah terdaftar
             if($cekKode != null){
                 // buat pesan error
@@ -332,24 +367,37 @@ class JenisAlatController extends Controller
             }
         }
         // ===================== END OF CEK DUPLIKASI KODE =====================
-
+        
         try{
-            // update data jenis alat di tabel Jenis Alat
-            JenisAlat::where('id', $request->id)
+            // update data peralatan di tabel peralatan
+            Peralatan::where('id', $request->id)
             ->update([
                 'kode' => strtoupper($request->kode),
                 'nama' => strtoupper($request->nama),
+                'merk' => strtoupper($request->merk),
+                'tipe' => strtoupper($request->tipe),
+                'model' => strtoupper($request->model),
+                'serial_number' => strtoupper($request->serial_number),
+                'thn_produksi' => $request->thn_produksi,
+                'thn_pengadaan' => $request->thn_pengadaan,
+                'keterangan' => strtoupper($request->keterangan),
+                'sewa' => $request->sewa,
+                'jenis_id' => $request->jenis,
+                'perusahaan_id' => $request->perusahaan,
+                'kondisi' => $request->kondisi,
                 'status' => $request->status,
                 'updated_by' => session()->get('id')
             ]);
         }
         // jika proses update gagal
         catch(QueryException $ex){
+            //dd($ex->getMessage());
             // kembali ke halaman daftar dan tampilkan pesan error
-            return redirect('/master-data/jenis-alat/daftar')->with('notif', 'edit_gagal');
+            return redirect('/fasilitas/peralatan/daftar')->with('notif', 'edit_gagal');
         }
 
-        // jika proses insert berhasil
-        return redirect('/master-data/jenis-alat/daftar')->with('notif', 'edit_sukses');
+        // jika proses update berhasil
+        return redirect('/fasilitas/peralatan/daftar')->with('notif', 'edit_sukses');
     }
+
 }

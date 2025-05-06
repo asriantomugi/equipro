@@ -13,8 +13,11 @@ return new class extends Migration
      */
     public function up(): void
     {
+        // membuat tabel users
         Schema::create('users', function (Blueprint $table) {
-            $table->bigIncrements('id'); // primary key
+
+            // membuat field-field
+            $table->id(); // primary key
             $table->string('name');
             $table->string('email')->unique();
             $table->timestamp('email_verified_at')->nullable();
@@ -27,13 +30,19 @@ return new class extends Migration
             $table->timestamps();
         });
 
+        // membuat tabel password reset token
         Schema::create('password_reset_tokens', function (Blueprint $table) {
+
+             // membuat field-field
             $table->string('email')->primary();
             $table->string('token');
             $table->timestamp('created_at')->nullable();
         });
 
+         // membuat tabel session
         Schema::create('sessions', function (Blueprint $table) {
+
+             // membuat field-field
             $table->string('id')->primary();
             $table->foreignId('user_id')->nullable()->index();
             $table->string('ip_address', 45)->nullable();

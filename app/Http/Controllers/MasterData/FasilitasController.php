@@ -12,7 +12,8 @@ namespace App\Http\Controllers\MasterData;
  use Illuminate\Http\Request;
  use Illuminate\Support\Facades\Auth;
  use Illuminate\Support\Facades\DB;
- use \Illuminate\Database\QueryException;
+ use Illuminate\Database\QueryException;
+ use Illuminate\Support\MessageBag;
  use App\Models\User;
  use App\Models\Fasilitas;
  use App\Http\Controllers\Controller;
@@ -313,6 +314,24 @@ class FasilitasController extends Controller
             return redirect('/');
         }
         // ===================== AKHIR PROSES VERIFIKASI =======================
+
+        // ===================== CEK DUPLIKASI KODE ============================
+        // ambil data fasilitas sebelumnya berdasarkan id
+        $fasilitas = Fasilitas::where('id', $request->id)
+            ->first();
+        // cek apakah ada perubahan kode
+        if($fasilitas->kode != $request->kode){
+            // jika ada, cek apakah kode yang baru sudah terdaftar
+            $cekKode = Fasilitas::where('kode', $request->kode)->first();
+            // jika kode sudah terdaftar
+            if($cekKode != null){
+                // buat pesan error
+                $errors = new MessageBag(['kode' => 'Kode yang dimasukkan sudah terdaftar']);
+                // kembali ke halaman edit dan tampilkan pesan error
+                return redirect()->back()->withErrors($errors)->withInput();
+            }
+        }
+        // ===================== END OF CEK DUPLIKASI KODE =====================
 
         try{
             // update data fasilitas di tabel Fasilitas

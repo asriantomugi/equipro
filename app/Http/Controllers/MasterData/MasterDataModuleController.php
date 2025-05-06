@@ -89,7 +89,7 @@ class MasterDataModuleController extends Controller
         $menu = "Home";
         $menu_url = "#";
 			
-		// alihkan ke halaman view untuk user non BUAU/BUGH
+		// alihkan ke halaman view
 		return view('master_data.home')
 		->with('judul', $judul)
 		->with('module', $module)

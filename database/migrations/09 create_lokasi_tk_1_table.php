@@ -7,15 +7,19 @@ use Illuminate\Support\Facades\Schema;
 return new class extends Migration
 {
     /**
-     * Function untuk membuat tabel Roles
+     * Function untuk membuat tabel Lokasi Tingkat I
      *
-     * @return void
+     * @return tabel lokasi_tk_1 di database
      */
-    public function up()
+    public function up(): void
     {
-        Schema::create('roles', function (Blueprint $table) {
-            $table->integer('id')->primary();
+        Schema::create('lokasi_tk_1', function (Blueprint $table) {
+
+            // membuat field-field
+            $table->id();
+            $table->string('kode');
             $table->string('nama');
+            $table->boolean('status')->default(true);
             $table->bigInteger('created_by')->nullable();
             $table->bigInteger('updated_by')->nullable();
             $table->timestamps();
@@ -24,11 +28,9 @@ return new class extends Migration
 
     /**
      * Reverse the migrations.
-     *
-     * @return void
      */
-    public function down()
+    public function down(): void
     {
-        Schema::dropIfExists('roles');
+        Schema::dropIfExists('lokasi_tk_1');
     }
 };

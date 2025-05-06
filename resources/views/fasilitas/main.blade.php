@@ -24,7 +24,7 @@
   @include('layout.navbar')
 
   <!-- menu side bar -->
-  @include('master_data.sidebar')
+  @include('fasilitas.sidebar')
 
   <!-- Content Wrapper. Contains page content -->
   <div class="content-wrapper">

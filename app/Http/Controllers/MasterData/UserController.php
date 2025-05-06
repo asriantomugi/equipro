@@ -12,7 +12,7 @@ namespace App\Http\Controllers\MasterData;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
-use \Illuminate\Database\QueryException;
+use Illuminate\Database\QueryException;
 use App\Models\User;
 use App\Models\Role;
 use App\Models\DetailUser;
@@ -58,14 +58,17 @@ class UserController extends Controller
        
         // variabel untuk dikirim ke halaman view
         $judul = "User";
+		$module = "Master Data";
         $menu = "User";
-        $page = "Daftar";
+        $menu_url = "/master-data/user/daftar";
+        $submenu = "Daftar";
         
         // menampilkan halaman view
         return view('master_data.user.daftar')
         ->with('judul', $judul)
-        ->with('menu', $menu)
-        ->with('page', $page)
+		->with('module', $module)
+		->with('menu', $menu)
+        ->with('menu_url', $menu_url)	
         ->with('daftar', $daftar)
         ;
     }
@@ -112,14 +115,18 @@ class UserController extends Controller
 
         // variabel untuk dikirim ke halaman view
         $judul = "User";
+		$module = "Master Data";
         $menu = "User";
-        $page = "Tambah";
+        $menu_url = "/master-data/user/daftar";
+        $submenu = "Tambah";
         
         // menampilkan halaman view
         return view('master_data.user.tambah')
         ->with('judul', $judul)
+        ->with('module', $module)
         ->with('menu', $menu)
-        ->with('page', $page)
+        ->with('menu_url', $menu_url)
+        ->with('submenu', $submenu)	
         ->with('roles', $roles)
         ->with('perusahaan', $perusahaan)
         ;
@@ -304,14 +311,18 @@ class UserController extends Controller
 
         // variabel untuk dikirim ke halaman view
         $judul = "User";
+		$module = "Master Data";
         $menu = "User";
-        $page = "Edit Data";
+        $menu_url = "/master-data/user/daftar";
+        $submenu = "Edit Data";
         
         // menampilkan halaman view
         return view('master_data.user.edit')
         ->with('judul', $judul)
+        ->with('module', $module)
         ->with('menu', $menu)
-        ->with('page', $page)
+        ->with('menu_url', $menu_url)
+        ->with('submenu', $submenu)
         ->with('roles', $roles)
         ->with('perusahaan', $perusahaan)
         ->with('user', $user)
@@ -440,15 +451,19 @@ class UserController extends Controller
 		
 		// variabel untuk dikirim ke halaman view
         $judul = "User";
+		$module = "Master Data";
         $menu = "User";
-        $page = "Reset Password";
+        $menu_url = "/master-data/user/daftar";
+        $submenu = "Reset Password";
         
         // menampilkan halaman view
         return view('master_data.user.password')
         ->with('judul', $judul)
-        ->with('menu', $menu)
-        ->with('page', $page)
-		->with('user', $user)
+        ->with('module', $module)
+		->with('menu', $menu)
+        ->with('menu_url', $menu_url)
+        ->with('submenu', $submenu)
+        ->with('user', $user)
         ;
     }
 	

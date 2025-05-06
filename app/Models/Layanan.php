@@ -6,11 +6,11 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Carbon\Carbon;
 
-class Fasilitas extends Model
+class Layanan extends Model
 {
     use HasFactory;
 
-    protected $table = 'fasilitas'; // nama tabel
+    protected $table = 'layanan'; // nama tabel
     protected $primaryKey = 'id'; // primary key
 
     /**
@@ -22,25 +22,13 @@ class Fasilitas extends Model
         'id'
     ];
 
-    /**
-     * Function untuk memanggil layanan dari fasilitas tsb.
+
+     /**
+     * Function untuk memanggil fasilitas dari layanan.
      */
-    public function getLayanan()
+    public function fasilitas()
     {
-        return $this->hasMany(Layanan::class);
-    }
-
-    // Fungsi untuk memanggil jumlah layanan serviceable dari fasilitas tsb (status = TRUE dan kondisi = TRUE).
-    public function getJlhLayananServ()
-    {
-        return $this->getLayanan()->where('status', TRUE)->where('kondisi', TRUE)->count();
-    }
-
-    
-    // Fungsi untuk memanggil jumlah layanan unserviceable dari fasilitas tsb (status = TRUE dan kondisi = FALSE).
-    public function getJlhLayananUnserv()
-    {
-        return $this->getLayanan()->where('status', TRUE)->where('kondisi', FALSE)->count();
+        return $this->belongsTo(Fasilitas::class);
     }
 
     /**

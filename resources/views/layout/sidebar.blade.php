@@ -20,7 +20,7 @@
         <li class="nav-header">NAVIGATION</li>
 
         <li class="nav-item">
-          <a href="{{url('/module')}}" class="nav-link @if($menu == 'Module') active @endif">
+          <a href="{{url('/module')}}" class="nav-link @if($module == 'Module') active @endif">
             <i class="nav-icon fas fa-th"></i>
             <p>Module</p>
           </a>

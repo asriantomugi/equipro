@@ -14,6 +14,8 @@ return new class extends Migration
     public function up()
     {
         Schema::create('detail_users', function (Blueprint $table) {
+
+            // buat field-field tabel detail user
             $table->id();
             $table->bigInteger('user_id');
             $table->bigInteger('perusahaan_id');

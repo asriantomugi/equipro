@@ -7,14 +7,18 @@ use Illuminate\Support\Facades\Schema;
 return new class extends Migration
 {
     /**
-     * Function untuk membuat tabel Lokasi Tingkat I
+     * Function untuk membuat tabel Lokasi Tingkat III
      *
-     * @return tabel lokasi_tk_1 di database
+     * @return tabel lokasi_tk_3 di database
      */
     public function up(): void
     {
-        Schema::create('lokasi_tk_1', function (Blueprint $table) {
+        Schema::create('lokasi_tk_3', function (Blueprint $table) {
+
+            // membuat field-field
             $table->id();
+            $table->bigInteger('lokasi_tk_1_id');
+            $table->bigInteger('lokasi_tk_2_id');
             $table->string('kode');
             $table->string('nama');
             $table->boolean('status')->default(true);
@@ -29,6 +33,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('lokasi_tk_1');
+        Schema::dropIfExists('lokasi_tk_3');
     }
 };

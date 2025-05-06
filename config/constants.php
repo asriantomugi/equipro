@@ -19,18 +19,33 @@ return [
         'teknisi' => 4, // Teknisi
     ],
 
-    // konstanta untuk kondisi peralatan
+    // konstanta untuk kondisi peralatans
     'kondisi_peralatan' => [
         'normal' => TRUE,
-        'rusak' => FALSE
+        'rusak' => FALSE,
     ],
 
     // konstanta untuk status histori gangguan peralatan
     'status_histori_gangguan_peralatan' => [
         'close' => TRUE,
-        'open' => FALSE
-    ]
+        'open' => FALSE,
+    ],
 
+    // konstanta untuk kondisi layanan
+    'kondisi_layanan' => [
+        'serviceable' => TRUE,
+        'unserviceable' => FALSE,
+    ],
 
-    
+    // konstanta untuk kondisi peralatan di layanan
+    'kondisi_peralatan_layanan' => [
+        'beroperasi' => TRUE,
+        'gangguan' => FALSE,
+    ],
+
+    // konstanta untuk status histori gangguan layanan
+    'status_histori_gangguan_layanan' => [
+        'close' => TRUE,
+        'open' => FALSE,
+    ] 
 ];

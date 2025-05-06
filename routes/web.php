@@ -12,6 +12,7 @@ use App\Http\Controllers\MasterData\LokasiTk1Controller;
 use App\Http\Controllers\MasterData\LokasiTk2Controller;
 use App\Http\Controllers\MasterData\LokasiTk3Controller;
 use App\Http\Controllers\Fasilitas\FasilitasModuleController;
+use App\Http\Controllers\Fasilitas\PeralatanController;
 
 /*
 Route::get('/', function () {
@@ -213,6 +214,27 @@ Route::post('/master-data/lokasi-tk-3/detail', [LokasiTk3Controller::class, 'det
 
 // Menampilkan halaman utama module Fasilitas
 Route::get('/fasilitas/home', [FasilitasModuleController::class, 'home']);
+
+/* ============================== MENU PERALATAN ==================================== */
+// Menampilkan daftar peralatan
+Route::get('/fasilitas/peralatan/daftar', [PeralatanController::class, 'daftar']);
+
+// Menampilkan form tambah peralatan
+Route::get('/fasilitas/peralatan/tambah', [PeralatanController::class, 'formTambah']);
+
+// Melakukan proses tambah peralatan
+Route::post('/fasilitas/peralatan/tambah', [PeralatanController::class, 'tambah']);
+
+// Menampilkan form edit peralatan
+Route::get('/fasilitas/peralatan/edit/{id}', [PeralatanController::class, 'formEdit']);
+
+// Melakukan proses edit peralatan
+Route::post('/fasilitas/peralatan/edit', [PeralatanController::class, 'edit']);
+
+// Menampilkan JSON data peralatan
+Route::post('/fasilitas/peralatan/detail', [PeralatanController::class, 'detail']);
+
+/* =========================== END OF MENU PERALATAN ================================ */
 
 /** 
  * ------------------------------------------------------------------------------------

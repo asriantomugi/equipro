@@ -1,21 +1,19 @@
 <?php
 
-namespace App\Http\Controllers\MasterData;
+namespace App\Http\Controllers\Fasilitas;
 
 /**
  * FasilitasModuleController.php
  * Controller ini digunakan untuk menangani akses ke halaman utama
- * module Master Data
+ * module Fasilitas
  *
  * @author Mugi Asrianto
  */
 
-use App\Models\Gse;
 use App\Models\User;
-use App\Models\Mohon;
-use App\Models\Stiker;
 use App\Models\Konstanta;
 use App\Models\Perusahaan;
+use App\Models\Fasilitas;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Auth;
@@ -53,49 +51,40 @@ class FasilitasModuleController extends Controller
 
         // cek role user, hanya bisa diakses oleh admin AP1
         if(session()->get('role_id') != config('constants.role.super_admin') 
-            && session()->get('role_id') != config('constants.role.admin')){
+            && session()->get('role_id') != config('constants.role.admin')
+            && session()->get('role_id') != config('constants.role.teknisi')){
             // jika bukan
             return redirect('/');
         }
         // ===================== AKHIR PROSES VERIFIKASI =======================
+
+        // mengambil daftar fasilitas yang aktif
+        $fasilitas = Fasilitas::where('status', 1)->get();
+
+        //dd($fasilitas);
 		
         // ===================== PROSES PENGAMBILAN DATA USER =======================
-        
-        // Ambil jumlah user Super Admin
-        $jlhSuperAdmin = User::where('status', 1) // status aktif
-            ->where('role_id', config('constants.role.super_admin')) // role super admin
-            ->get()->count();
-
-        // Ambil jumlah user Admin
-        $jlhAdmin = User::where('status', 1) // status aktif
-            ->where('role_id', config('constants.role.admin')) // role admin
-            ->get()->count();
-
-        // Ambil jumlah user Teknisi
-        $jlhTeknisi = User::where('status', 1) // status aktif
-            ->where('role_id', config('constants.role.teknisi')) // role teknisi
-            ->get()->count();
-
-        // Buat array untuk data chart jumlah user berdasarkan role
-        $dataChartRoleUser = [
-            'labels' => ['Super Admin', 'Admin', 'Teknisi'],
-            'data' => [$jlhSuperAdmin, $jlhAdmin, $jlhTeknisi]
+        // Buat array sementara untuk data chart jumlah serviceable dan unserviceable
+        $dataChart = [
+            'labels' => ['Serviceable', 'Unserviceable'],
+            'data' => [0, 0]
         ];
         // ===================== AKHIR PROSES PENGAMBILAN DATA USER =======================
 
 		// buat variabel untuk dikirim ke halaman view
 		$judul = "Home";
-		$module = "Master Data";
+		$module = "Fasilitas";
         $menu = "Home";
         $menu_url = "#";
 			
-		// alihkan ke halaman view untuk user non BUAU/BUGH
-		return view('master_data.home')
+		// alihkan ke halaman view
+		return view('fasilitas.home')
 		->with('judul', $judul)
 		->with('module', $module)
 		->with('menu', $menu)
         ->with('menu_url', $menu_url)	
-        ->with('dataChartRoleUser', $dataChartRoleUser)
+        ->with('fasilitas', $fasilitas)
+        ->with('dataChart', $dataChart)
 		;
     }	
 

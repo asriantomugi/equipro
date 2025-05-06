@@ -12,7 +12,8 @@ namespace App\Http\Controllers\MasterData;
  use Illuminate\Http\Request;
  use Illuminate\Support\Facades\Auth;
  use Illuminate\Support\Facades\DB;
- use \Illuminate\Database\QueryException;
+ use Illuminate\Database\QueryException;
+ use Illuminate\Support\MessageBag;
  use App\Models\User;
  use App\Models\LokasiTk1;
  use App\Http\Controllers\Controller;
@@ -312,6 +313,24 @@ class LokasiTk1Controller extends Controller
             return redirect('/');
         }
         // ===================== AKHIR PROSES VERIFIKASI =======================
+
+        // ===================== CEK DUPLIKASI KODE ============================
+        // ambil data lokasi sebelumnya berdasarkan id
+        $lokasi = LokasiTk1::where('id', $request->id)
+            ->first();
+        // cek apakah ada perubahan kode
+        if($lokasi->kode != $request->kode){
+            // jika ada, cek apakah kode yang baru sudah terdaftar
+            $cekKode = LokasiTk1::where('kode', $request->kode)->first();
+            // jika kode sudah terdaftar
+            if($cekKode != null){
+                // buat pesan error
+                $errors = new MessageBag(['kode' => 'Kode yang dimasukkan sudah terdaftar']);
+                // kembali ke halaman edit dan tampilkan pesan error
+                return redirect()->back()->withErrors($errors)->withInput();
+            }
+        }
+        // ===================== END OF CEK DUPLIKASI KODE =====================
 
         try{
             // update data lokasi tingkat I di tabel lokasi_tk_1

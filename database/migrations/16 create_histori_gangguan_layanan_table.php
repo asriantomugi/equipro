@@ -7,18 +7,20 @@ use Illuminate\Support\Facades\Schema;
 return new class extends Migration
 {
     /**
-     * Function untuk membuat tabel Lokasi Tingkat III
+     * Function untuk membuat tabel Histori Gangguan Layanan
      *
-     * @return tabel lokasi_tk_3 di database
+     * @return tabel Layanan di database
      */
     public function up(): void
     {
-        Schema::create('lokasi_tk_3', function (Blueprint $table) {
+        Schema::create('histori_gangguan_layanan', function (Blueprint $table) {
+
+            // membuat field-field
             $table->id();
-            $table->bigInteger('lokasi_tk_1_id');
-            $table->bigInteger('lokasi_tk_2_id');
-            $table->string('kode');
-            $table->string('nama');
+            $table->bigInteger('layanan_id');
+            $table->bigInteger('laporan_id');
+            $table->datetime('waktu_unserv');
+            $table->datetime('waktu_serv')->nullable();
             $table->boolean('status')->default(true);
             $table->bigInteger('created_by')->nullable();
             $table->bigInteger('updated_by')->nullable();
@@ -31,6 +33,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('lokasi_tk_3');
+        Schema::dropIfExists('histori_gangguan_layanan');
     }
 };

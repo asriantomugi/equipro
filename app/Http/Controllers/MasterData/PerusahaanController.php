@@ -12,6 +12,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use \Illuminate\Database\QueryException;
+use Illuminate\Support\MessageBag;
 use App\Models\User;
 use App\Models\Perusahaan;
 use App\Http\Controllers\Controller;
@@ -55,14 +56,17 @@ class PerusahaanController extends Controller
        
         // variabel untuk dikirim ke halaman view
         $judul = "Perusahaan";
+		$module = "Master Data";
         $menu = "Perusahaan";
-        $page = "Daftar";
+        $menu_url = "/master-data/perusahaan/daftar";
+        $submenu = "Daftar";
         
         // menampilkan halaman view
         return view('master_data.perusahaan.daftar')
         ->with('judul', $judul)
-        ->with('menu', $menu)
-        ->with('page', $page)
+		->with('module', $module)
+		->with('menu', $menu)
+        ->with('menu_url', $menu_url)	
         ->with('daftar', $daftar)
         ;
     }
@@ -101,14 +105,18 @@ class PerusahaanController extends Controller
 
         // variabel untuk dikirim ke halaman view
         $judul = "Perusahaan";
+		$module = "Master Data";
         $menu = "Perusahaan";
-        $page = "Tambah";
+        $menu_url = "/master-data/perusahaan/daftar";
+        $submenu = "Tambah";
         
         // menampilkan halaman view
         return view('master_data.perusahaan.tambah')
         ->with('judul', $judul)
-        ->with('menu', $menu)
-        ->with('page', $page)
+        ->with('module', $module)
+		->with('menu', $menu)
+        ->with('menu_url', $menu_url)
+        ->with('submenu', $submenu)
         ;
     }
 
@@ -259,14 +267,18 @@ class PerusahaanController extends Controller
 
         // variabel untuk dikirim ke halaman view
         $judul = "Perusahaan";
+		$module = "Master Data";
         $menu = "Perusahaan";
-        $page = "Edit Data";
+        $menu_url = "/master-data/perusahaan/daftar";
+        $submenu = "Edit Data";
         
         // menampilkan halaman view
         return view('master_data.perusahaan.edit')
         ->with('judul', $judul)
-        ->with('menu', $menu)
-        ->with('page', $page)
+        ->with('module', $module)
+		->with('menu', $menu)
+        ->with('menu_url', $menu_url)
+        ->with('submenu', $submenu)
         ->with('perusahaan', $perusahaan)
         ;
     }
@@ -303,6 +315,37 @@ class PerusahaanController extends Controller
             return redirect('/');
         }
         // ===================== AKHIR PROSES VERIFIKASI =======================
+
+        // ===================== CEK DUPLIKASI NAMA DAN EMAIL ============================
+        // ambil data perusahaan sebelumnya berdasarkan id
+        $perusahaan = Perusahaan::where('id', $request->id)
+            ->first();
+        // cek apakah ada perubahan nama
+        if($perusahaan->nama != $request->nama){
+            // jika ada, cek apakah nama yang baru sudah terdaftar
+            $cekNama = Perusahaan::where('nama', $request->nama)->first();
+            // jika nama sudah terdaftar
+            if($cekNama != null){
+                // buat pesan error
+                $errors = new MessageBag(['nama' => 'Nama yang dimasukkan sudah terdaftar']);
+                // kembali ke halaman edit dan tampilkan pesan error
+                return redirect()->back()->withErrors($errors)->withInput();
+            }
+        }
+
+        // cek apakah ada perubahan email
+        if($perusahaan->email != $request->email){
+            // jika ada, cek apakah email yang baru sudah terdaftar
+            $cekEmail = Perusahaan::where('email', $request->email)->first();
+            // jika email sudah terdaftar
+            if($cekEmail != null){
+                // buat pesan error
+                $errors = new MessageBag(['email' => 'Email yang dimasukkan sudah terdaftar']);
+                // kembali ke halaman edit dan tampilkan pesan error
+                return redirect()->back()->withErrors($errors)->withInput();
+            }
+        }
+        // ===================== END OF CEK DUPLIKASI NAMA DAN EMAIL =====================
 
         try{
             // update data perusahaan di tabel Perusahaan

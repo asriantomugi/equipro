@@ -39,16 +39,16 @@
 
         <!-- MENU PERALATAN -->
         <li class="nav-item">
-          <a href="{{url('/master-data/user/daftar')}}" class="nav-link @if($menu == 'User') active @endif">
-            <i class="nav-icon fas fa-user"></i>
+          <a href="{{url('/fasilitas/peralatan/daftar')}}" class="nav-link @if($menu == 'Peralatan') active @endif">
+            <i class="nav-icon fas fa-hdd"></i>
             <p>Peralatan</p>
           </a>
         </li>
 
         <!-- MENU LAYANAN -->
         <li class="nav-item">
-          <a href="{{url('/master-data/perusahaan/daftar')}}" class="nav-link @if($menu == 'Perusahaan') active @endif">
-            <i class="nav-icon fas fa-briefcase"></i>
+          <a href="{{url('/fasilitas/layanan/daftar')}}" class="nav-link @if($menu == 'Layanan') active @endif">
+            <i class="nav-icon fas fa-server"></i>
             <p>Layanan</p>
           </a>
         </li>

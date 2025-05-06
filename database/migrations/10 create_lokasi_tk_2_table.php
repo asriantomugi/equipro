@@ -14,6 +14,8 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('lokasi_tk_2', function (Blueprint $table) {
+
+            // membuat field-field
             $table->id();
             $table->bigInteger('lokasi_tk_1_id');
             $table->string('kode');
