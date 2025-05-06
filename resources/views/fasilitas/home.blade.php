@@ -43,31 +43,36 @@
                     <canvas id="chart{{ $index }}" style="min-height: 250px; height: 250px; max-height: 90%; max-width: 100%;"></canvas>
                   </div><!-- /.col -->
                   
-                  <!-- info box jumlah -->
                   <div class="col-md-6">
                    
-                    <div class="info-box mb-3 bg-success">
-                      <span class="info-box-icon"><i class="fas fa-check"></i></span>
+                    <!-- small box -->
+                    <div class="small-box bg-success">
+                      <div class="inner">
+                        <h3>{{ $satu->getJlhLayananServ() }}</h3>
 
-                      <div class="info-box-content">
-                        <span class="info-box-text">Serviceable</span>
-                        <span class="info-box-number">{{ $satu->getJlhLayananServ() }}</span>
+                        <p>SERVICEABLE</p>
                       </div>
-                      <!-- /.info-box-content -->
-                    </div>
-                    <!-- /.info-box -->
-                    <div class="info-box mb-3 bg-danger">
-                      <span class="info-box-icon"><i class="fas fa-times"></i></span>
+                      <div class="icon">
+                        <i class="fas fa-check"></i>
+                      </div>
+                      <a href="#" class="small-box-footer">More info <i class="fas fa-arrow-circle-right"></i></a>
+                    </div><!-- /.small-box -->
 
-                      <div class="info-box-content">
-                        <span class="info-box-text">Unserviceable</span>
-                        <span class="info-box-number">{{ $satu->getJlhLayananUnserv() }}</span>
+                    <!-- small box -->
+                    <div class="small-box bg-danger">
+                      <div class="inner">
+                        <h3>{{ $satu->getJlhLayananUnserv() }}</h3>
+
+                        <p>UNSERVICEABLE</p>
                       </div>
-                      <!-- /.info-box-content -->
-                    </div>
-                    <!-- /.info-box -->
+                      <div class="icon">
+                        <i class="fas fa-times"></i>
+                      </div>
+                      <a href="#" class="small-box-footer">More info <i class="fas fa-arrow-circle-right"></i></a>
+                    </div><!-- /.small-box -->
                     
                   </div><!-- /.col -->
+
                 </div><!-- /.row -->
 
               </div>
