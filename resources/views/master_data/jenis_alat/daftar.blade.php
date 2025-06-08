@@ -40,8 +40,8 @@
 @foreach ($daftar as $satu)
                     <tr class="table-condensed">
                       <td></td>
-                      <td>{{ strtoupper($satu->kode) }}</td>
-                      <td>{{ strtoupper($satu->nama) }}</td>
+                      <td><center>{{ strtoupper($satu->kode) }}</center></td>
+                      <td><center>{{ strtoupper($satu->nama) }}</center></td>
   @if($satu->status == 1)
                       <td><center><span class="badge bg-success">AKTIF</span></center></td>
   @else
@@ -113,31 +113,41 @@
       $(document).Toasts('create', {
           class: 'bg-success',
           title: 'Sukses!',
-          body: 'Jenis Alat baru telah berhasil ditambahkan'
+          body: 'Jenis Alat baru telah berhasil ditambahkan',
+          autohide: true,
+          delay: 3000
         })
     @elseif(session()->get('notif') == 'edit_sukses')
       $(document).Toasts('create', {
           class: 'bg-success',
           title: 'Sukses!',
-          body: 'Data Jenis Alat telah berhasil diubah'
+          body: 'Data Jenis Alat telah berhasil diubah',
+          autohide: true,
+          delay: 3000
         })
     @elseif(session()->get('notif') == 'tambah_gagal')
       $(document).Toasts('create', {
           class: 'bg-danger',
           title: 'Error!',
-          body: 'Gagal menambahkan jenis alat baru'
+          body: 'Gagal menambahkan jenis alat baru',
+          autohide: true,
+          delay: 3000
         })
     @elseif(session()->get('notif') == 'edit_gagal')
       $(document).Toasts('create', {
           class: 'bg-danger',
           title: 'Error!',
-          body: 'Gagal mengubah data jenis alat'
+          body: 'Gagal mengubah data jenis alat',
+          autohide: true,
+          delay: 3000
         })
     @elseif(session()->get('notif') == 'item_null')
       $(document).Toasts('create', {
           class: 'bg-danger',
           title: 'Error!',
-          body: 'Gagal menampilkan data jenis alat'
+          body: 'Gagal menampilkan data jenis alat',
+          autohide: true,
+          delay: 3000
         })
     @endif
   @endif

@@ -13,6 +13,7 @@ use App\Http\Controllers\MasterData\LokasiTk2Controller;
 use App\Http\Controllers\MasterData\LokasiTk3Controller;
 use App\Http\Controllers\Fasilitas\FasilitasModuleController;
 use App\Http\Controllers\Fasilitas\PeralatanController;
+use App\Http\Controllers\Fasilitas\LayananController;
 
 /*
 Route::get('/', function () {
@@ -198,6 +199,9 @@ Route::post('/master-data/lokasi-tk-3/edit', [LokasiTk3Controller::class, 'edit'
 // Menampilkan JSON data lokasi tingkat III
 Route::post('/master-data/lokasi-tk-3/detail', [LokasiTk3Controller::class, 'detail']);
 
+// Menampilkan JSON data lokasi tingkat III berdasarkan lokasi tingkat II
+Route::post('/json/lokasi-tk-3/daftar', [LokasiTk3Controller::class, 'daftarJson']);
+
 /* =========================== END OF MENU LOKASI TINGKAT II ================================ */
 
 /** 
@@ -235,6 +239,61 @@ Route::post('/fasilitas/peralatan/edit', [PeralatanController::class, 'edit']);
 Route::post('/fasilitas/peralatan/detail', [PeralatanController::class, 'detail']);
 
 /* =========================== END OF MENU PERALATAN ================================ */
+
+/* ============================== MENU LAYANAN ==================================== */
+Route::prefix('/fasilitas/layanan')->name('fasilitas.layanan.')->group(function () {
+    // Menampilkan daftar layanan
+    Route::get('/daftar', [LayananController::class, 'daftar'])->name('daftar');
+
+    // Menampilkan form tambah layanan step 1
+    Route::get('/tambah/step1', [LayananController::class, 'formTambahStep1'])->name('tambah.step1.form');
+
+    // Menampilkan form tambah layanan step 1 (tombol back)
+    Route::get('/tambah/step1/back/{id}', [LayananController::class, 'formTambahStep1Back'])->name('tambah.step1.back.form');;
+
+    // Melakukan proses tambah layanan step 1
+    Route::post('/tambah/step1', [LayananController::class, 'tambahStep1'])->name('tambah.step1.form');
+
+    // Melakukan proses tambah layanan step 1 (tombol back)
+    Route::post('/tambah/step1/back', [LayananController::class, 'tambahStep1Back'])->name('tambah.step1.back');
+
+    // Menampilkan form tambah layanan step 2
+    Route::get('/tambah/step2/{id}', [LayananController::class, 'formTambahStep2'])->name('tambah.step2.form');
+
+    // Melakukan proses tambah layanan step 2
+    Route::post('/tambah/step2', [LayananController::class, 'tambahStep2'])->name('tambah.step2');
+
+    // Menampilkan form tambah layanan step 3
+    Route::get('/tambah/step3/{id}', [LayananController::class, 'formTambahStep3'])->name('tambah.step3.form');
+
+    // Melakukan proses tambah layanan step 3
+    Route::post('/tambah/step3', [LayananController::class, 'tambahStep3'])->name('tambah.step3');
+
+    // Melakukan menghapus draft layanan
+    Route::post('/hapus', [LayananController::class, 'hapus'])->name('hapus');
+
+    // Menampilkan form edit layanan
+    //Route::get('/edit/{id}', [LayananController::class, 'formEdit'])->name('edit')->name('edit.form');
+
+    // Melakukan proses edit layanan
+    //Route::post('/edit', [LayananController::class, 'edit'])->name('edit')->name('edit');
+
+    // Menampilkan JSON data layanan
+    Route::post('/detail', [LayananController::class, 'detail'])->name('detail');
+
+    // Menampilkan daftar peralatan tersedia berdasarkan filter
+    Route::post('/peralatan/filter', [LayananController::class, 'peralatanFilter'])->name('peralatan.filter');
+
+    // Melakukan proses tambah peralatan ke layanan
+    Route::post('/peralatan/tambah', [LayananController::class, 'tambahPeralatan'])->name('peralatan.tambah');
+
+    // Menampilkan halaman edit ip address peralatan
+    Route::post('/peralatan/edit', [LayananController::class, 'editPeralatan'])->name('peralatan.edit');
+
+    // Menghapus peralatan dari layanan
+    Route::post('/peralatan/hapus', [LayananController::class, 'hapusPeralatan'])->name('peralatan.hapus');
+});
+/* =========================== END OF MENU LAYANAN ================================ */
 
 /** 
  * ------------------------------------------------------------------------------------

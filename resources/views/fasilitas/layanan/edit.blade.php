@@ -260,10 +260,10 @@
               <!-- /.card-body -->
 
               <div class="card-footer">
-                <a class="btn btn-default btn-sm" 
+                <a class="btn btn-default" 
                    href="{{url('/fasilitas/peralatan/daftar')}}" 
                    role="button">Batal</a>
-                <button type="submit" class="btn btn-primary btn-sm float-right">Simpan</button>
+                <button type="submit" class="btn btn-primary float-right">Simpan</button>
               </div>
 
 </form>

@@ -40,8 +40,8 @@
 @foreach ($daftar as $satu)
                     <tr class="table-condensed">
                       <td></td>
-                      <td>{{ strtoupper($satu->kode) }}</td>
-                      <td>{{ strtoupper($satu->nama) }}</td>
+                      <td><center>{{ strtoupper($satu->kode) }}</center></td>
+                      <td><center>{{ strtoupper($satu->nama) }}</center></td>
   @if($satu->status == 1)
                       <td><center><span class="badge bg-success">AKTIF</span></center></td>
   @else

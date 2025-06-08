@@ -6,11 +6,11 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Carbon\Carbon;
 
-class Layanan extends Model
+class DaftarPeralatanLayanan extends Model
 {
     use HasFactory;
 
-    protected $table = 'layanan'; // nama tabel
+    protected $table = 'daftar_peralatan_layanan'; // nama tabel
     protected $primaryKey = 'id'; // primary key
 
     /**
@@ -24,35 +24,19 @@ class Layanan extends Model
 
 
     /**
-     * Function untuk memanggil fasilitas dari layanan.
+     * Function untuk memanggil layanan.
      */
-    public function fasilitas()
+    public function layanan()
     {
-        return $this->belongsTo(Fasilitas::class);
+        return $this->belongsTo(Layanan::class);
     }
 
     /**
-     * Function untuk memanggil nama Lokasi Tingkat I.
+     * Function untuk memanggil data peralatan.
      */
-    public function LokasiTk1()
+    public function peralatan()
     {
-        return $this->hasOne(LokasiTk1::class, 'id', 'lokasi_tk_1_id');
-    }
-
-    /**
-     * Function untuk memanggil nama Lokasi Tingkat II.
-     */
-    public function LokasiTk2()
-    {
-        return $this->hasOne(LokasiTk2::class, 'id', 'lokasi_tk_2_id');
-    }
-
-    /**
-     * Function untuk memanggil nama Lokasi Tingkat III.
-     */
-    public function LokasiTk3()
-    {
-        return $this->hasOne(LokasiTk3::class, 'id', 'lokasi_tk_3_id');
+        return $this->hasOne(Peralatan::class, 'id', 'peralatan_id');
     }
 
     /**

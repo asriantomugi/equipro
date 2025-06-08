@@ -14,13 +14,110 @@
 
         <div class="row">
           <div class="col-lg-12 col-6">
+            <div class="card">
+              <div class="card-body">
+
+<!-- form filter --> 
+<form class="form-horizontal needs-validation" 
+      action="{{url('/gse/daftar')}}"
+      method="post" 
+      enctype="multipart/form-data"
+      novalidate>
+@csrf
+                <div class="row">
+
+                  <!-- field fasilitas -->
+                  <div class="col-lg-3">
+                    <label>Fasilitas</label> 
+                    <select class="form-control" 
+                            name="kategori"
+                            id="kategori">
+                            <option value="0" >- ALL -</option>
+                    </select>
+                  </div>
+
+                  <!-- field lokasi tingkat I -->
+                  <div class="col-lg-3"> 
+                    <label>Lokasi Tingkat I</label>
+                    <select class="form-control" name="jenis" id="formJenis">
+                      <option value="0">- ALL -</option>
+                    </select>
+                  </div>
+
+                  <!-- field lokasi tingkat II -->
+                  <div class="col-lg-3"> 
+                    <label>Lokasi Tingkat II</label>
+                    <select class="form-control" 
+                            name="perusahaan"
+                            id="perusahaan">
+                      <option value="0" >- ALL -</option>
+                    </select>
+                  </div>
+
+                  <!-- field lokasi tingkat III -->
+                  <div class="col-lg-3"> 
+                    <label>Lokasi Tingkat III</label>
+                    <select class="form-control" 
+                            name="perusahaan"
+                            id="perusahaan">
+                      <option value="0" >- ALL -</option>
+                    </select>
+                  </div>
+
+                </div>
+                <!-- /.row -->
+                <br>
+                <div class="row">
+
+                  <!-- field kondisi -->
+                  <div class="col-lg-3"> 
+                    <label>Kondisi</label>
+                    <select class="form-control" 
+                            name="perusahaan"
+                            id="perusahaan">
+                      <option value="0" >- ALL -</option>
+                    </select>
+                  </div>
+
+                  <!-- field status -->
+                  <div class="col-lg-3"> 
+                    <label>Status</label>
+                    <select class="form-control" 
+                            name="perusahaan"
+                            id="perusahaan">
+                      <option value="0" >- ALL -</option>
+                    </select>
+                  </div>
+
+                </div>
+                <!-- /.row -->
+
+              </div>
+              <!-- /.card-body -->
+
+              <div class="card-footer">
+                  <button type="submit" 
+                          class="btn btn-primary btn-sm float-right">
+                          <i class="fas fa-filter"></i>&nbsp;&nbsp;&nbsp;Filter</button>
+              </div>
+</form>
+<!-- form --> 
+            </div>
+            <!-- /.card -->
+          </div>
+          <!-- /.col-lg-12 -->
+        </div>
+        <!-- /.row -->
+
+        <div class="row">
+          <div class="col-lg-12 col-6">
             
             <div class="card">
               <div class="card-header">
-                <h3 class="card-title">DAFTAR PERALATAN</h3>
+                <h3 class="card-title">DAFTAR LAYANAN</h3>
 
                 <a class="btn btn-success btn-sm float-right" 
-                   href="{{url('/fasilitas/peralatan/tambah')}}" 
+                   href="{{url('/fasilitas/layanan/tambah/step1')}}" 
                    role="button"><i class="fas fa-plus"></i>&nbsp;&nbsp;&nbsp;Tambah</a>
 
               </div>
@@ -32,10 +129,10 @@
                       <th style="width: 10px"><center>NO.</center></th>
                       <th><center>KODE</center></th>
                       <th><center>NAMA</center></th>
-                      <th><center>MERK</center></th>
-                      <th><center>TIPE</center></th>
-                      <th><center>MODEL</center></th>
-                      <th><center>SN</center></th>
+                      <th><center>FASILITAS</center></th>
+                      <th><center>LOK. TK I</center></th>
+                      <th><center>LOK. TK II</center></th>
+                      <th><center>LOK. TK III</center></th>
                       <th><center>KONDISI</center></th>
                       <th><center>STATUS</center></th>
                       <th style="width: 100px"></th>
@@ -47,21 +144,23 @@
                       <td></td>
                       <td><center>{{ strtoupper($satu->kode) }}</center></td>
                       <td><center>{{ strtoupper($satu->nama) }}</center></td>
-                      <td><center>{{ strtoupper($satu->merk) }}</center></td>
-                      <td><center>{{ strtoupper($satu->tipe) }}</center></td>
-                      <td><center>{{ strtoupper($satu->model) }}</center></td>
-                      <td><center>{{ strtoupper($satu->serial_number) }}</center></td>
+                      <td><center>{{ strtoupper($satu->fasilitas->kode) }}</center></td>
+                      <td><center>{{ strtoupper($satu->LokasiTk1->nama) }}</center></td>
+                      <td><center>{{ strtoupper($satu->LokasiTk2->nama) }}</center></td>
+                      <td><center>{{ strtoupper($satu->LokasiTk3->nama) }}</center></td>
 
-  @if($satu->kondisi == config('constants.kondisi_peralatan.normal'))
-                      <td><center><span class="badge bg-success">NORMAL</span></center></td>
+  @if($satu->kondisi == config('constants.kondisi_layanan.serviceable'))
+                      <td><center><span class="badge bg-success">SERVICEABLE</span></center></td>
   @else
-                      <td><center><span class="badge bg-danger">RUSAK</span></center></td>
+                      <td><center><span class="badge bg-danger">UNSERVICEABLE</span></center></td>
   @endif
 
-  @if($satu->status == 1)
-                      <td><center><span class="badge bg-success">AKTIF</span></center></td>
-  @else
+  @if($satu->status == 0)
                       <td><center><span class="badge bg-danger">TIDAK AKTIF</span></center></td>
+  @elseif($satu->status == 1)
+                      <td><center><span class="badge bg-success">AKTIF</span></center></td>
+  @elseif($satu->status == 2)
+                      <td><center><span class="badge bg-warning">DRAFT</span></center></td>
   @endif
                       <td>
 <!--
@@ -75,7 +174,7 @@
 -->
                         <center>
                           <a class="btn btn-info btn-sm" 
-                             href="{{url('/fasilitas/peralatan/edit/'.$satu->id)}}" 
+                             href="{{url('/fasilitas/layanan/edit/'.$satu->id)}}" 
                              role="button"
                              title="Edit Data"><i class="fas fa-pencil-alt"></i></a>
                           <button class="btn btn-secondary btn-sm" 
@@ -83,6 +182,13 @@
                                   title="Detail">
                                   <i class="fas fa-angle-double-right"></i>
                           </button>
+  @if($satu->status == config('constants.status_layanan.draft'))
+                          <button class="btn btn-danger btn-sm" 
+                                  onclick="hapus('{{ $satu->id }}')"
+                                  title="Hapus">
+                                  <i class="fas fa-trash-alt"></i>
+                          </button>
+  @endif
                         </center>
                       </td>
                     </tr>
@@ -104,17 +210,29 @@
     </section>
     <!-- /.content -->
 
-      <!-- isi modal tombol detail -->
-      <div class="modal fade" id="modal_detail">
-        <div class="modal-dialog modal-lg">
-          <div class="modal-content" id="detail">
-            
-          </div>
-          <!-- /.modal-content -->
+    <!-- isi modal tombol detail -->
+    <div class="modal fade" id="modal_detail">
+      <div class="modal-dialog modal-lg">
+        <div class="modal-content" id="detail">
+          
         </div>
-        <!-- /.modal-dialog -->
+        <!-- /.modal-content -->
       </div>
-      <!-- /.modal -->
+      <!-- /.modal-dialog -->
+    </div>
+    <!-- /.modal -->
+
+    <!-- isi modal tombol hapus -->
+  <div class="modal fade" id="modal_hapus">
+    <div class="modal-dialog">
+      <div class="modal-content" id="isi_modal_hapus">
+        <!-- isi modal dari js -->
+      </div>
+      <!-- /.modal-content -->
+    </div>
+    <!-- /.modal-dialog -->
+  </div>
+  <!-- /.modal -->
 
 @endsection
 <!-- /. section content -->
@@ -129,7 +247,23 @@
       $(document).Toasts('create', {
           class: 'bg-success',
           title: 'Sukses!',
-          body: 'Peralatan baru telah berhasil ditambahkan',
+          body: 'Layanan baru telah berhasil ditambahkan',
+          autohide: true,
+          delay: 3000
+        })
+    @elseif(session()->get('notif') == 'draft_sukses')
+      $(document).Toasts('create', {
+          class: 'bg-success',
+          title: 'Sukses!',
+          body: 'Draft layanan telah berhasil disimpan',
+          autohide: true,
+          delay: 3000
+        })
+    @elseif(session()->get('notif') == 'hapus_sukses')
+      $(document).Toasts('create', {
+          class: 'bg-success',
+          title: 'Sukses!',
+          body: 'Draft layanan telah berhasil dihapus',
           autohide: true,
           delay: 3000
         })
@@ -137,7 +271,7 @@
       $(document).Toasts('create', {
           class: 'bg-success',
           title: 'Sukses!',
-          body: 'Data peralatan telah berhasil diubah',
+          body: 'Data layanan telah berhasil diubah',
           autohide: true,
           delay: 3000
         })
@@ -145,7 +279,7 @@
       $(document).Toasts('create', {
           class: 'bg-danger',
           title: 'Error!',
-          body: 'Gagal menambahkan peralatan baru',
+          body: 'Gagal menambahkan layanan baru',
           autohide: true,
           delay: 3000
         })
@@ -153,7 +287,15 @@
       $(document).Toasts('create', {
           class: 'bg-danger',
           title: 'Error!',
-          body: 'Gagal mengubah data peralatan',
+          body: 'Gagal mengubah data layanan',
+          autohide: true,
+          delay: 3000
+        })
+    @elseif(session()->get('notif') == 'hapus_gagal')
+      $(document).Toasts('create', {
+          class: 'bg-danger',
+          title: 'Error!',
+          body: 'Gagal menghapus draft layanan',
           autohide: true,
           delay: 3000
         })
@@ -161,7 +303,7 @@
       $(document).Toasts('create', {
           class: 'bg-danger',
           title: 'Error!',
-          body: 'Gagal menampilkan data peralatan',
+          body: 'Gagal menampilkan data layanan',
           autohide: true,
           delay: 3000
         })
@@ -187,7 +329,7 @@
         data : {id: id},
         success: function(data){
 
-          //alert(data.jenis.nama);
+          //alert(data.nama);
 
           $('#detail').empty();
 
@@ -291,6 +433,29 @@
         }
     });
 }
+</script>
+
+<!-- javascript untuk menampilkan modal untuk menghapus peralatan -->
+<script type="text/javascript">
+  function hapus(layanan_id) {
+    //alert(id);
+    $('#isi_modal_hapus').empty();;
+
+      var html = '<form action="{{route('fasilitas.layanan.hapus')}}" method="post">';
+          html += '@csrf';
+          html += '<div class="modal-body">';
+          html += '<p><center>Ingin menghapus draft layanan ini?</center></p>';
+          html += '<input type="text" name="id" value="'+layanan_id+'" hidden>';
+          html += '</div>';
+          html += '<div class="modal-footer justify-content-between">';
+          html += '<button type="button" class="btn btn-default btn-sm" data-dismiss="modal">Tidak</button>';
+          html += '<button type="submit" class="btn btn-danger btn-sm float-right">Hapus</button>';
+          html += '</div>';
+          html += '</form>';
+
+    $("#isi_modal_hapus").append(html);
+    $("#modal_hapus").modal('show');  
+  }
 </script>
 
 @endsection

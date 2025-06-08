@@ -19,7 +19,7 @@ return new class extends Migration
             $table->id();
             $table->bigInteger('layanan_id');
             $table->bigInteger('peralatan_id');
-            $table->string('ip_address');
+            $table->string('ip_address')->nullable();;
             $table->boolean('kondisi')->default(true);
             $table->boolean('status')->default(true);
             $table->bigInteger('created_by')->nullable();

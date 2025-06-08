@@ -20,11 +20,11 @@ return new class extends Migration
             $table->string('kode');
             $table->string('nama');
             $table->bigInteger('fasilitas_id');
-            $table->bigInteger('lok_tk_1_id');
-            $table->bigInteger('lok_tk_2_id');
-            $table->bigInteger('lok_tk_3_id');
+            $table->bigInteger('lokasi_tk_1_id');
+            $table->bigInteger('lokasi_tk_2_id');
+            $table->bigInteger('lokasi_tk_3_id');
             $table->boolean('kondisi')->default(true);
-            $table->boolean('status')->default(true);
+            $table->integer('status');
             $table->bigInteger('created_by')->nullable();
             $table->bigInteger('updated_by')->nullable();
             $table->timestamps();
