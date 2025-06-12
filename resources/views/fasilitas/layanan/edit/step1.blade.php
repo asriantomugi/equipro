@@ -48,7 +48,7 @@
 
 <!-- form start -->
 <form class="form-horizontal needs-validation" 
-      action="{{url('/fasilitas/layanan/tambah/step1/back')}}"
+      action="{{ route('fasilitas.layanan.edit.step1') }}"
       method="post" 
       novalidate>
 @csrf
@@ -62,7 +62,7 @@
                   <div class="col-sm-9">
                     <select name="fasilitas" 
                             class="form-control" 
-                            required>
+                            disabled>
                       <option value="">- Pilih -</option>
 @foreach ($fasilitas as $satu)
   @if($satu->id == $layanan->fasilitas_id)
@@ -225,6 +225,14 @@
               class: 'bg-danger',
               title: 'Error!',
               body: 'Kode yang dimasukkan sudah terdaftar',
+              autohide: true,
+              delay: 3000
+            })
+        @elseif(session()->get('notif') == 'edit_gagal')
+          $(document).Toasts('create', {
+              class: 'bg-danger',
+              title: 'Error!',
+              body: 'Gagal mengubah data layanan',
               autohide: true,
               delay: 3000
             })

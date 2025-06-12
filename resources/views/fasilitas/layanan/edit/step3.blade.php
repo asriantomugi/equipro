@@ -93,9 +93,7 @@
                       <th><center>KODE</center></th>
                       <th><center>NAMA</center></th>
                       <th><center>MERK</center></th>
-                      <th><center>TIPE</center></th>
-                      <th><center>MODEL</center></th>
-                      <th><center>SN</center></th>
+                      <th><center>JENIS ALAT</center></th>
                       <th><center>IP ADDRESS</center></th>
                       <th><center>KONDISI</center></th>
                       <th style="width: 100px"></th>
@@ -108,9 +106,7 @@
                       <td><center>{{ strtoupper($satu->peralatan->kode) }}</center></td>
                       <td><center>{{ strtoupper($satu->peralatan->nama) }}</center></td>
                       <td><center>{{ strtoupper($satu->peralatan->merk) }}</center></td>
-                      <td><center>{{ strtoupper($satu->peralatan->tipe) }}</center></td>
-                      <td><center>{{ strtoupper($satu->peralatan->model) }}</center></td>
-                      <td><center>{{ strtoupper($satu->peralatan->serial_number) }}</center></td>
+                      <td><center>{{ strtoupper($satu->peralatan->jenis->nama) }}</center></td>
                       <td><center>{{ strtoupper($satu->ip_address) }}</center></td>
   @if($satu->kondisi == config('constants.kondisi_peralatan_layanan.beroperasi'))
                       <td><center><span class="badge bg-success">BEROPERASI</span></center></td>
@@ -136,7 +132,7 @@
 
               <div class="card-footer">
                 <a class="btn btn-success btn-sm" 
-                   href="{{ route('fasilitas.layanan.tambah.step2.form', ['id' => $layanan->id]) }}" 
+                   href="{{ route('fasilitas.layanan.edit.step2.form', ['id' => $layanan->id]) }}" 
                    role="button"><i class="fas fa-angle-left"></i>&nbsp;&nbsp;&nbsp;Kembali</a>
 
                 <button type="button" 
@@ -199,11 +195,11 @@
   <!-- javascript untuk pop up notifikasi -->
     <script type="text/javascript">
       @if (session()->has('notif'))
-        @if (session()->get('notif') == 'tambah_gagal')
+        @if (session()->get('notif') == 'simpan_gagal')
           $(document).Toasts('create', {
               class: 'bg-danger',
               title: 'Sukses!',
-              body: 'Gagal menambahkan layanan baru',
+              body: 'Gagal menyimpan layanan baru',
               autohide: true,
               delay: 3000
             })
@@ -341,10 +337,10 @@
         //alert(id);
         $('#isi_modal_submit').empty();;
 
-          var html = '<form action="{{route('fasilitas.layanan.tambah.step3')}}" method="post">';
+          var html = '<form action="{{route('fasilitas.layanan.edit.step3')}}" method="post">';
               html += '@csrf';
               html += '<div class="modal-body">';
-              html += '<p><center>Ingin menyimpan dan mengaktifkan layanan ini?</center></p>';
+              html += '<p><center>Ingin menyimpan perubahan data layanan ini?</center></p>';
               html += '<input type="text" name="id" value="'+layanan_id+'" hidden>';
               html += '</div>';
               html += '<div class="modal-footer justify-content-between">';

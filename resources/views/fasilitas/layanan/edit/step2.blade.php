@@ -116,7 +116,7 @@
                    href="{{url('/fasilitas/layanan/tambah/step1/back/'.$layanan->id)}}" 
                    role="button"><i class="fas fa-angle-left"></i>&nbsp;&nbsp;&nbsp;Kembali</a>
                 <a class="btn btn-success btn-sm float-right" 
-                   href="{{ route('fasilitas.layanan.tambah.step3.form', ['id' => $layanan->id]) }}" 
+                   href="{{ route('fasilitas.layanan.edit.step3.form', ['id' => $layanan->id]) }}" 
                    role="button">Lanjut &nbsp;&nbsp;&nbsp;<i class="fas fa-angle-right"></i></a>
               </div>
               
@@ -600,6 +600,7 @@
       }
     </script>
 
+
     <!-- javascript untuk menampilkan modal edit data peralatan -->
     <script type="text/javascript">
       function edit(id, peralatan_id){
@@ -688,6 +689,30 @@
                   html += '<label class="col-sm-3 col-form-label">IP Address</label>';
                   html += '<div class="col-sm-9">';
                   html += '<input type="text" name="ip_address" class="form-control" value="">';
+                  html += '</div>';
+                  html += '</div>';
+              }
+              
+              if(data.satuPeralatan.kondisi == 1){
+                  html += '<div class="form-group row">';
+                  html += '<label class="col-sm-3 col-form-label required">Kondisi</label>';
+                  html += '<div class="col-sm-9">';
+                  html += '<select name="kondisi" class="form-control" required>';
+                  html += '<option value="1" selected>BEROPERASI</option>';
+                  html += '<option value="0">GANGGUAN</option>';
+                  html += '</select>';
+                  html += '<div class="invalid-feedback">Kondisi wajib dipilih.</div>';
+                  html += '</div>';
+                  html += '</div>';
+              }else{
+                  html += '<div class="form-group row">';
+                  html += '<label class="col-sm-3 col-form-label required">Kondisi</label>';
+                  html += '<div class="col-sm-9">';
+                  html += '<select name="kondisi" class="form-control" required>';
+                  html += '<option value="1">BEROPERASI</option>';
+                  html += '<option value="0" selected>GANGGUAN</option>';
+                  html += '</select>';
+                  html += '<div class="invalid-feedback">Kondisi wajib dipilih.</div>';
                   html += '</div>';
                   html += '</div>';
               }

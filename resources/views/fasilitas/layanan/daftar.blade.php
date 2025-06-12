@@ -19,7 +19,7 @@
 
 <!-- form filter --> 
 <form class="form-horizontal needs-validation" 
-      action="{{url('/gse/daftar')}}"
+      action="{{ route('fasilitas.layanan.filter') }}"
       method="post" 
       enctype="multipart/form-data"
       novalidate>
@@ -30,17 +30,27 @@
                   <div class="col-lg-3">
                     <label>Fasilitas</label> 
                     <select class="form-control" 
-                            name="kategori"
-                            id="kategori">
-                            <option value="0" >- ALL -</option>
+                            name="fasilitas"
+                            id="fasilitas">
+                            <option value="" >- ALL -</option>
+  @foreach($fasilitas as $satu)
+                            <option value="{{$satu->id}}" @if($fasilitas_id == $satu->id) selected @endif>
+                              {{strtoupper($satu->kode)}} - {{strtoupper($satu->nama)}}
+                            </option>
+  @endforeach
                     </select>
                   </div>
 
                   <!-- field lokasi tingkat I -->
                   <div class="col-lg-3"> 
                     <label>Lokasi Tingkat I</label>
-                    <select class="form-control" name="jenis" id="formJenis">
-                      <option value="0">- ALL -</option>
+                    <select class="form-control" name="lokasi_tk_1" id="formLokasiTk1">
+                      <option value="">- ALL -</option>
+  @foreach($lokasi_tk_1 as $satu)
+                      <option value="{{$satu->id}}" @if($lokasi_tk_1_id == $satu->id) selected @endif>
+                        {{strtoupper($satu->kode)}} - {{strtoupper($satu->nama)}}
+                      </option>
+  @endforeach
                     </select>
                   </div>
 
@@ -48,9 +58,9 @@
                   <div class="col-lg-3"> 
                     <label>Lokasi Tingkat II</label>
                     <select class="form-control" 
-                            name="perusahaan"
-                            id="perusahaan">
-                      <option value="0" >- ALL -</option>
+                            name="lokasi_tk_2"
+                            id="formLokasiTk2">
+                      <option value="" >- ALL -</option>
                     </select>
                   </div>
 
@@ -58,9 +68,9 @@
                   <div class="col-lg-3"> 
                     <label>Lokasi Tingkat III</label>
                     <select class="form-control" 
-                            name="perusahaan"
-                            id="perusahaan">
-                      <option value="0" >- ALL -</option>
+                            name="lokasi_tk_3"
+                            id="formLokasiTk3">
+                      <option value="" >- ALL -</option>
                     </select>
                   </div>
 
@@ -73,9 +83,11 @@
                   <div class="col-lg-3"> 
                     <label>Kondisi</label>
                     <select class="form-control" 
-                            name="perusahaan"
-                            id="perusahaan">
-                      <option value="0" >- ALL -</option>
+                            name="kondisi"
+                            id="kondisi">
+                      <option value="" @if($kondisi === null || $kondisi === '') selected @endif>- ALL -</option>
+                      <option value="1" @if($kondisi === 1) selected @endif>SERVICEABLE</option>
+                      <option value="0" @if($kondisi === 0) selected @endif>UNSERVICEABLE</option>
                     </select>
                   </div>
 
@@ -83,9 +95,13 @@
                   <div class="col-lg-3"> 
                     <label>Status</label>
                     <select class="form-control" 
-                            name="perusahaan"
-                            id="perusahaan">
-                      <option value="0" >- ALL -</option>
+                            name="status"
+                            id="status">
+                      <option value="" >- ALL -</option>
+                      <option value="" @if($kondisi === null || $kondisi === '') selected @endif>- ALL -</option>
+                      <option value="2" @if($kondisi === 1) selected @endif>DRAFT</option>
+                      <option value="1" @if($kondisi === 0) selected @endif>AKTIF</option>
+                      <option value="0" @if($kondisi === 0) selected @endif>TIDAK AKTIF</option>
                     </select>
                   </div>
 
@@ -173,16 +189,23 @@
 </form>
 -->
                         <center>
+  @if($satu->status != config('constants.status_layanan.draft'))
                           <a class="btn btn-info btn-sm" 
-                             href="{{url('/fasilitas/layanan/edit/'.$satu->id)}}" 
+                             href="{{ route('fasilitas.layanan.edit.step1.form', ['id' => $satu->id]) }}" 
                              role="button"
                              title="Edit Data"><i class="fas fa-pencil-alt"></i></a>
+  @endif
                           <button class="btn btn-secondary btn-sm" 
                                   onclick="detail('{{ $satu->id }}')"
                                   title="Detail">
                                   <i class="fas fa-angle-double-right"></i>
                           </button>
   @if($satu->status == config('constants.status_layanan.draft'))
+                          <a class="btn btn-warning btn-sm" 
+                             href="{{ route('fasilitas.layanan.tambah.step1.back.form', ['id' => $satu->id]) }}" 
+                             role="button"
+                             title="Lanjut Tambah Data"><i class="fas fa-pencil-alt"></i></a>
+
                           <button class="btn btn-danger btn-sm" 
                                   onclick="hapus('{{ $satu->id }}')"
                                   title="Hapus">
@@ -267,11 +290,11 @@
           autohide: true,
           delay: 3000
         })
-    @elseif(session()->get('notif') == 'edit_sukses')
+    @elseif(session()->get('notif') == 'simpan_sukses')
       $(document).Toasts('create', {
           class: 'bg-success',
           title: 'Sukses!',
-          body: 'Data layanan telah berhasil diubah',
+          body: 'Data layanan telah berhasil disimpan',
           autohide: true,
           delay: 3000
         })
@@ -283,11 +306,11 @@
           autohide: true,
           delay: 3000
         })
-    @elseif(session()->get('notif') == 'edit_gagal')
+    @elseif(session()->get('notif') == 'simpan_gagal')
       $(document).Toasts('create', {
           class: 'bg-danger',
           title: 'Error!',
-          body: 'Gagal mengubah data layanan',
+          body: 'Gagal menyimpan data layanan',
           autohide: true,
           delay: 3000
         })
@@ -310,6 +333,7 @@
     @endif
   @endif
 </script>
+
 
 <!-- javascript untuk menampilkan modal detail -->
 <script type="text/javascript">
@@ -435,13 +459,14 @@
 }
 </script>
 
+
 <!-- javascript untuk menampilkan modal untuk menghapus peralatan -->
 <script type="text/javascript">
   function hapus(layanan_id) {
     //alert(id);
     $('#isi_modal_hapus').empty();;
 
-      var html = '<form action="{{route('fasilitas.layanan.hapus')}}" method="post">';
+      var html = '<form action="{{ route('fasilitas.layanan.hapus') }}" method="post">';
           html += '@csrf';
           html += '<div class="modal-body">';
           html += '<p><center>Ingin menghapus draft layanan ini?</center></p>';
@@ -456,6 +481,136 @@
     $("#isi_modal_hapus").append(html);
     $("#modal_hapus").modal('show');  
   }
+</script>
+
+
+<!-- Javascript untuk menampilkan pilihan dropdown lokasi tingkat II berdasarkan lokasi tingkat I yang dipilih -->
+<script>
+  document.addEventListener('DOMContentLoaded', function () {
+    const formLokasiTk1 = document.getElementById('formLokasiTk1');
+    const formLokasiTk2 = document.getElementById('formLokasiTk2');
+
+    // proses ketika terjadi perubahan value di dropdown lokasi tingkat I
+    formLokasiTk1.addEventListener('change', function () {
+      // ambil id dari lokasi tingkat I
+      const lokasi_tk_1_id = formLokasiTk1.value;
+      formLokasiTk2.innerHTML = '<option value="">- ALL -</option>';
+      // jika id lokasi tingkat I ada
+      if (lokasi_tk_1_id) {
+        // Mengirim request POST untuk mendapatkan kota berdasarkan lokasi tingkat I yang dipilih
+        fetch('/json/lokasi-tk-2/daftar', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json', // Mengirim data dalam format JSON
+                'X-CSRF-TOKEN': '{{ csrf_token() }}', // Menyertakan token CSRF untuk keamanan
+            },
+            body: JSON.stringify({ lokasi_tk_1_id: lokasi_tk_1_id }) // Mengirimkan ID lokasi tingkat I
+        })
+        .then(response => response.json()) // Mengonversi response menjadi JSON
+        .then(data => {
+          // Jika data diterima, update dropdown lokasi tingkat II
+          formLokasiTk2.innerHTML = '<option value="">- ALL -</option>';
+          data.forEach(item => {
+            formLokasiTk2.innerHTML += `<option value="${item.id}">${item.kode.toUpperCase()} - ${item.nama.toUpperCase()}</option>`;
+          });
+        })
+        .catch(error => {
+            console.error('Gagal memuat data:', error);
+        });
+      }
+    });
+  });
+</script>
+
+
+<!-- Javascript untuk menampilkan pilihan dropdown lokasi tingkat III berdasarkan lokasi tingkat II yang dipilih -->
+<script>
+  document.addEventListener('DOMContentLoaded', function () {
+    const formLokasiTk2 = document.getElementById('formLokasiTk2');
+    const formLokasiTk3 = document.getElementById('formLokasiTk3');
+
+    // proses ketika terjadi perubahan value di dropdown lokasi tingkat II
+    formLokasiTk2.addEventListener('change', function () {
+      // ambil id dari lokasi tingkat II
+      const lokasi_tk_2_id = formLokasiTk2.value;
+      formLokasiTk3.innerHTML = '<option value="">- ALL -</option>';
+      // jika id lokasi tingkat II ada
+      if (lokasi_tk_2_id) {
+        // Mengirim request POST untuk mendapatkan kota berdasarkan lokasi tingkat II yang dipilih
+        fetch('/json/lokasi-tk-3/daftar', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json', // Mengirim data dalam format JSON
+                'X-CSRF-TOKEN': '{{ csrf_token() }}', // Menyertakan token CSRF untuk keamanan
+            },
+            body: JSON.stringify({ lokasi_tk_2_id: lokasi_tk_2_id }) // Mengirimkan ID lokasi tingkat II
+        })
+        .then(response => response.json()) // Mengonversi response menjadi JSON
+        .then(data => {
+          // Jika data diterima, update dropdown lokasi tingkat III
+          formLokasiTk3.innerHTML = '<option value="">- ALL -</option>';
+          data.forEach(item => {
+            formLokasiTk3.innerHTML += `<option value="${item.id}">${item.kode.toUpperCase()} - ${item.nama.toUpperCase()}</option>`;
+          });
+        })
+        .catch(error => {
+            console.error('Gagal memuat data:', error);
+        });
+      }
+    });
+  });
+</script>
+
+
+<!-- Javascript untuk memproses dropdown lokasi setelah proses filter data -->
+<script>
+  document.addEventListener("DOMContentLoaded", function () {
+    const lokasiTk1Id = "{{ $lokasi_tk_1_id }}";
+    const lokasiTk2Id = "{{ $lokasi_tk_2_id }}";
+    const lokasiTk3Id = "{{ $lokasi_tk_3_id }}";
+
+    // Cek jika ada lokasi_tk_1_id yang dikirim dari controller
+    if (lokasiTk1Id) {
+        fetch('/json/lokasi-tk-2/daftar', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRF-TOKEN': '{{ csrf_token() }}',
+            },
+            body: JSON.stringify({ lokasi_tk_1_id: lokasiTk1Id })
+        })
+        .then(response => response.json())
+        .then(data => {
+            let options = '<option value="">- ALL -</option>';
+            data.forEach(item => {
+                const selected = lokasiTk2Id == item.id ? 'selected' : '';
+                options += `<option value="${item.id}" ${selected}>${item.kode.toUpperCase()} - ${item.nama.toUpperCase()}</option>`;
+            });
+            document.getElementById('formLokasiTk2').innerHTML = options;
+
+            // Kalau Tk2 ada, lanjut load Tk3
+            if (lokasiTk2Id) {
+                fetch('/json/lokasi-tk-3/daftar', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                    },
+                    body: JSON.stringify({ lokasi_tk_2_id: lokasiTk2Id })
+                })
+                .then(response => response.json())
+                .then(data => {
+                    let options = '<option value="">- ALL -</option>';
+                    data.forEach(item => {
+                        const selected = lokasiTk3Id == item.id ? 'selected' : '';
+                        options += `<option value="${item.id}" ${selected}>${item.kode.toUpperCase()} - ${item.nama.toUpperCase()}</option>`;
+                    });
+                    document.getElementById('formLokasiTk3').innerHTML = options;
+                });
+            }
+        });
+    }
+  });
 </script>
 
 @endsection

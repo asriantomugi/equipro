@@ -249,7 +249,7 @@ Route::prefix('/fasilitas/layanan')->name('fasilitas.layanan.')->group(function 
     Route::get('/tambah/step1', [LayananController::class, 'formTambahStep1'])->name('tambah.step1.form');
 
     // Menampilkan form tambah layanan step 1 (tombol back)
-    Route::get('/tambah/step1/back/{id}', [LayananController::class, 'formTambahStep1Back'])->name('tambah.step1.back.form');;
+    Route::get('/tambah/step1/back/{id}', [LayananController::class, 'formTambahStep1Back'])->name('tambah.step1.back.form');
 
     // Melakukan proses tambah layanan step 1
     Route::post('/tambah/step1', [LayananController::class, 'tambahStep1'])->name('tambah.step1.form');
@@ -272,11 +272,23 @@ Route::prefix('/fasilitas/layanan')->name('fasilitas.layanan.')->group(function 
     // Melakukan menghapus draft layanan
     Route::post('/hapus', [LayananController::class, 'hapus'])->name('hapus');
 
-    // Menampilkan form edit layanan
-    //Route::get('/edit/{id}', [LayananController::class, 'formEdit'])->name('edit')->name('edit.form');
+    // Menampilkan form edit layanan step 1
+    Route::get('/edit/step1/{id}', [LayananController::class, 'formEditStep1'])->name('edit.step1.form');
 
-    // Melakukan proses edit layanan
-    //Route::post('/edit', [LayananController::class, 'edit'])->name('edit')->name('edit');
+    // Melakukan proses edit layanan step 1
+    Route::post('/edit/step1', [LayananController::class, 'editStep1'])->name('edit.step1');
+
+    // Menampilkan form edit layanan step 2
+    Route::get('/edit/step2/{id}', [LayananController::class, 'formEditStep2'])->name('edit.step2.form');
+
+    // Menampilkan form edit layanan step 3
+    Route::get('/edit/step3/{id}', [LayananController::class, 'formEditStep3'])->name('edit.step3.form');
+
+    // Melakukan proses edit layanan step 3
+    Route::post('/edit/step3', [LayananController::class, 'editStep3'])->name('edit.step3');
+
+    // Melakukan proses filter layanan
+    Route::post('/filter', [LayananController::class, 'filter'])->name('filter');
 
     // Menampilkan JSON data layanan
     Route::post('/detail', [LayananController::class, 'detail'])->name('detail');
@@ -292,6 +304,9 @@ Route::prefix('/fasilitas/layanan')->name('fasilitas.layanan.')->group(function 
 
     // Menghapus peralatan dari layanan
     Route::post('/peralatan/hapus', [LayananController::class, 'hapusPeralatan'])->name('peralatan.hapus');
+
+    // Menampilkan JSON data layanan
+    Route::post('/peralatan/detail', [LayananController::class, 'detailPeralatan'])->name('peralatan.detail');
 });
 /* =========================== END OF MENU LAYANAN ================================ */
 

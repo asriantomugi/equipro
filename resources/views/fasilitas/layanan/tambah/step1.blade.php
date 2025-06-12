@@ -8,23 +8,6 @@
       <div class="container-fluid">
         <!-- Small boxes (Stat box) -->
 
-<!-- pesan error validasi -->
-@if($errors->any())
-        <div class="row">
-          <div class="col-lg-7">
-            <div class="alert alert-danger alert-dismissible">
-                  <button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
-                  <h5><b></b>Kesalahan !</b></h5>
-                  <ul>
-  @foreach ($errors->all() as $error)
-                  <li>{{$error}}</li>
-  @endforeach
-                  </ul>
-                </div>
-          </div>
-        </div>
-@endif
-
         <div class="row">
           <div class="col-lg-12">
              <div class="card">
