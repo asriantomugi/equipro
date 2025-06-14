@@ -7,7 +7,7 @@ use Illuminate\Support\Facades\Schema;
 return new class extends Migration
 {
     /**
-     * Function untuk membuat tabel Jenis Alat
+     * Function untuk membuat tabel Jenis alat
      *
      * @return tabel jenis_alat di database
      */

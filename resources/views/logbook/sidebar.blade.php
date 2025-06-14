@@ -1,0 +1,68 @@
+<script src="{{ asset('js/notifications.js') }}"></script>
+<!-- Main Sidebar Container -->
+  
+<aside class="main-sidebar sidebar-dark-primary elevation-4">
+    
+  <!-- Brand Logo -->
+  <a href="{{asset('/')}}" class="brand-link">
+    <img src="{{asset('dist/img/logo.png')}}" alt="logo" class="" style="width:20px;height:20px;">
+    <!-- <span class="brand-text font-weight-light">AdminLTE 3</span> -->
+  </a>
+
+    <!-- Sidebar -->
+   <div class="sidebar">
+    
+    <!-- Sidebar Menu -->
+    <nav class="mt-2">
+      <ul class="nav nav-pills nav-sidebar flex-column" data-widget="treeview" role="menu" data-accordion="false">
+      <!-- Add icons to the links using the .nav-icon class with font-awesome or any other icon font library -->
+
+        <li class="nav-header">NAVIGATION</li>
+
+        <!-- MENU MODULE -->
+        <li class="nav-item">
+          <a href="{{url('/module')}}" class="nav-link @if($menu == 'Module') active @endif">
+            <i class="nav-icon fas fa-th"></i>
+            <p>Module</p>
+          </a>
+        </li>
+
+        <li class="nav-header">MENU</li>
+
+        <!-- MENU HOME -->
+        <li class="nav-item">
+          <a href="{{url('/logbook/home')}}" class="nav-link @if($menu == 'Home') active @endif">
+            <i class="nav-icon fas fa-home"></i>
+            <p>Home</p>
+          </a>
+        </li>
+
+        <!-- MENU LAPORAN -->
+        <li class="nav-item">
+          <a href="{{url('/logbook/laporan/daftar')}}" class="nav-link @if($menu == 'Laporan') active @endif">
+            <i class="nav-icon fas fa-file-alt"></i>
+            <p>Laporan</p>
+          </a>
+        </li>
+
+        <!-- MENU RIWAYAT -->
+        <li class="nav-item">
+          <a href="{{url('/logbook/riwayat/daftar')}}" class="nav-link @if($menu == 'Riwayat') active @endif">
+            <i class="nav-icon fas fa-history"></i>
+            <p>Riwayat</p>
+          </a>
+        </li>
+
+        <!-- agar menu terakhir tidak tertutup -->
+        <li class="nav-item">
+          <a class="nav-link"></a>
+        </li>
+
+      </ul>
+    </nav>
+    <!-- /.sidebar-menu -->
+  </div>
+
+<!-- /.sidebar -->
+</aside>
+  

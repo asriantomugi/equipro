@@ -305,7 +305,7 @@
     wbr: s
   };
 
-  var globalAttrs = {
+  var globperalatantrs = {
     accesskey: ["a", "b", "c", "d", "e", "f", "g", "h", "i", "j", "k", "l", "m", "n", "o", "p", "q", "r", "s", "t", "u", "v", "w", "x", "y", "z", "0", "1", "2", "3", "4", "5", "6", "7", "8", "9"],
     "class": null,
     contenteditable: ["true", "false"],
@@ -333,8 +333,8 @@
     rel: ["stylesheet", "alternate", "author", "bookmark", "help", "license", "next", "nofollow", "noreferrer", "prefetch", "prev", "search", "tag"]
   };
   function populate(obj) {
-    for (var attr in globalAttrs) if (globalAttrs.hasOwnProperty(attr))
-      obj.attrs[attr] = globalAttrs[attr];
+    for (var attr in globperalatantrs) if (globperalatantrs.hasOwnProperty(attr))
+      obj.attrs[attr] = globperalatantrs[attr];
   }
 
   populate(s);

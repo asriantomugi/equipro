@@ -4542,12 +4542,12 @@ function uPlot(opts, data, then) {
 		else {
 		//	let pctY = 1 - (y / rect.height);
 
-			let mouseXPos, valAtPosX, xPos;
+			let mouseXPos, vperalatanPosX, xPos;
 
 			if (mode == 1) {
 				mouseXPos = scaleX.ori == 0 ? mouseLeft1 : mouseTop1;
-				valAtPosX = posToVal(mouseXPos, xScaleKey);
-				idx = closestIdx(valAtPosX, data[0], i0, i1);
+				vperalatanPosX = posToVal(mouseXPos, xScaleKey);
+				idx = closestIdx(vperalatanPosX, data[0], i0, i1);
 				xPos = incrRoundUp(valToPosX(data[0][idx], scaleX, xDim, 0), 0.5);
 			}
 
@@ -4557,7 +4557,7 @@ function uPlot(opts, data, then) {
 				let idx1  = activeIdxs[i];
 				let yVal1 = mode == 1 ? data[i][idx1] : data[i][1][idx1];
 
-				let idx2  = cursor.dataIdx(self, i, idx, valAtPosX);
+				let idx2  = cursor.dataIdx(self, i, idx, vperalatanPosX);
 				let yVal2 = mode == 1 ? data[i][idx2] : data[i][1][idx2];
 
 				shouldSetLegend = shouldSetLegend || yVal2 != yVal1 || idx2 != idx1;

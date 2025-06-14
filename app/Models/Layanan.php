@@ -32,6 +32,40 @@ class Layanan extends Model
     }
 
     /**
+     * Function untuk memanggil DaftarPeralatanLayanan dari layanan .
+     */
+    public function daftarPeralatanLayanan()
+    {
+        return $this->hasMany(DaftarPeralatanLayanan::class, 'layanan_id');
+    }
+
+    
+
+    /**
+     * Function untuk memanggil data lokasi tingkat I.
+     */
+    public function getLokasiTk1()
+    {
+        return $this->belongsTo(LokasiTk1::class, 'lokasi_tk_1_id', 'id');
+    }
+
+    /**
+     * Function untuk memanggil data lokasi tingkat II.
+     */
+    public function getLokasiTk2()
+    {
+        return $this->belongsTo(LokasiTk2::class, 'lokasi_tk_2_id', 'id');
+    }
+
+    /**
+     * Function untuk memanggil data lokasi tingkat III.
+     */
+    public function getLokasiTk3()
+    {
+        return $this->belongsTo(LokasiTk3::class, 'lokasi_tk_3_id', 'id');
+    }
+
+    /**
      * Function untuk memanggil user created_by.
      */
     public function getCreatedName()

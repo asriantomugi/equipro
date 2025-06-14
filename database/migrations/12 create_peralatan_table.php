@@ -9,7 +9,7 @@ return new class extends Migration
     /**
      * Function untuk membuat tabel Peralatan
      *
-     * @return tabel Peralatan di database
+     * @return tabel peralatan di database
      */
     public function up(): void
     {
@@ -31,7 +31,7 @@ return new class extends Migration
             $table->boolean('status')->default(true);
             $table->boolean('kondisi')->default(true);
             $table->string('keterangan')->nullable();
-            $table->boolean('flag_layanan')->nullable();
+            $table->tinyInteger('flag_layanan')->default(0);
             $table->bigInteger('created_by')->nullable();
             $table->bigInteger('updated_by')->nullable();
             $table->timestamps();

@@ -7,13 +7,13 @@ use Illuminate\Support\Facades\Schema;
 return new class extends Migration
 {
     /**
-     * Function untuk membuat tabel Histori Layanan Peralatan
+     * Function untuk membuat tabel Histori Layanan Perperalatanan
      *
-     * @return tabel Histori Layanan Peralatan di database
+     * @return tabel Histori Layanan Perperalatanan di database
      */
     public function up(): void
     {
-        Schema::create('histori_layanan_peralatan', function (Blueprint $table) {
+        Schema::create('histori_layanan_perperalatanan', function (Blueprint $table) {
 
             // membuat field-field
             $table->id();

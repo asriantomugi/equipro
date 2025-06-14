@@ -66,13 +66,13 @@
     } else {
       // Attribute completion
       var curTag = tagInfo && tags[tagInfo.name], attrs = curTag && curTag.attrs;
-      var globalAttrs = tags["!attrs"];
-      if (!attrs && !globalAttrs) return;
+      var globperalatantrs = tags["!attrs"];
+      if (!attrs && !globperalatantrs) return;
       if (!attrs) {
-        attrs = globalAttrs;
-      } else if (globalAttrs) { // Combine tag-local and global attributes
+        attrs = globperalatantrs;
+      } else if (globperalatantrs) { // Combine tag-local and global attributes
         var set = {};
-        for (var nm in globalAttrs) if (globalAttrs.hasOwnProperty(nm)) set[nm] = globalAttrs[nm];
+        for (var nm in globperalatantrs) if (globperalatantrs.hasOwnProperty(nm)) set[nm] = globperalatantrs[nm];
         for (var nm in attrs) if (attrs.hasOwnProperty(nm)) set[nm] = attrs[nm];
         attrs = set;
       }

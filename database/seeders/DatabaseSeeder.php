@@ -90,5 +90,7 @@ class DatabaseSeeder extends Seeder
             'telepon' => '',
             'jabatan' => '',
         ]);
+
+        
     }
 }

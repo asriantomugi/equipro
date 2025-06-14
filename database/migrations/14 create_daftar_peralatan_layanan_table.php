@@ -7,9 +7,9 @@ use Illuminate\Support\Facades\Schema;
 return new class extends Migration
 {
     /**
-     * Function untuk membuat tabel Daftar Peralatan Layanan
+     * Function untuk membuat tabel Daftar peralatan Layanan
      *
-     * @return tabel Daftar Peralatan Layanan di database
+     * @return tabel Daftar peralatan Layanan di database
      */
     public function up(): void
     {

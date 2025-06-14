@@ -13,6 +13,8 @@ use App\Http\Controllers\MasterData\LokasiTk2Controller;
 use App\Http\Controllers\MasterData\LokasiTk3Controller;
 use App\Http\Controllers\Fasilitas\FasilitasModuleController;
 use App\Http\Controllers\Fasilitas\PeralatanController;
+use App\Http\Controllers\Logbook\LogbookModuleController;
+use App\Http\Controllers\Logbook\LaporanController;
 
 /*
 Route::get('/', function () {
@@ -239,5 +241,56 @@ Route::post('/fasilitas/peralatan/detail', [PeralatanController::class, 'detail'
 /** 
  * ------------------------------------------------------------------------------------
  *                             END OF MODULE FASILITAS
+ * ------------------------------------------------------------------------------------
+ */ 
+
+
+/** 
+ * ------------------------------------------------------------------------------------
+ *                             MODULE LOGBOOK
+ * ------------------------------------------------------------------------------------
+ */ 
+
+// Menampilkan halaman utama module Logbook
+Route::get('/logbook/home', [LogbookModuleController::class, 'home']);
+
+/* ============================== MENU LAPORAN ==================================== */
+
+// Menampilkan daftar laporan
+Route::get('/logbook/laporan/daftar', [LaporanController::class, 'daftar']);
+
+// Step 1 -  form tambah laporan
+Route::get('/logbook/laporan/tambah/step1', [LaporanController::class, 'formStep1'])->name('tambah.step1');
+
+// Step 2 - Pilih Jenis Laporan dan Input Gangguan
+Route::get('/logbook/laporan/tambah/step2', [LaporanController::class, 'formStep2'])->name('tambah.step2');
+
+// Step 2 - Menyimpan Jenis Laporan dan Input Gangguan
+Route::post('/logbook/laporan/tambah/step2/simpan', [LaporanController::class, 'simpanStep2'])->name('tambah.step2.simpan');
+
+// Step 3 - Menampilkan Form Tindaklanjut
+Route::get('/logbook/laporan/tambah/step3', [LogbookController::class, 'formStep3'])->name('tambah.step3');
+
+// Step 3 - Menyimpan Tindaklanjut
+Route::post('/logbook/laporan/tambah/step3/simpan', [LogbookController::class, 'simpanStep3'])->name('tambah.step3.simpan');
+
+// Step 4 - Menampilkan Form Tindaklanjut Gangguan Peralatan (Step 4)
+Route::get('logbook/laporan/tambah/gangguan/tindaklanjut/{laporan_id}', [LaporanController::class, 'formTindaklanjut'])->name('tambah.gangguan.tindaklanjut');
+
+// Step 4 - Proses Simpan Tindaklanjut
+Route::post('logbook/laporan/tambah/gangguan/tindaklanjut/simpan', [LaporanController::class, 'simpanTindaklanjut'])->name('tambah.gangguan.tindaklanjut.simpan');
+
+// Step 5 - (penggantian) Menampilkan form penggantian peralatan 
+Route::get('/logbook/laporan/tambah/gangguan/penggantian/{laporan_id}', [LaporanController::class, 'formPenggantian'])->name('tambah.gangguan.penggantian');
+
+// Step 5 - (penggantian) Proses Simpan Penggantian
+Route::post('logbook/laporan/tambah/gangguan/penggantian/simpan', [LaporanController::class, 'simpanPenggantian'])->name('tambah.gangguan.penggantian.simpan');
+
+// Step 5 - (perbaikan) Menampilkan form perbaikan peralatan 
+Route::get('/logbook/laporan/tambah/gangguan/perbaikan/{laporan_id}', [LaporanController::class, 'formPerbaikan'])->name('tambah.gangguan.perbaikan');
+
+/** 
+ * ------------------------------------------------------------------------------------
+ *                            END OF MODULE LOGBOOK
  * ------------------------------------------------------------------------------------
  */ 

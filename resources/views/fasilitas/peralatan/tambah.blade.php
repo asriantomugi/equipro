@@ -54,7 +54,7 @@
                       <option value="{{ $satu->id }}">{{ $satu->kode }} - {{ $satu->nama }}</option>
 @endforeach
                     </select>
-                    <div class="invalid-feedback">Jenis Alat wajib dipilih.</div>
+                    <div class="invalid-feedback">Jenis alat wajib dipilih.</div>
                   </div>
                 </div>
 

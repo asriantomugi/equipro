@@ -1131,7 +1131,7 @@
                 // Set final element opacity
                 self.setElementOpacity(
                     elem,
-                    (elem.mapElem.originalAttrs.opacity !== undefined) ? elem.mapElem.originalAttrs.opacity : 1,
+                    (elem.mapElem.originperalatantrs.opacity !== undefined) ? elem.mapElem.originperalatantrs.opacity : 1,
                     animDuration
                 );
             };
@@ -1509,11 +1509,11 @@
         },
 
         /*
-         * Check wether newAttrs object bring modifications to originalAttrs object
+         * Check wether newAttrs object bring modifications to originperalatantrs object
          */
-        isAttrsChanged: function(originalAttrs, newAttrs) {
+        isAttrsChanged: function(originperalatantrs, newAttrs) {
             for (var key in newAttrs) {
-                if (newAttrs.hasOwnProperty(key) && typeof originalAttrs[key] === 'undefined' || newAttrs[key] !== originalAttrs[key]) {
+                if (newAttrs.hasOwnProperty(key) && typeof originperalatantrs[key] === 'undefined' || newAttrs[key] !== originperalatantrs[key]) {
                     return true;
                 }
             }
@@ -1975,7 +1975,7 @@
                         if ($.isEmptyObject(hiddenBy)) {
                             self.setElementOpacity(
                                 mapElems[y],
-                                mapElems[y].mapElem.originalAttrs.opacity !== undefined ? mapElems[y].mapElem.originalAttrs.opacity : 1,
+                                mapElems[y].mapElem.originperalatantrs.opacity !== undefined ? mapElems[y].mapElem.originperalatantrs.opacity : 1,
                                 animDuration
                             );
                         }
@@ -2026,16 +2026,16 @@
         /*
          * Set the attributes on hover and the attributes to restore for a map element
          * @param elem the map element
-         * @param originalAttrs the original attributes to restore on mouseout event
+         * @param originperalatantrs the original attributes to restore on mouseout event
          * @param attrsHover the attributes to set on mouseover event
          */
-        setHoverOptions: function (elem, originalAttrs, attrsHover) {
+        setHoverOptions: function (elem, originperalatantrs, attrsHover) {
             // Disable transform option on hover for VML (IE<9) because of several bugs
             if (Raphael.type !== "SVG") delete attrsHover.transform;
             elem.attrsHover = attrsHover;
 
-            if (elem.attrsHover.transform) elem.originalAttrs = $.extend({transform: "s1"}, originalAttrs);
-            else elem.originalAttrs = originalAttrs;
+            if (elem.attrsHover.transform) elem.originperalatantrs = $.extend({transform: "s1"}, originperalatantrs);
+            else elem.originperalatantrs = originperalatantrs;
         },
 
         /*
@@ -2135,12 +2135,12 @@
 
             /* reset mapElem attributes */
             if (elem.mapElem !== undefined) {
-                self.animate(elem.mapElem, elem.mapElem.originalAttrs, elem.mapElem.attrsHover.animDuration);
+                self.animate(elem.mapElem, elem.mapElem.originperalatantrs, elem.mapElem.attrsHover.animDuration);
             }
 
             /* reset textElem attributes */
             if (elem.textElem !== undefined) {
-                self.animate(elem.textElem, elem.textElem.originalAttrs, elem.textElem.attrsHover.animDuration);
+                self.animate(elem.textElem, elem.textElem.originperalatantrs, elem.textElem.attrsHover.animDuration);
             }
 
             /* reset tooltip */

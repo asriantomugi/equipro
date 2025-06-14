@@ -34,8 +34,8 @@ CodeMirror.defineMode("puppet", function () {
     'file filebucket group host icmp iniface interface jump k5login limit log_level ' +
     'log_prefix macauthorization mailalias maillist mcx mount nagios_command ' +
     'nagios_contact nagios_contactgroup nagios_host nagios_hostdependency ' +
-    'nagios_hostescalation nagios_hostextinfo nagios_hostgroup nagios_service ' +
-    'nagios_servicedependency nagios_serviceescalation nagios_serviceextinfo ' +
+    'nagios_hostescperalatanion nagios_hostextinfo nagios_hostgroup nagios_service ' +
+    'nagios_servicedependency nagios_serviceescperalatanion nagios_serviceextinfo ' +
     'nagios_servicegroup nagios_timeperiod name notify outiface package proto reject ' +
     'resources router schedule scheduled_task selboolean selmodule service source ' +
     'sport ssh_authorized_key sshkey stage state table tidy todest toports tosource ' +

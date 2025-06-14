@@ -334,7 +334,7 @@ class JenisAlatController extends Controller
         // ===================== END OF CEK DUPLIKASI KODE =====================
 
         try{
-            // update data jenis alat di tabel Jenis Alat
+            // update data jenis alat di tabel Jenis alat
             JenisAlat::where('id', $request->id)
             ->update([
                 'kode' => strtoupper($request->kode),

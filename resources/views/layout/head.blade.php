@@ -9,6 +9,73 @@
     }
   </style>
 
+  <!--Pengaturan Untuk Step Navigation-->
+  <style>
+    .step {
+      list-style: none;
+      margin: .2rem 0;
+      width: 100%;
+    }
+
+    .step .step-item {
+      -ms-flex: 1 1 0;
+      flex: 1 1 0;
+      margin-top: 0;
+      min-height: 1rem;
+      position: relative; 
+      text-align: center;
+    }
+
+    .step .step-item:not(:first-child)::before {
+      background: #0069d9;
+      content: "";
+      height: 2px;
+      left: -50%;
+      position: absolute;
+      top: 9px;
+      width: 100%;
+    }
+
+    .step .step-item a {
+      color: #acb3c2;
+      display: inline-block;
+      padding: 20px 10px 0;
+      text-decoration: none;
+    }
+
+    .step .step-item a::before {
+      background: #0069d9;
+      border: .1rem solid #fff;
+      border-radius: 50%;
+      content: "";
+      display: block;
+      height: .9rem;
+      left: 50%;
+      position: absolute;
+      top: .2rem;
+      transform: translateX(-50%);
+      width: .9rem;
+      z-index: 1;
+    }
+
+    .step .step-item.active a::before {
+      background: #fff;
+      border: .1rem solid #0069d9;
+    }
+
+    .step .step-item.active ~ .step-item::before {
+      background: #e7e9ed;
+    }
+
+    .step .step-item.active ~ .step-item a::before {
+      background: #e7e9ed;
+    }
+
+    .step-item a.active {
+        color: #0d6efd; 
+    }
+  </style>
+
   <!-- DataTables JS -->
   <script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/1.10.24/js/jquery.dataTables.js"></script>
   <!-- Google Font: Source Sans Pro -->
@@ -42,4 +109,8 @@
   <link rel="stylesheet" href="{{asset('/plugins/datatables-buttons/css/buttons.bootstrap4.min.css')}}">
   <!-- Asterik Sign -->
   <link rel="stylesheet" href="{{asset('/dist/css/asterik.css')}}">
+  <!-- Bootstrap -->
+  <link href="//maxcdn.bootstrapcdn.com/bootstrap/4.1.1/css/bootstrap.min.css" rel="stylesheet" id="bootstrap-css">
+  <script src="//maxcdn.bootstrapcdn.com/bootstrap/4.1.1/js/bootstrap.min.js"></script>
+  <script src="//cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
 
