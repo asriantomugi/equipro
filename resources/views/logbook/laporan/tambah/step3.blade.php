@@ -1,123 +1,153 @@
 @extends('logbook.main')
+
 @section('head')
-    <meta name="csrf-token" content="{{ csrf_token() }}" />
+<meta name="csrf-token" content="{{ csrf_token() }}" />
 @endsection
+
 @section('content')
 <section class="content">
     <div class="container-fluid">
 
-        <!-- Step Navigation -->
+        {{-- Step Navigation --}}
         <div class="row mb-2">
             <div class="col-lg-12">
                 <div class="card">
                     <div class="card-body py-2">
-                        <ul class="step d-flex flex-nowrap justify-content-between mb-0">
-                            <li class="step-item completed">
-                                <a href="{{ route('tambah.step1') }}">Step 1</a>
-                            </li>
-                            <li class="step-item completed">
-                                <a href="{{ route('tambah.step2') }}">Step 2</a>
-                            </li>
-                            <li class="step-item active">
-                                <a href="#">Step 3</a>
-                            </li>
-                            <li class="step-item">
-                                <a href="#">Step 4</a>
-                            </li>
-                            <li class="step-item">
-                                <a href="#">Step 5</a>
-                            </li>
+                        <ul class="step d-flex flex-nowrap">
+                            <li class="step-item completed"><a href="{{ route('tambah.step1') }}">Pilih Layanan</a></li>
+                            <li class="step-item completed"><a href="{{ route('tambah.step2.back', ['laporan_id' => $laporan->id]) }}">Input Gangguan</a></li>
+                            <li class="step-item active"><a href="#">Tindaklanjut</a></li>
+                            <li class="step-item"><a href="#">Review</a></li>
                         </ul>
                     </div>
                 </div>
             </div>
         </div>
 
-        <!-- Form Tindak Lanjut -->
-        @if ($step == 3)
+        {{-- Form --}}
         <div class="row">
             <div class="col-lg-12">
                 <div class="card">
                     <div class="card-header">
-                        <h3 class="card-title">Form Tindak Lanjut</h3>
+                        <h3 class="card-title">FORM TINDAK LANJUT</h3>
                     </div>
                     <div class="card-body">
-                        <form action="{{ route('laporan.simpanStep3') }}" method="POST">
+                    @if ($errors->any())
+                        <div class="alert alert-danger">
+                            <ul class="mb-0">
+                                @foreach ($errors->all() as $error)
+                                    <li>{{ $error }}</li>
+                                @endforeach
+                            </ul>
+                        </div>
+                    @endif
+                        <form action="{{ route('tambah.simpanStep3') }}" method="POST" id="formStep3">
                             @csrf
-
-                            <!-- Hidden Inputs -->
                             <input type="hidden" name="laporan_id" value="{{ $laporan->id }}">
                             <input type="hidden" name="layanan_id" value="{{ $laporan->layanan_id }}">
-                            <input type="hidden" name="jenis_laporan" value="{{ $laporan->jenis_laporan }}">
+                            <input type="hidden" name="jenis_laporan" value="{{ $laporan->jenis == 1 ? 1 : 0 }}">
 
-                            @if ($laporan->jenis_laporan === 'peralatan')
-                                <input type="hidden" name="gangguan_peralatan_id" value="{{ $laporan->gangguan_peralatan_id }}">
-                                <input type="hidden" name="peralatan_id" value="{{ $laporan->peralatan_id }}">
+                            @if ($laporan->jenis == 1)
+                                @foreach ($layanan->daftarPeralatanLayanan as $index => $dpl)
+                                    @if ($index > 0)
+                                        <hr>
+                                    @endif
+                                    <div class="mb-3">
+                                        <strong>Peralatan {{ $index + 1 }}: <span class="badge bg-primary">{{ $dpl->peralatan->nama }}</span></strong>
+                                    </div>
 
-                                <div class="form-group">
-                                    <label for="jenis_tindaklanjut">Jenis Tindak Lanjut</label>
-                                    <select name="jenis_tindaklanjut" id="jenis_tindaklanjut" class="form-control" required>
-                                        <option value="0">Pemeliharaan</option>
-                                        <option value="1">Perbaikan</option>
-                                    </select>
-                                </div>
+                                    {{-- Jenis --}}
+                                    <div class="form-group row">
+                                        <label class="col-sm-3 col-form-label">Jenis <span class="text-danger">*</span></label>
+                                        <div class="col-sm-9">
+                                            <select name="tindaklanjut[{{ $dpl->peralatan->id }}][jenis]" class="form-control tindak-jenis" data-nama="{{ $dpl->peralatan->nama }}">
+                                                <option value="">- Pilih -</option>
+                                                @foreach ($jenisTindakLanjut as $label => $value)
+                                                    <option value="{{ $value ? 1 : 0 }}">{{ ucfirst($label) }}</option>
+                                                @endforeach
+                                            </select>
+                                        </div>
+                                    </div>
 
-                                <div class="form-group">
-                                    <label for="tanggal">Tanggal</label>
-                                    <input type="date" name="tanggal" id="tanggal" class="form-control" required>
-                                </div>
+                                    {{-- Waktu --}}
+                                    <div class="form-group row">
+                                        <label class="col-sm-3 col-form-label">Waktu <span class="text-danger">*</span></label>
+                                        <div class="col-sm-9">
+                                            <input type="datetime-local" name="tindaklanjut[{{ $dpl->peralatan->id }}][waktu]" class="form-control tindak-waktu" data-nama="{{ $dpl->peralatan->nama }}">
+                                        </div>
+                                    </div>
 
-                                <div class="form-group">
-                                    <label for="waktu">Waktu</label>
-                                    <input type="time" name="waktu" id="waktu" class="form-control" required>
-                                </div>
+                                    {{-- Deskripsi --}}
+                                    <div class="form-group row">
+                                        <label class="col-sm-3 col-form-label">Deskripsi</label>
+                                        <div class="col-sm-9">
+                                            <textarea name="tindaklanjut[{{ $dpl->peralatan->id }}][deskripsi]" class="form-control"></textarea>
+                                        </div>
+                                    </div>
 
-                                <div class="form-group">
-                                    <label for="deskripsi">Deskripsi Perbaikan</label>
-                                    <textarea name="deskripsi" id="deskripsi" class="form-control" required></textarea>
-                                </div>
-
-                                <div class="form-group">
-                                    <label for="kondisi">Kondisi Setelah Perbaikan</label>
-                                    <select name="kondisi" id="kondisi" class="form-control" required>
-                                        <option value="1">Serviceable</option>
-                                        <option value="0">Unserviceable</option>
-                                    </select>
-                                </div>
+                                    {{-- Kondisi --}}
+                                    <div class="form-group row">
+                                        <label class="col-sm-3 col-form-label">Kondisi <span class="text-danger">*</span></label>
+                                        <div class="col-sm-9">
+                                            <select name="tindaklanjut[{{ $dpl->peralatan->id }}][kondisi]" class="form-control tindak-kondisi" data-nama="{{ $dpl->peralatan->nama }}">
+                                                <option value="">- Pilih -</option>
+                                                @foreach ($kondisiTindaklanjut as $label => $value)
+                                                    <option value="{{ $value ? 1 : 0 }}">{{ ucfirst($label) }}</option>
+                                                @endforeach
+                                            </select>
+                                        </div>
+                                    </div>
+                                @endforeach
                             @else
-                                <input type="hidden" name="gangguan_non_peralatan_id" value="{{ $laporan->gangguan_non_peralatan_id }}">
-
-                                <div class="form-group">
-                                    <label for="tanggal">Tanggal</label>
-                                    <input type="date" name="tanggal" id="tanggal" class="form-control" required>
+                                {{-- Non-peralatan --}}
+                                <div class="form-group row">
+                                    <label class="col-sm-3 col-form-label">Waktu <span class="text-danger">*</span></label>
+                                    <div class="col-sm-9">
+                                        <input type="datetime-local" name="waktu" class="form-control">
+                                    </div>
                                 </div>
 
-                                <div class="form-group">
-                                    <label for="waktu">Waktu</label>
-                                    <input type="time" name="waktu" id="waktu" class="form-control" required>
+                                <div class="form-group row">
+                                    <label class="col-sm-3 col-form-label">Deskripsi</label>
+                                    <div class="col-sm-9">
+                                        <textarea name="deskripsi" class="form-control"></textarea>
+                                    </div>
                                 </div>
 
-                                <div class="form-group">
-                                    <label for="deskripsi">Deskripsi Tindak Lanjut</label>
-                                    <textarea name="deskripsi" id="deskripsi" class="form-control" required></textarea>
-                                </div>
-
-                                <div class="form-group">
-                                    <label for="kondisi">Kondisi</label>
-                                    <select name="kondisi" id="kondisi" class="form-control" required>
-                                        <option value="1">Selesai</option>
-                                        <option value="0">Belum Selesai</option>
-                                    </select>
+                                <div class="form-group row">
+                                    <label class="col-sm-3 col-form-label">Kondisi <span class="text-danger">*</span></label>
+                                    <div class="col-sm-9">
+                                        <select name="kondisi" class="form-control">
+                                            <option value="">- Pilih -</option>
+                                            @foreach ($kondisiTindaklanjut as $label => $value)
+                                                <option value="{{ $value ? 1 : 0 }}">{{ ucfirst($label) }}</option>
+                                            @endforeach
+                                        </select>
+                                    </div>
                                 </div>
                             @endif
 
-                            <!-- Tombol Navigasi -->
-                            <div class="form-group mt-4 d-flex justify-content-between">
-                                <a href="{{ route('tambah.step2') }}" class="btn btn-secondary">
-                                    <i class="fas fa-arrow-left"></i> Kembali
+                            <hr>
+
+                            {{-- Kondisi Layanan --}}
+                            <div class="form-group row mt-4">
+                                <label class="col-sm-3 col-form-label">Update Kondisi Layanan <span class="text-danger">*</span></label>
+                                <div class="col-sm-9">
+                                    <select name="kondisi_setelah" class="form-control">
+                                        <option value="">- Pilih -</option>
+                                        @foreach ($kondisiSetelah as $label => $value)
+                                            <option value="{{ $value ? '1' : '0' }}">{{ $label }}</option>
+                                        @endforeach
+                                    </select>
+                                </div>
+                            </div>
+
+                            <div class="card-footer">
+                                <a href="{{ route('tambah.step2.back', ['laporan_id' => $laporan->id]) }}" class="btn btn-success btn-sm">
+                                    <i class="fas fa-angle-left"></i> &nbsp; Kembali
                                 </a>
-                                <button type="submit" class="btn btn-primary">
-                                    Lanjut <i class="fas fa-arrow-right"></i>
+                                <button type="submit" class="btn btn-success btn-sm float-right">
+                                    Lanjut &nbsp; <i class="fas fa-angle-right"></i>
                                 </button>
                             </div>
                         </form>
@@ -125,8 +155,86 @@
                 </div>
             </div>
         </div>
-        @endif
-
     </div>
 </section>
 @endsection
+
+@push('scripts')
+<script>
+function markInvalid(el, message) {
+    el.classList.remove('is-valid');
+    el.classList.add('is-invalid');
+    const msg = document.createElement('div');
+    msg.className = 'invalid-feedback dynamic';
+    msg.innerHTML = message;
+    if (!el.parentNode.querySelector('.invalid-feedback.dynamic')) {
+        el.parentNode.appendChild(msg);
+    }
+}
+
+function markValid(el) {
+    el.classList.remove('is-invalid');
+    el.classList.add('is-valid');
+    const feedback = el.parentNode.querySelector('.invalid-feedback.dynamic');
+    if (feedback) feedback.remove();
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+    const form = document.getElementById('formStep3');
+
+    form.addEventListener('submit', function (e) {
+        let valid = true;
+
+        // Bersihkan sebelumnya
+        form.querySelectorAll('.is-invalid').forEach(el => el.classList.remove('is-invalid'));
+        form.querySelectorAll('.invalid-feedback.dynamic').forEach(el => el.remove());
+
+        @if ($laporan->jenis == 1)
+            document.querySelectorAll('.tindak-jenis').forEach(el => {
+                if (el.value === "") {
+                    markInvalid(el, 'Jenis tindak lanjut wajib dipilih');
+                    valid = false;
+                } else markValid(el);
+            });
+
+            document.querySelectorAll('.tindak-waktu').forEach(el => {
+                if (el.value === "") {
+                    markInvalid(el, 'Waktu wajib diisi');
+                    valid = false;
+                } else markValid(el);
+            });
+
+            document.querySelectorAll('.tindak-kondisi').forEach(el => {
+                if (el.value === "") {
+                    markInvalid(el, 'Kondisi wajib dipilih');
+                    valid = false;
+                } else markValid(el);
+            });
+        @else
+            const waktu = form.querySelector('[name="waktu"]');
+            const kondisi = form.querySelector('[name="kondisi"]');
+
+            if (!waktu.value) {
+                markInvalid(waktu, 'Waktu wajib diisi');
+                valid = false;
+            } else markValid(waktu);
+
+            if (!kondisi.value) {
+                markInvalid(kondisi, 'Kondisi wajib dipilih');
+                valid = false;
+            } else markValid(kondisi);
+        @endif
+
+        const kondisiSetelah = form.querySelector('[name="kondisi_setelah"]');
+            if (kondisiSetelah.value === "") {
+                markInvalid(kondisiSetelah, 'Kondisi layanan wajib dipilih');
+                valid = false;
+            } else {
+                markValid(kondisiSetelah);
+            }
+
+        if (!valid) e.preventDefault();
+    });
+});
+</script>
+@endpush

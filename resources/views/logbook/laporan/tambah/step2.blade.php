@@ -1,108 +1,103 @@
 @extends('logbook.main')
+
 @section('head')
     <meta name="csrf-token" content="{{ csrf_token() }}" />
 @endsection
+
 @section('content')
 <section class="content">
     <div class="container-fluid">
 
-        <!-- Step Navigation -->
+        {{-- Step Navigation --}}
         <div class="row mb-2">
             <div class="col-lg-12">
                 <div class="card">
                     <div class="card-body py-2">
-                        <div class="container">
-                            <ul class="step d-flex flex-nowrap">
-                                <li class="step-item completed"><a href="{{ route('tambah.step1') }}">Step 1</a></li>
-                                <li class="step-item active"><a href="#">Step 2</a></li>
-                                <li class="step-item"><a href="#">Step 3</a></li>
-                                <li class="step-item"><a href="#">Step 4</a></li>
-                                <li class="step-item"><a href="#">Step 5</a></li>
-                            </ul>
-                        </div>
+                        <ul class="step d-flex flex-nowrap">
+                            <li class="step-item completed"><a href="{{ route('tambah.step1') }}">Pilih Layanan</a></li>
+                            <li class="step-item active"><a href="#">Input Gangguan</a></li>
+                            <li class="step-item"><a href="#">Tindaklanjut</a></li>
+                            <li class="step-item"><a href="#">Review</a></li>
+                        </ul>
                     </div>
                 </div>
             </div>
         </div>
 
-        <!-- Data Layanan -->
-        <div class="row">
-            <div class="col-lg-12">
-                <div class="card">
-                    <div class="card-header"><h3 class="card-title">DATA LAYANAN</h3></div>
-                    <div class="card-body">
-                        <div class="row">
-                            <div class="col-md-8">
-                                @php
-                                    $fasilitasNama = $layanan->fasilitas->nama ?? '-';
-                                    $lokasiTkt1Nama = $layanan->lokasiTkt1->nama ?? '-';
-                                    $lokasiTkt2Nama = $layanan->lokasiTkt2->nama ?? '-';
-                                    $lokasiTkt3Nama = $layanan->lokasiTkt3->nama ?? '-';
-                                @endphp
-
-                                @foreach ([
-                                    'KODE' => $layanan->kode,
-                                    'NAMA' => $layanan->nama,
-                                    'FASILITAS' => $fasilitasNama,
-                                    'LOKASI TINGKAT 1' => $lokasiTkt1Nama,
-                                    'LOKASI TINGKAT 2' => $lokasiTkt2Nama,
-                                    'LOKASI TINGKAT 3' => $lokasiTkt3Nama,
-                                    'STATUS' => $layanan->status ? 'Aktif' : 'Tidak Aktif',
-                                    'KONDISI' => $layanan->kondisi == config('constants.kondisi_layanan.Serviceable') ? 'Serviceable' : 'Unserviceable',
-                                ] as $label => $value)
-                                    <div class="form-group row align-items-center">
-                                        <label class="col-sm-3 col-form-label">{{ $label }}</label>
-                                        <div class="col-sm-9">
-                                            <input type="text" class="form-control" value="{{ $value }}" readonly>
-                                        </div>
-                                    </div>
-                                @endforeach
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- Form Step 2 -->
-        <form method="POST" action="{{ route('tambah.step2.simpan') }}">
+        {{-- Form --}}
+        <form method="POST" action="{{ route('tambah.step2.simpan') }}" id="step2-form">
             @csrf
-            <input type="hidden" name="layanan_id" value="{{ $layanan->id }}">
+            <input type="hidden" name="laporan_id" value="{{ $laporan->id ?? '' }}">
+            <input type="hidden" name="layanan_id" value="{{ $laporan->layanan_id ?? $layanan->id }}">
 
-            <!-- Pilih Jenis Laporan -->
-            <div class="row mb-1">
-                <div class="col-lg-12">
-                    <div class="card">
-                        <div class="card-header">
-                            <h3 class="card-title">Pilih Jenis Laporan untuk Layanan: <strong>{{ $layanan->nama }}</strong></h3>
-                        </div>
-                        <div class="card-body">
-                            <div class="form-group row">
-                                <label for="jenis_laporan" class="col-sm-2 col-form-label">Jenis Laporan</label>
-                                <div class="col-sm-6">
-                                    <select class="form-control" name="jenis_laporan" id="jenis_laporan" required>
-                                        <option value="">- Pilih -</option>
-                                        @foreach($jenisLaporan as $key => $value)
-                                            <option value="{{ $key }}">{{ Str::title(str_replace('_', ' ', $key)) }}</option>
-                                        @endforeach
-                                    </select>
-                                </div>
+            {{-- CARD 1: DATA LAYANAN --}}
+            <div class="card">
+                <div class="card-header"><h3 class="card-title">DATA LAYANAN</h3></div>
+                <div class="card-body">
+                    @php
+                        $fasilitasNama = $layanan->fasilitas->nama ?? '-';
+                        $lokasiTkt1Nama = $layanan->LokasiTk1->nama ?? '-';
+                        $lokasiTkt2Nama = $layanan->LokasiTk2->nama ?? '-';
+                        $lokasiTkt3Nama = $layanan->LokasiTk3->nama ?? '-';
+                    @endphp
+
+                    @foreach([
+                        'KODE' => $layanan->kode,
+                        'NAMA' => $layanan->nama,
+                        'FASILITAS' => $fasilitasNama,
+                        'LOKASI TINGKAT 1' => $lokasiTkt1Nama,
+                        'LOKASI TINGKAT 2' => $lokasiTkt2Nama,
+                        'LOKASI TINGKAT 3' => $lokasiTkt3Nama,
+                        'STATUS' => $layanan->status ? 'Aktif' : 'Tidak Aktif',
+                        'KONDISI' => $layanan->kondisi == config('constants.kondisi_layanan.Serviceable') ? 'Serviceable' : 'Unserviceable',
+                    ] as $label => $value)
+                        <div class="form-group row align-items-center">
+                            <label class="col-sm-3 col-form-label">{{ $label }}</label>
+                            <div class="col-sm-9">
+                                <input type="text" class="form-control" value="{{ $value }}" readonly>
                             </div>
                         </div>
+                    @endforeach
+
+                    <div class="form-group row">
+                        <label for="jenis_laporan" class="col-sm-3 col-form-label">
+                            JENIS LAPORAN <span class="text-danger">*</span>
+                        </label>
+                        <div class="col-sm-9">
+                            <select name="jenis_laporan" id="jenis_laporan" class="form-control" required>
+                                <option value="">- Pilih -</option>
+                                @foreach ($jenisLaporan as $key => $value)
+                                    <option value="{{ $key }}" {{ old('jenis_laporan', $laporan->jenis_laporan ?? '') == $key ? 'selected' : '' }}>
+                                        {{ Str::title(str_replace('_', ' ', $key)) }}
+                                    </option>
+                                @endforeach
+                            </select>
+                            @error('jenis_laporan')
+                                <div class="invalid-feedback">{{ $message }}</div>
+                            @enderror
+                        </div>
                     </div>
+
                 </div>
             </div>
 
-            <!-- Dynamic Form Gangguan -->
-            <div class="row mb-1">
-                <div class="col-lg-12">
-                    <div id="form-gangguan-container" class="mt-1"></div>
+            {{-- CARD 2: FORM GANGGUAN --}}
+            <div class="card d-none mt-2" id="card-input-gangguan">
+                <div class="card-header"><h3 class="card-title">INPUT GANGGUAN</h3></div>
+                <div class="card-body" id="form-gangguan-container">
+                    {{-- Diisi oleh JS --}}
+                </div>
+            </div>
 
-                    <!-- Tombol Navigasi -->
-                    <div class="form-group mt-3">
-                        <a href="{{ route('tambah.step1') }}" class="btn btn-secondary">Kembali</a>
-                        <button type="submit" class="btn btn-primary float-right">Lanjut</button>
-                    </div>
+            {{-- FOOTER --}}
+            <div class="card mt-3">
+                <div class="card-footer">
+                    <a href="{{ route('tambah.step1') }}" class="btn btn-success btn-sm">
+                        <i class="fas fa-angle-left"></i>&nbsp;&nbsp;Kembali
+                    </a>
+                    <button type="submit" class="btn btn-success btn-sm float-right">
+                        Lanjut &nbsp;&nbsp;<i class="fas fa-angle-right"></i>
+                    </button>
                 </div>
             </div>
         </form>
@@ -113,90 +108,144 @@
 
 @push('scripts')
 <script>
-    const kondisiGangguan = @json(config('constants.kondisi_gangguan_peralatan'));
+    const kondisiPeralatan = @json(config('constants.kondisi_peralatan'));
     const peralatan = @json($layanan->daftarPeralatanLayanan);
+   const jenisLaporanAwal = @json(old('jenis_laporan', $laporan->jenis_laporan ?? ''));
 
-    document.addEventListener('DOMContentLoaded', function () {
-        const jenisLaporanSelect = document.getElementById('jenis_laporan');
+    function markInvalid(el, message) {
+        el.classList.remove('is-valid');
+        el.classList.add('is-invalid');
+        const msg = document.createElement('div');
+        msg.className = 'invalid-feedback dynamic';
+        msg.innerHTML = message;
+        if (!el.parentNode.querySelector('.invalid-feedback.dynamic')) {
+            el.parentNode.appendChild(msg);
+        }
+    }
+
+    function markValid(el) {
+        el.classList.remove('is-invalid');
+        el.classList.add('is-valid');
+        const feedback = el.parentNode.querySelector('.invalid-feedback.dynamic');
+        if (feedback) feedback.remove();
+    }
+
+    function buildGangguanForm(jenis) {
         const container = document.getElementById('form-gangguan-container');
+        const cardGangguan = document.getElementById('card-input-gangguan');
+        let html = '';
 
-        jenisLaporanSelect.addEventListener('change', function () {
-            const selected = this.value;
-            let html = '';
+        cardGangguan.classList.remove('d-none');
+        cardGangguan.style.display = 'block';
 
-            if (selected === 'gangguan_peralatan') {
+        if (jenis === 'gangguan_peralatan') {
+            html += `
+                <div class="form-group row mb-2">
+                    <label class="col-sm-3 col-from-label">Waktu Gangguan <span class="text-danger">*</span></label>
+                    <div class="col-sm-9">
+                        <input type="datetime-local" name="waktu_gangguan" class="form-control">
+                    </div>
+                </div>
+            `;
+
+            peralatan.forEach((item, index) => {
                 html += `
-                    <div class="card">
-                        <div class="card-header"><h3 class="card-title">Input Gangguan Peralatan</h3></div>
-                        <div class="card-body">
-                            <div class="form-group row">
-                                <label class="col-sm-2 col-form-label">Waktu Gangguan</label>
-                                <div class="col-sm-6">
-                                    <input type="datetime-local" name="waktu_gangguan" class="form-control" required>
-                                </div>
-                            </div>
+                    <hr> 
+                    <div class="mb-4">
+                        <strong>Peralatan ${index + 1}: <span class="badge bg-primary">${item.peralatan?.nama ?? '-'}</span></strong>
+                        <input type="hidden" name="peralatan[${index}][id]" value="${item.peralatan?.id}">
+                    </div>
+
+                    <div class="form-group row mb-2">
+                        <label class="col-sm-3 col-from-label">Kondisi Peralatan <span class="text-danger">*</span></label>
+                        <div class="col-sm-9">
+                            <select name="peralatan[${index}][kondisi]" class="form-control">
+                                <option value="">- Pilih -</option>
+                                ${Object.entries(kondisiPeralatan).map(([label, value]) => {
+                                    const val = value === true ? 1 : 0;
+                                    const labelFormatted = label.charAt(0).toUpperCase() + label.slice(1);
+                                    return `<option value="${val}">${labelFormatted}</option>`;
+                                }).join('')}
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="form-group row mb-2">
+                        <label class="col-sm-3 col-from-label">Deskripsi Gangguan</label>
+                        <div class="col-sm-9">
+                            <textarea name="peralatan[${index}][deskripsi]" class="form-control" rows="3"></textarea>
                         </div>
                     </div>
                 `;
+            });
 
-                if (peralatan.length > 0) {
-                    peralatan.forEach((item, index) => {
-                        let options = '<option value="">- Pilih -</option>';
-                        for (const [label, value] of Object.entries(kondisiGangguan)) {
-                            options += `<option value="${value}">${label.charAt(0).toUpperCase() + label.slice(1)}</option>`;
-                        }
-
-                        html += `
-                            <div class="card mt-3">
-                                <div class="card-body">
-                                    <h6>Peralatan ${index + 1}: ${item.peralatan?.nama ?? '-'}</h6>
-                                    <input type="hidden" name="peralatan[${index}][id]" value="${item.peralatan?.id}">
-                                    <div class="form-group row">
-                                        <label class="col-sm-2 col-form-label">Kondisi Peralatan</label>
-                                        <div class="col-sm-6">
-                                            <select name="peralatan[${index}][kondisi]" class="form-control" required>
-                                                ${options}
-                                            </select>
-                                        </div>
-                                    </div>
-                                    <div class="form-group row mt-2">
-                                        <label class="col-sm-2 col-form-label">Deskripsi Gangguan</label>
-                                        <div class="col-sm-6">
-                                            <textarea name="peralatan[${index}][deskripsi]" class="form-control" rows="3" required></textarea>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        `;
-                    });
-                } else {
-                    html += `<div class="alert alert-warning mt-3">Tidak ada peralatan pada layanan ini.</div>`;
-                }
-
-            } else if (selected === 'gangguan_non_peralatan') {
-                html = `
-                    <div class="card">
-                        <div class="card-header"><h3 class="card-title">Input Gangguan Non Peralatan</h3></div>
-                        <div class="card-body">
-                            <div class="form-group row">
-                                <label class="col-sm-2 col-form-label">Waktu Gangguan</label>
-                                <div class="col-sm-6">
-                                    <input type="datetime-local" name="waktu_gangguan" class="form-control" required>
-                                </div>
-                            </div>
-                            <div class="form-group row mt-2">
-                                <label class="col-sm-2 col-form-label">Deskripsi Gangguan</label>
-                                <div class="col-sm-6">
-                                    <textarea name="deskripsi_gangguan" class="form-control" rows="3" required></textarea>
-                                </div>
-                            </div>
-                        </div>
+        } else {
+            html += `
+                <div class="form-group row mb-2">
+                    <label class="col-sm-3 col-from-label">Waktu Gangguan <span class="text-danger">*</span></label>
+                    <div class="col-sm-9">
+                        <input type="datetime-local" name="waktu_gangguan" class="form-control">
                     </div>
-                `;
-            }
+                </div>
+                <div class="form-group row mb-2">
+                    <label class="col-sm-3 col-from-label">Deskripsi Gangguan</label>
+                    <div class="col-sm-9">
+                        <textarea name="deskripsi_gangguan" class="form-control" rows="3"></textarea>
+                    </div>
+                </div>
+            `;
+        }
 
-            container.innerHTML = html;
-        });
+        container.innerHTML = html;
+    }
+
+    document.addEventListener('DOMContentLoaded', () => {
+    const form = document.getElementById('step2-form');
+    const select = document.getElementById('jenis_laporan');
+
+    if (jenisLaporanAwal) buildGangguanForm(jenisLaporanAwal);
+
+    select.addEventListener('change', e => {
+        console.log('Jenis laporan dipilih:', e.target.value);
+        if (e.target.value) buildGangguanForm(e.target.value);
+        else {
+            document.getElementById('card-input-gangguan').classList.add('d-none');
+            document.getElementById('form-gangguan-container').innerHTML = '';
+        }
     });
+
+    form.addEventListener('submit', function (e) {
+        e.preventDefault();
+
+        let valid = true;
+        form.querySelectorAll('.is-invalid').forEach(el => el.classList.remove('is-invalid'));
+        form.querySelectorAll('.invalid-feedback.dynamic').forEach(el => el.remove());
+
+        const jenis = select.value.trim();
+        if (!jenis) {
+            markInvalid(select, 'Jenis laporan wajib dipilih');
+            valid = false;
+        }
+
+        const waktu = form.querySelector('[name="waktu_gangguan"]');
+        if (!waktu || !waktu.value) {
+            markInvalid(waktu, 'Waktu gangguan wajib diisi');
+            valid = false;
+        }
+
+        if (jenis === 'gangguan_peralatan') {
+            const kondisiFields = form.querySelectorAll('[name^="peralatan"][name$="[kondisi]"]');
+            kondisiFields.forEach(el => {
+                if (!el.value) {
+                    markInvalid(el, 'Kondisi peralatan wajib dipilih');
+                    valid = false;
+                }
+            });
+        }
+
+        if (valid) form.submit();
+    });
+});
+
 </script>
 @endpush

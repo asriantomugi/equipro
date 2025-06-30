@@ -45,14 +45,14 @@
 @foreach ($daftar as $satu)
                     <tr class="table-condensed">
                       <td></td>
-                      <td>{{ strtoupper($satu->kode) }}</td>
-                      <td>{{ strtoupper($satu->nama) }}</td>
-                      <td>{{ strtoupper($satu->merk) }}</td>
-                      <td>{{ strtoupper($satu->tipe) }}</td>
-                      <td>{{ strtoupper($satu->model) }}</td>
-                      <td>{{ strtoupper($satu->serial_number) }}</td>
+                      <td><center>{{ strtoupper($satu->kode) }}</center></td>
+                      <td><center>{{ strtoupper($satu->nama) }}</center></td>
+                      <td><center>{{ strtoupper($satu->merk) }}</center></td>
+                      <td><center>{{ strtoupper($satu->tipe) }}</center></td>
+                      <td><center>{{ strtoupper($satu->model) }}</center></td>
+                      <td><center>{{ strtoupper($satu->serial_number) }}</center></td>
 
-  @if($satu->kondisi == config('constants.kondisi_peralatan.normal'))
+  @if($satu->kondisi == config('constants.kondisi_peralatan.Normal'))
                       <td><center><span class="badge bg-success">NORMAL</span></center></td>
   @else
                       <td><center><span class="badge bg-danger">RUSAK</span></center></td>
@@ -129,31 +129,39 @@
       $(document).Toasts('create', {
           class: 'bg-success',
           title: 'Sukses!',
-          body: 'Peralatan baru telah berhasil ditambahkan'
+          body: 'Peralatan baru telah berhasil ditambahkan',
+          autohide: true,
+          delay: 3000
         })
     @elseif(session()->get('notif') == 'edit_sukses')
       $(document).Toasts('create', {
           class: 'bg-success',
           title: 'Sukses!',
-          body: 'Data Peralatan telah berhasil diubah'
+          body: 'Data peralatan telah berhasil diubah'
         })
     @elseif(session()->get('notif') == 'tambah_gagal')
       $(document).Toasts('create', {
           class: 'bg-danger',
           title: 'Error!',
-          body: 'Gagal menambahkan peralatan baru'
+          body: 'Gagal menambahkan peralatan baru',
+          autohide: true,
+          delay: 3000
         })
     @elseif(session()->get('notif') == 'edit_gagal')
       $(document).Toasts('create', {
           class: 'bg-danger',
           title: 'Error!',
-          body: 'Gagal mengubah data peralatan'
+          body: 'Gagal mengubah data peralatan',
+          autohide: true,
+          delay: 3000
         })
     @elseif(session()->get('notif') == 'item_null')
       $(document).Toasts('create', {
           class: 'bg-danger',
           title: 'Error!',
-          body: 'Gagal menampilkan data peralatan'
+          body: 'Gagal menampilkan data peralatan',
+          autohide: true,
+          delay: 3000
         })
     @endif
   @endif

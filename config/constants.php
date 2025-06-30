@@ -21,8 +21,8 @@ return [
 
     // konstanta untuk kondisi peralatan
     'kondisi_peralatan' => [
-        'normal' => TRUE,
-        'rusak' => FALSE,
+        'Normal' => TRUE,
+        'Rusak' => FALSE,
     ],
 
     // konstanta untuk status histori gangguan peralatan
@@ -35,6 +35,13 @@ return [
     'kondisi_layanan' => [
         'Serviceable' => TRUE,
         'Unserviceable' => FALSE,
+    ],
+
+    // konstanta untuk status layanan
+    'status_layanan' => [
+        'tidak_aktif' => 0,
+        'aktif' => 1,
+        'draft' => 2,
     ],
 
     // konstanta untuk kondisi peralatan di layanan

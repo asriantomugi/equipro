@@ -21,8 +21,7 @@ return new class extends Migration
             $table->bigInteger('laporan_id');
             $table->bigInteger('layanan_id');
             $table->bigInteger('peralatan_id');
-            $table->date('tanggal');
-            $table->time('waktu');
+            $table->dateTime('waktu');
             $table->string('deskripsi');
             $table->boolean('kondisi');
             $table->boolean('jenis_tindaklanjut');

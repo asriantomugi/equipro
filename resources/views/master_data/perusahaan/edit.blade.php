@@ -110,10 +110,10 @@
               <!-- /.card-body -->
 
               <div class="card-footer">
-                <a class="btn btn-default" 
+                <a class="btn btn-default btn-sm" 
                    href="{{url('/master-data/perusahaan/daftar')}}" 
                    role="button">Batal</a>
-                <button type="submit" class="btn btn-primary float-right">Simpan</button>
+                <button type="submit" class="btn btn-primary btn-sm float-right">Simpan</button>
               </div>
 
 </form>

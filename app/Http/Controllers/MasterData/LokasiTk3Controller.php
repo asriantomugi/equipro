@@ -362,4 +362,31 @@ class LokasiTk3Controller extends Controller
         // jika proses insert berhasil
         return redirect('/master-data/lokasi-tk-3/daftar')->with('notif', 'edit_sukses');
     }
+
+
+    /**
+     * Menampilkan JSON daftar lokasi tingkat III berdasarkan id lokasi tingkat II
+     * 
+     * Akses:
+     * - All User
+     * 
+     * Method: POST
+     * URL: /json/lokasi-tk-3/daftar
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @return \Illuminate\Http\Response
+     */
+    public function daftarJson(Request $request)
+    {
+        // ambil id lokasi tingkat II
+        $lokasi_tk_2_id = $request->input('lokasi_tk_2_id');
+
+        // ambil daftar lokasi tingkat III berdasarkan id lokasi tingkat II
+        $daftar = LokasiTk3::where('lokasi_tk_2_id', $lokasi_tk_2_id)
+            ->where('status', 1) //status aktif
+            ->orderBy('kode', 'asc')
+            ->get();
+
+        return response()->json($daftar);
+    }
 }

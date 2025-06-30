@@ -32,6 +32,42 @@ class Laporan extends Model
     }
 
     /**
+     * Relasi ke data penggantian peralatan (jika ada)
+     */
+    public function penggantian()
+    {
+        return $this->hasOne(TlPenggantianPeralatan::class, 'laporan_id');
+    }
+
+    public function gangguanPeralatan()
+    {
+        return $this->hasMany(TlGangguanPeralatan::class, 'laporan_id');
+    }
+
+    public function gangguanNonPeralatan()
+    {
+        return $this->hasOne(TlGangguanNonPeralatan::class, 'laporan_id');
+    }
+
+    public function getStatusLabelAttribute()
+    {
+        $status = $this->status;
+
+        if ($status == config('constants.status_laporan.draft')) {
+            return '<span class="badge bg-warning">DRAFT</span>';
+        } elseif ($status == config('constants.status_laporan.open')) {
+            return '<span class="badge bg-success">OPEN</span>';
+        } elseif ($status == config('constants.status_laporan.closed')) {
+            return '<span class="badge bg-secondary">CLOSED</span>';
+        } else {
+            return '<span class="badge bg-dark">UNKNOWN</span>';
+        }
+    }
+
+
+
+
+    /**
      * Function untuk memanggil user created_by.
      */
     public function getCreatedName()

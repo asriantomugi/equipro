@@ -192,6 +192,7 @@ class PeralatanController extends Controller
                 'perusahaan_id' => $request->perusahaan,
                 'kondisi' => $request->kondisi,
                 'status' => 1, // aktif
+                'flag_layanan' => 0, // default = 0
                 'created_by' => session()->get('id')
             ]);
         }
@@ -255,7 +256,7 @@ class PeralatanController extends Controller
      * - Admin
      * 
      * Method: GET
-     * URL: /fasilitas/peralatan/edit
+     * URL: /fasilitas/peralatan/edit/{id}
      *
      * @param  int  $id
      * @return \Illuminate\Http\Response
@@ -355,9 +356,9 @@ class PeralatanController extends Controller
         $peralatan = Peralatan::where('id', $request->id)
             ->first();
         // cek apakah ada perubahan kode
-        if($peralatan->kode != $request->kode){
+        if($peralatan->kode != strtoupper($request->kode)){
             // jika ada, cek apakah kode yang baru sudah terdaftar
-            $cekKode = Peralatan::where('kode', $request->kode)->first();
+            $cekKode = Peralatan::where('kode', strtoupper($request->kode))->first();
             // jika kode sudah terdaftar
             if($cekKode != null){
                 // buat pesan error

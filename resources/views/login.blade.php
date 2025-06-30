@@ -74,7 +74,7 @@
       style="width:290px; height:120px;">
     </a>
     <br>
-    <h5>EQUIPRO<br><small>Peralatan Electronics & Technology Services</small></h5>
+    <h5>EQUIPRO<br><small> Electronics & Technology Services</small></h5>
   </div>
   <br>
   <!-- /.login-logo -->
