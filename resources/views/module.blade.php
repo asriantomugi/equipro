@@ -72,7 +72,7 @@
                     </center>
                   </div>
                  
-                  <a href="{{url('/log-aktivitas/home')}}" class="small-box-footer">Masuk <i class="fas fa-arrow-circle-right"></i></a>
+                  <a href="{{url('/log_aktivitas/daftar')}}" class="small-box-footer">Masuk <i class="fas fa-arrow-circle-right"></i></a>
                 </div>
               </div>
               <!-- ./col -->

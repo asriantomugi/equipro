@@ -32,6 +32,24 @@ class Laporan extends Model
     }
 
     /**
+     * Relasi ke data penggantian peralatan (jika ada)
+     */
+    public function penggantian()
+    {
+        return $this->hasOne(TlPenggantianPeralatan::class, 'laporan_id');
+    }
+
+    public function gangguanPeralatan()
+    {
+        return $this->hasMany(TlGangguanPeralatan::class, 'laporan_id');
+    }
+
+    public function gangguanNonPeralatan()
+    {
+        return $this->hasOne(TlGangguanNonPeralatan::class, 'laporan_id');
+    }
+
+    /**
      * Function untuk memanggil user created_by.
      */
     public function getCreatedName()

@@ -40,8 +40,8 @@
 @foreach ($daftar as $satu)
                     <tr class="table-condensed">
                       <td></td>
-                      <td>{{ strtoupper($satu->kode) }}</td>
-                      <td>{{ strtoupper($satu->nama) }}</td>
+                      <td><center>{{ strtoupper($satu->kode) }}</center></td>
+                      <td><center>{{ strtoupper($satu->nama) }}</center></td>
   @if($satu->status == 1)
                       <td><center><span class="badge bg-success">AKTIF</span></center></td>
   @else
@@ -113,31 +113,41 @@
       $(document).Toasts('create', {
           class: 'bg-success',
           title: 'Sukses!',
-          body: 'Fasilitas baru telah berhasil ditambahkan'
+          body: 'Fasilitas baru telah berhasil ditambahkan',
+          autohide: true,
+          delay: 3000
         })
     @elseif(session()->get('notif') == 'edit_sukses')
       $(document).Toasts('create', {
           class: 'bg-success',
           title: 'Sukses!',
-          body: 'Data fasilitas telah berhasil diubah'
+          body: 'Data fasilitas telah berhasil diubah',
+          autohide: true,
+          delay: 3000
         })
     @elseif(session()->get('notif') == 'tambah_gagal')
       $(document).Toasts('create', {
           class: 'bg-danger',
           title: 'Error!',
-          body: 'Gagal menambahkan fasilitas baru'
+          body: 'Gagal menambahkan fasilitas baru',
+          autohide: true,
+          delay: 3000
         })
     @elseif(session()->get('notif') == 'edit_gagal')
       $(document).Toasts('create', {
           class: 'bg-danger',
           title: 'Error!',
-          body: 'Gagal mengubah data fasilitas'
+          body: 'Gagal mengubah data fasilitas',
+          autohide: true,
+          delay: 3000
         })
     @elseif(session()->get('notif') == 'item_null')
       $(document).Toasts('create', {
           class: 'bg-danger',
           title: 'Error!',
-          body: 'Gagal menampilkan data fasilitas'
+          body: 'Gagal menampilkan data fasilitas',
+          autohide: true,
+          delay: 3000
         })
     @endif
   @endif

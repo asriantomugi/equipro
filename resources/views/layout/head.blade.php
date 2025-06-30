@@ -109,8 +109,6 @@
   <link rel="stylesheet" href="{{asset('/plugins/datatables-buttons/css/buttons.bootstrap4.min.css')}}">
   <!-- Asterik Sign -->
   <link rel="stylesheet" href="{{asset('/dist/css/asterik.css')}}">
-  <!-- Bootstrap -->
-  <link href="//maxcdn.bootstrapcdn.com/bootstrap/4.1.1/css/bootstrap.min.css" rel="stylesheet" id="bootstrap-css">
-  <script src="//maxcdn.bootstrapcdn.com/bootstrap/4.1.1/js/bootstrap.min.js"></script>
-  <script src="//cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+  <!-- Step Bar -->
+  <link rel="stylesheet" href="{{asset('/dist/css/stepbar.css')}}">
 

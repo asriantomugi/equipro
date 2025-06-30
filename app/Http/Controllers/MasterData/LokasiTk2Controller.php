@@ -363,8 +363,7 @@ class LokasiTk2Controller extends Controller
      * Menampilkan JSON daftar lokasi tingkat II berdasarkan id lokasi tingkat I
      * 
      * Akses:
-     * - Super Admin
-     * - Airport Operation
+     * - All User
      * 
      * Method: POST
      * URL: /json/lokasi-tk-2/daftar

@@ -23,8 +23,8 @@ class DaftarPeralatanLayanan extends Model
     ];
 
 
-     /**
-     * Function untuk memanggil layanan dari daftar_peralatan_layanan.
+    /**
+     * Function untuk memanggil layanan.
      */
     public function layanan()
     {
@@ -32,11 +32,11 @@ class DaftarPeralatanLayanan extends Model
     }
 
     /**
-     * Function untuk memanggil peralatan dari daftar_peralatan_layanan.
+     * Function untuk memanggil data peralatan.
      */
     public function peralatan()
     {
-        return $this->belongsTo(Peralatan::class);
+        return $this->hasOne(Peralatan::class, 'id', 'peralatan_id');
     }
 
     /**

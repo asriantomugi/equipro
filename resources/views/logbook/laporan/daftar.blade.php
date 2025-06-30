@@ -21,8 +21,8 @@
                             <thead>
                                 <tr>
                                     <th style="width: 10px"><center>NO.</center></th>
-                                    <th><center>NO TICKET</center></th>
-                                    <th><center>NAMA PERALATAN</center></th>
+                                    <th><center>NO LAPORAN</center></th>
+                                    <th><center>LAYANAN</center></th>
                                     <th><center>FASILITAS</center></th>
                                     <th><center>LOKASI T.1</center></th>
                                     <th><center>LOKASI T.2</center></th>
@@ -33,18 +33,18 @@
                             <tbody>
                                 @if($daftar->isEmpty())
                                     <tr>
-                                        <td colspan="8" class="text-center">Belum ada data laporan.</td>
+                                        <td colspan="8" class="text-center">No data avalaible in table</td>
                                     </tr>
                                 @else
                                     @foreach ($daftar as $satu)
                                         <tr>
                                             <td><center>{{ $loop->iteration }}</center></td>
                                             <td>{{ strtoupper($satu->no_laporan) }}</td>
-                                            <td>{{ strtoupper($satu->peralatan->nama ?? '-') }}</td>
-                                            <td>{{ strtoupper($satu->fasilitas->nama ?? '-') }}</td>
-                                            <td>{{ strtoupper($satu->getLokasiTk1->nama ?? '-') }}</td>
-                                            <td>{{ strtoupper($satu->getLokasiTk2->nama ?? '-') }}</td>
-                                            <td>{{ strtoupper($satu->getLokasiTk3->nama ?? '-') }}</td>
+                                            <td> {{ strtoupper($satu->gangguanPeralatan->first()->peralatan->nama ?? '-') }}</td>
+                                            <td>{{ strtoupper($satu->layanan->fasilitas->nama ?? '-') }}</td>
+                                            <td>{{ strtoupper($satu->layanan->LokasiTk1->nama ?? '-') }}</td>
+                                            <td>{{ strtoupper($satu->layanan->LokasiTk2->nama ?? '-') }}</td>
+                                            <td>{{ strtoupper($satu->layanan->LokasiTk3->nama ?? '-') }}</td>
                                             <td>
                                                 <center>
                                                 <a class="btn btn-info btn-sm" 

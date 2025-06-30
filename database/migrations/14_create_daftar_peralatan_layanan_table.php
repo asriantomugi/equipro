@@ -7,22 +7,19 @@ use Illuminate\Support\Facades\Schema;
 return new class extends Migration
 {
     /**
-     * Function untuk membuat tabel Layanan
+     * Function untuk membuat tabel Daftar peralatan Layanan
      *
-     * @return tabel Layanan di database
+     * @return tabel Daftar peralatan Layanan di database
      */
     public function up(): void
     {
-        Schema::create('layanan', function (Blueprint $table) {
+        Schema::create('daftar_peralatan_layanan', function (Blueprint $table) {
 
             // membuat field-field
             $table->id();
-            $table->string('kode');
-            $table->string('nama');
-            $table->bigInteger('fasilitas_id');
-            $table->bigInteger('lok_tk_1_id');
-            $table->bigInteger('lok_tk_2_id');
-            $table->bigInteger('lok_tk_3_id');
+            $table->bigInteger('layanan_id');
+            $table->bigInteger('peralatan_id');
+            $table->string('ip_address')->nullable();;
             $table->boolean('kondisi')->default(true);
             $table->boolean('status')->default(true);
             $table->bigInteger('created_by')->nullable();
@@ -36,6 +33,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('layanan');
+        Schema::dropIfExists('daftar_peralatan_layanan');
     }
 };

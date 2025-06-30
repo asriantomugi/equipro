@@ -13,11 +13,10 @@
                     <div class="card-body py-2">
                         <div class="container">
                             <ul class="step d-flex flex-nowrap">
-                                <li class="step-item completed"><a href="{{ route('tambah.step1') }}">Step 1</a></li>
-                                <li class="step-item active"><a href="#">Step 2</a></li>
-                                <li class="step-item"><a href="#">Step 3</a></li>
-                                <li class="step-item"><a href="#">Step 4</a></li>
-                                <li class="step-item"><a href="#">Step 5</a></li>
+                                <li class="step-item completed"><a href="{{ route('tambah.step1') }}">Pilih Layanan</a></li>
+                                <li class="step-item active"><a href="#">Input Gangguan</a></li>
+                                <li class="step-item"><a href="#">Tindaklanjut</a></li>
+                                <li class="step-item"><a href="#">Review</a></li>
                             </ul>
                         </div>
                     </div>
@@ -25,19 +24,21 @@
             </div>
         </div>
 
-        <!-- Data Layanan -->
+        <!-- CARD: DATA LAYANAN -->
         <div class="row">
             <div class="col-lg-12">
                 <div class="card">
-                    <div class="card-header"><h3 class="card-title">DATA LAYANAN</h3></div>
+                    <div class="card-header">
+                        <h3 class="card-title">DATA LAYANAN</h3>
+                    </div>
                     <div class="card-body">
                         <div class="row">
                             <div class="col-md-8">
                                 @php
                                     $fasilitasNama = $layanan->fasilitas->nama ?? '-';
-                                    $lokasiTkt1Nama = $layanan->lokasiTkt1->nama ?? '-';
-                                    $lokasiTkt2Nama = $layanan->lokasiTkt2->nama ?? '-';
-                                    $lokasiTkt3Nama = $layanan->lokasiTkt3->nama ?? '-';
+                                    $lokasiTkt1Nama = $layanan->LokasiTk1->nama ?? '-';
+                                    $lokasiTkt2Nama = $layanan->LokasiTk2->nama ?? '-';
+                                    $lokasiTkt3Nama = $layanan->LokasiTk3->nama ?? '-';
                                 @endphp
 
                                 @foreach ([
@@ -57,6 +58,20 @@
                                         </div>
                                     </div>
                                 @endforeach
+
+                                <div class="form-group row">
+                                    <label for="jenis_laporan" class="col-sm-3 col-form-label">Jenis Laporan <span class="text-danger">*</span></label>
+                                    <div class="col-sm-9">
+                                        <select class="form-control" name="jenis_laporan" id="jenis_laporan" required>
+                                            <option value="">- Pilih -</option>
+                                            @foreach($jenisLaporan as $key => $value)
+                                                <option value="{{ $key }}">{{ Str::title(str_replace('_', ' ', $key)) }}</option>
+                                            @endforeach
+                                        </select>
+                                        <div class="invalid-feedback">Jenis laporan wajib diisi</div>
+                                    </div>
+                                </div>
+
                             </div>
                         </div>
                     </div>
@@ -64,47 +79,32 @@
             </div>
         </div>
 
-        <!-- Form Step 2 -->
+        <!-- Form -->
         <form method="POST" action="{{ route('tambah.step2.simpan') }}">
             @csrf
             <input type="hidden" name="layanan_id" value="{{ $layanan->id }}">
 
-            <!-- Pilih Jenis Laporan -->
-            <div class="row mb-1">
+            <!-- CARD: INPUT GANGGUAN (DISABLED DEFAULT) -->
+            <div class="row mt-1">
                 <div class="col-lg-12">
-                    <div class="card">
+                    <div class="card d-none" id="card-input-gangguan">
                         <div class="card-header">
-                            <h3 class="card-title">Pilih Jenis Laporan untuk Layanan: <strong>{{ $layanan->nama }}</strong></h3>
+                            <h3 class="card-title">INPUT GANGGUAN</h3>
                         </div>
-                        <div class="card-body">
-                            <div class="form-group row">
-                                <label for="jenis_laporan" class="col-sm-2 col-form-label">Jenis Laporan</label>
-                                <div class="col-sm-6">
-                                    <select class="form-control" name="jenis_laporan" id="jenis_laporan" required>
-                                        <option value="">- Pilih -</option>
-                                        @foreach($jenisLaporan as $key => $value)
-                                            <option value="{{ $key }}">{{ Str::title(str_replace('_', ' ', $key)) }}</option>
-                                        @endforeach
-                                    </select>
-                                </div>
-                            </div>
+                        <div class="card-body" id="form-gangguan-container">
+                            <!-- Diisi oleh JS -->
                         </div>
                     </div>
                 </div>
             </div>
-
-            <!-- Dynamic Form Gangguan -->
-            <div class="row mb-1">
-                <div class="col-lg-12">
-                    <div id="form-gangguan-container" class="mt-1"></div>
-
-                    <!-- Tombol Navigasi -->
-                    <div class="form-group mt-3">
-                        <a href="{{ route('tambah.step1') }}" class="btn btn-secondary">Kembali</a>
-                        <button type="submit" class="btn btn-primary float-right">Lanjut</button>
-                    </div>
-                </div>
-            </div>
+            <div class="card-footer">
+                            <a href="{{ route('tambah.step1') }}" class="btn btn-success btn-sm">
+                                <i class="fas fa-angle-left"></i>&nbsp;&nbsp;Kembali
+                            </a>
+                            <button type="submit" class="btn btn-success btn-sm float-right">
+                                Lanjut &nbsp;&nbsp;<i class="fas fa-angle-right"></i>
+                            </button>
+                        </div>
         </form>
 
     </div>
@@ -119,22 +119,28 @@
     document.addEventListener('DOMContentLoaded', function () {
         const jenisLaporanSelect = document.getElementById('jenis_laporan');
         const container = document.getElementById('form-gangguan-container');
+        const cardGangguan = document.getElementById('card-input-gangguan');
 
         jenisLaporanSelect.addEventListener('change', function () {
             const selected = this.value;
             let html = '';
 
+            // Reset tampilan
+            if (!selected) {
+                cardGangguan.classList.add('d-none');
+                container.innerHTML = '';
+                return;
+            }
+
+            // Tampilkan card gangguan
+            cardGangguan.classList.remove('d-none');
+
             if (selected === 'gangguan_peralatan') {
                 html += `
-                    <div class="card">
-                        <div class="card-header"><h3 class="card-title">Input Gangguan Peralatan</h3></div>
-                        <div class="card-body">
-                            <div class="form-group row">
-                                <label class="col-sm-2 col-form-label">Waktu Gangguan</label>
-                                <div class="col-sm-6">
-                                    <input type="datetime-local" name="waktu_gangguan" class="form-control" required>
-                                </div>
-                            </div>
+                    <div class="form-group row mb-3">
+                        <label class="col-sm-3 col-form-label">Waktu Gangguan <span class="text-danger">*</span></label>
+                        <div class="col-sm-9">
+                            <input type="datetime-local" name="waktu_gangguan" class="form-control" required>
                         </div>
                     </div>
                 `;
@@ -143,28 +149,29 @@
                     peralatan.forEach((item, index) => {
                         let options = '<option value="">- Pilih -</option>';
                         for (const [label, value] of Object.entries(kondisiGangguan)) {
-                            options += `<option value="${value}">${label.charAt(0).toUpperCase() + label.slice(1)}</option>`;
+                            options += `<option value="${value}">${label}</option>`;
                         }
 
                         html += `
-                            <div class="card mt-3">
-                                <div class="card-body">
-                                    <h6>Peralatan ${index + 1}: ${item.peralatan?.nama ?? '-'}</h6>
-                                    <input type="hidden" name="peralatan[${index}][id]" value="${item.peralatan?.id}">
-                                    <div class="form-group row">
-                                        <label class="col-sm-2 col-form-label">Kondisi Peralatan</label>
-                                        <div class="col-sm-6">
-                                            <select name="peralatan[${index}][kondisi]" class="form-control" required>
-                                                ${options}
-                                            </select>
-                                        </div>
-                                    </div>
-                                    <div class="form-group row mt-2">
-                                        <label class="col-sm-2 col-form-label">Deskripsi Gangguan</label>
-                                        <div class="col-sm-6">
-                                            <textarea name="peralatan[${index}][deskripsi]" class="form-control" rows="3" required></textarea>
-                                        </div>
-                                    </div>
+                            <hr>
+                            <div class="mb-2">
+                                <strong>Peralatan ${index + 1}: <span class="badge bg-primary">${item.peralatan?.nama ?? '-'}</span></strong>
+                                <input type="hidden" name="peralatan[${index}][id]" value="${item.peralatan?.id}">
+                            </div>
+
+                            <div class="form-group row mb-2">
+                                <label class="col-sm-3 col-form-label">Kondisi Peralatan <span class="text-danger">*</span></label>
+                                <div class="col-sm-9">
+                                    <select name="peralatan[${index}][kondisi]" class="form-control" required>
+                                        ${options}
+                                    </select>
+                                </div>
+                            </div>
+
+                            <div class="form-group row mb-3">
+                                <label class="col-sm-3 col-form-label">Deskripsi Gangguan <span class="text-danger">*</span></label>
+                                <div class="col-sm-9">
+                                    <textarea name="peralatan[${index}][deskripsi]" class="form-control" rows="3" required></textarea>
                                 </div>
                             </div>
                         `;
@@ -175,21 +182,17 @@
 
             } else if (selected === 'gangguan_non_peralatan') {
                 html = `
-                    <div class="card">
-                        <div class="card-header"><h3 class="card-title">Input Gangguan Non Peralatan</h3></div>
-                        <div class="card-body">
-                            <div class="form-group row">
-                                <label class="col-sm-2 col-form-label">Waktu Gangguan</label>
-                                <div class="col-sm-6">
-                                    <input type="datetime-local" name="waktu_gangguan" class="form-control" required>
-                                </div>
-                            </div>
-                            <div class="form-group row mt-2">
-                                <label class="col-sm-2 col-form-label">Deskripsi Gangguan</label>
-                                <div class="col-sm-6">
-                                    <textarea name="deskripsi_gangguan" class="form-control" rows="3" required></textarea>
-                                </div>
-                            </div>
+                    <div class="form-group row mb-3">
+                        <label class="col-sm-3 col-form-label">Waktu Gangguan <span class="text-danger">*</span></label>
+                        <div class="col-sm-9">
+                            <input type="datetime-local" name="waktu_gangguan" class="form-control" required>
+                        </div>
+                    </div>
+
+                    <div class="form-group row mb-3">
+                        <label class="col-sm-3 col-form-label">Deskripsi Gangguan <span class="text-danger">*</span></label>
+                        <div class="col-sm-9">
+                            <textarea name="deskripsi_gangguan" class="form-control" rows="3" required></textarea>
                         </div>
                     </div>
                 `;
