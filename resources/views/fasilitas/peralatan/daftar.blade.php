@@ -137,7 +137,9 @@
       $(document).Toasts('create', {
           class: 'bg-success',
           title: 'Sukses!',
-          body: 'Data peralatan telah berhasil diubah'
+          body: 'Data peralatan telah berhasil diubah',
+          autohide: true,
+          delay: 3000
         })
     @elseif(session()->get('notif') == 'tambah_gagal')
       $(document).Toasts('create', {

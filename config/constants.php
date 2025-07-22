@@ -44,6 +44,13 @@ return [
         'draft' => 2,
     ],
 
+    // konstanta untuk status layanan
+    'status_layanan' => [
+        'tidak_aktif' => 0,
+        'aktif' => 1,
+        'draft' => 2,
+    ],
+
     // konstanta untuk kondisi peralatan di layanan
     'kondisi_peralatan_layanan' => [
         'beroperasi' => TRUE,

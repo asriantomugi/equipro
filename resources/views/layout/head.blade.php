@@ -160,6 +160,4 @@
   <link rel="stylesheet" href="{{asset('/plugins/datatables-buttons/css/buttons.bootstrap4.min.css')}}">
   <!-- Asterik Sign -->
   <link rel="stylesheet" href="{{asset('/dist/css/asterik.css')}}">
-  <!-- Step Bar -->
-  <link rel="stylesheet" href="{{asset('/dist/css/stepbar.css')}}">
 

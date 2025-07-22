@@ -24,6 +24,7 @@ class Layanan extends Model
 
 
     /**
+    /**
      * Function untuk memanggil fasilitas dari layanan.
      */
     public function fasilitas()
