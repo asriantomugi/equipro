@@ -52,6 +52,13 @@
             <p>Riwayat</p>
           </a>
         </li>
+        <!-- MENU EKSPOR -->
+        <li class="nav-item">
+          <a href="{{url('/logbook/export/daftar')}}" class="nav-link @if($menu == 'Export') active @endif">
+            <i class="nav-icon fas fa-file-export"></i>
+            <p>Export</p>
+          </a>
+        </li>
 
         <!-- agar menu terakhir tidak tertutup -->
         <li class="nav-item">

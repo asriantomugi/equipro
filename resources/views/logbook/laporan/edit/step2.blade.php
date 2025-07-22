@@ -14,7 +14,7 @@
                 <div class="card">
                     <div class="card-body py-2">
                         <ul class="step d-flex flex-nowrap">
-                            <li class="step-item completed"><a href="{{ route('tambah.step1') }}">Pilih Layanan</a></li>
+                            <li class="step-item completed"><a href="#">Pilih Layanan</a></li>
                             <li class="step-item active"><a href="#">Input Gangguan</a></li>
                             <li class="step-item"><a href="#">Tindaklanjut</a></li>
                             <li class="step-item"><a href="#">Review</a></li>
@@ -25,10 +25,10 @@
         </div>
 
         {{-- Form --}}
-        <form method="POST" action="{{ route('tambah.step2.simpan') }}" id="step2-form" novalidate>
+        <form method="POST" action="{{ route('laporan.edit.step2.update', $laporan->id) }}" id="step2-form" novalidate>
             @csrf
-            <input type="hidden" name="laporan_id"  value="{{ $laporan->id ?? '' }}">
-            <input type="hidden" name="layanan_id"  value="{{ $laporan->layanan_id ?? $layanan->id }}">
+            <input type="hidden" name="laporan_id"  value="{{ $laporan->id }}">
+            <input type="hidden" name="layanan_id"  value="{{ $laporan->layanan_id }}">
 
             {{-- CARD 1: DATA LAYANAN --}}
             <div class="card">
@@ -36,9 +36,9 @@
                 <div class="card-body">
                     @php
                         $fasilitasNama  = $layanan->fasilitas->nama ?? '-';
-                        $lokasiTkt1Nama = $layanan->LokasiTk1->nama ?? '-';
-                        $lokasiTkt2Nama = $layanan->LokasiTk2->nama ?? '-';
-                        $lokasiTkt3Nama = $layanan->LokasiTk3->nama ?? '-';
+                        $lokasiTkt1Nama = $layanan->lokasiTk1->nama ?? '-';
+                        $lokasiTkt2Nama = $layanan->lokasiTk2->nama ?? '-';
+                        $lokasiTkt3Nama = $layanan->lokasiTk3->nama ?? '-';
                     @endphp
 
                     @foreach([
@@ -66,15 +66,14 @@
                             JENIS LAPORAN <span class="text-danger">*</span>
                         </label>
                         <div class="col-sm-9">
-                            <select name="jenis_laporan" id="jenis_laporan" class="form-control" data-required="true">
-                                <option value="">- Pilih -</option>
-                                @foreach ($jenisLaporan as $key => $value)
-                                    <option value="{{ $key }}"
-                                        {{ old('jenis_laporan', $laporan->jenis_laporan ?? '') == $key ? 'selected' : '' }}>
-                                        {{ Str::title(str_replace('_', ' ', $key)) }}
-                                    </option>
-                                @endforeach
-                            </select>
+                            {{-- Jenis laporan tidak bisa diubah saat edit --}}
+                            <input type="text" class="form-control" 
+                                   value="{{ $selectedJenisLaporan == 'gangguan_peralatan' ? 'Gangguan Peralatan' : 'Gangguan Non Peralatan' }}" 
+                                   readonly>
+                            <input type="hidden" name="jenis_laporan" value="{{ $selectedJenisLaporan }}">
+                            <small class="form-text text-muted">
+                                <i class="fas fa-info-circle"></i> Jenis laporan tidak dapat diubah saat edit
+                            </small>
                         </div>
                     </div>
 
@@ -82,7 +81,7 @@
             </div>
 
             {{-- CARD 2: FORM GANGGUAN --}}
-            <div class="card d-none mt-2" id="card-input-gangguan">
+            <div class="card mt-2" id="card-input-gangguan">
                 <div class="card-header"><h3 class="card-title">INPUT GANGGUAN</h3></div>
                 <div class="card-body" id="form-gangguan-container">
                     {{-- Diisi JavaScript --}}
@@ -92,11 +91,11 @@
             {{-- FOOTER --}}
             <div class="card mt-3">
                 <div class="card-footer">
-                    <a href="{{ route('tambah.step1') }}" class="btn btn-success btn-sm">
-                        <i class="fas fa-angle-left"></i>&nbsp;&nbsp;Kembali
+                    <a href="{{ url('/logbook/laporan/daftar') }}" 
+                      class="btn btn-default">Batal
                     </a>
                     <button type="submit" class="btn btn-success btn-sm float-right">
-                        Lanjut &nbsp;&nbsp;<i class="fas fa-angle-right"></i>
+                        Lanjut&nbsp;&nbsp;<i class="fas fa-angle-right"></i>
                     </button>
                 </div>
             </div>
@@ -124,6 +123,14 @@ input[type="datetime-local"]:required::after {
     display: none !important;
     color: transparent !important;
 }
+
+/* styling untuk readonly field */
+.form-control[readonly] {
+    background-color: #f8f9fa;
+    border-color: #dee2e6;
+}
+
+
 </style>
 @endpush
 
@@ -133,7 +140,14 @@ input[type="datetime-local"]:required::after {
 /* ---------- DATA DARI BACK‑END ---------- */
 const kondisiGangguan   = @json(config('constants.kondisi_gangguan_peralatan'));
 const peralatan         = @json($layanan->daftarPeralatanLayanan ?? []);
-const jenisLaporanAwal  = @json(old('jenis_laporan', $laporan->jenis_laporan ?? ''));
+const jenisLaporan      = @json($selectedJenisLaporan);
+
+// Data existing untuk edit
+const existingData = {
+    waktu_gangguan: @json($waktuGangguan ?? ''),
+    deskripsi_gangguan: @json($gangguanNonPeralatan->deskripsi ?? ''),
+    gangguan_peralatan: @json($gangguanPeralatan ?? [])
+};
 
 /* ---------- UTIL ---------- */
 function markInvalid(el,msg){
@@ -147,67 +161,103 @@ function markInvalid(el,msg){
   fe.innerText=msg;
 }
 
+function formatDateTimeLocal(dateString) {
+    if (!dateString) return '';
+    const date = new Date(dateString);
+    if (isNaN(date.getTime())) return '';
+    
+    const year = date.getFullYear();
+    const month = String(date.getMonth() + 1).padStart(2, '0');
+    const day = String(date.getDate()).padStart(2, '0');
+    const hours = String(date.getHours()).padStart(2, '0');
+    const minutes = String(date.getMinutes()).padStart(2, '0');
+    
+    return `${year}-${month}-${day}T${hours}:${minutes}`;
+}
+
 /* ---------- BUILD FORM DINAMIS ---------- */
 function buildGangguanForm(jenis){
   const card=document.getElementById('card-input-gangguan');
   const cont=document.getElementById('form-gangguan-container');
-  card.classList.remove('d-none');
+  
   let html=`<div class="form-group row mb-2">
      <label class="col-sm-3 col-form-label">Waktu Gangguan<span class="text-danger">*</span></label>
      <div class="col-sm-9">
-       <input type="datetime-local" name="waktu_gangguan" class="form-control" data-required="true">
+       <input type="datetime-local" name="waktu_gangguan" class="form-control" 
+              value="${formatDateTimeLocal(existingData.waktu_gangguan)}" 
+              data-required="true">
      </div>
    </div>`;
 
   if(jenis==='gangguan_peralatan'){
      if(peralatan.length===0){
         html+=`<p class="text-danger">Tidak ada daftar peralatan untuk layanan ini.</p>`;
+     } else {
+        peralatan.forEach((p,i)=>{
+           const nama = p.peralatan?.nama ?? p.nama ?? '-';
+           const peralatanId = p.peralatan?.id ?? p.peralatan_id ?? p.id ?? '';
+           
+           // Cari data existing untuk peralatan ini
+           const existingGangguan = existingData.gangguan_peralatan.find(g => {
+               return g.peralatan_id == peralatanId || 
+                      g.peralatan_id == p.peralatan_id ||
+                      g.peralatan_id == p.id;
+           });
+           
+           const kondisiValue = existingGangguan?.kondisi !== undefined ? String(existingGangguan.kondisi) : '';
+           const deskripsiValue = existingGangguan?.deskripsi ?? '';
+           
+                       html+=`
+            <hr>
+            <div class="mb-2">
+                <strong>Peralatan ${i+1}: <span class="badge bg-primary">${nama}</span></strong>
+            </div>
+            <input type="hidden" name="gangguan[${i}][id]" value="${peralatanId}">
+            <input type="hidden" name="gangguan[${i}][existing_id]" value="${existingGangguan?.id || ''}">
+            <div class="form-group row mb-2">
+              <label class="col-sm-3 col-form-label">Kondisi Gangguan<span class="text-danger">*</span></label>
+              <div class="col-sm-9">
+                <select name="gangguan[${i}][kondisi]" class="form-control" data-required="true">
+                  <option value="">- Pilih -</option>`;
+                  
+           // Build options untuk kondisi
+           Object.entries(kondisiGangguan).forEach(([key, value]) => {
+               const isSelected = kondisiValue !== '' && String(kondisiValue) === String(value) ? 'selected' : '';
+               const labelText = key.replace('_', ' ').toUpperCase();
+               
+               html += `<option value="${value}" ${isSelected}>${labelText}</option>`;
+           });
+           
+           html += `</select>
+              </div>
+            </div>
+            <div class="form-group row mb-2">
+              <label class="col-sm-3 col-form-label">Deskripsi Gangguan</label>
+              <div class="col-sm-9">
+                <textarea name="gangguan[${i}][deskripsi]" class="form-control" rows="3" placeholder="Masukkan deskripsi gangguan...">${deskripsiValue}</textarea>
+              </div>
+            </div>`;
+        });
      }
-     peralatan.forEach((p,i)=>{
-        const nama=p.peralatan?.nama??p.nama??'-';
-        const id=p.peralatan?.id??p.id??'';
-        html+=`
-         <hr>
-         <div class="mb-2"><strong>Peralatan ${i+1}: <span class="badge bg-primary">${nama}</span></strong></div>
-         <input type="hidden" name="gangguan[${i}][id]" value="${id}">
-         <div class="form-group row mb-2">
-           <label class="col-sm-3 col-form-label">Kondisi Gangguan<span class="text-danger">*</span></label>
-           <div class="col-sm-9">
-             <select name="gangguan[${i}][kondisi]" class="form-control" data-required="true">
-               <option value="">- Pilih -</option>
-               ${Object.entries(kondisiGangguan).map(([k,v])=>
-                  `<option value="${v}">${k.replace('_',' ').toUpperCase()}</option>`).join('')}
-             </select>
-           </div>
-         </div>
-         <div class="form-group row mb-2">
-           <label class="col-sm-3 col-form-label">Deskripsi Gangguan</label>
-           <div class="col-sm-9">
-             <textarea name="gangguan[${i}][deskripsi]" class="form-control" rows="3"></textarea>
-           </div>
-         </div>`;
-     });
-  }else if(jenis){
+  } else if(jenis === 'gangguan_non_peralatan'){
      html+=`
       <div class="form-group row mb-2">
         <label class="col-sm-3 col-form-label">Deskripsi Gangguan</label>
         <div class="col-sm-9">
-          <textarea name="deskripsi_gangguan" class="form-control" rows="3"></textarea>
+          <textarea name="deskripsi_gangguan" class="form-control" rows="3" placeholder="Masukkan deskripsi gangguan non peralatan...">${existingData.deskripsi_gangguan || ''}</textarea>
         </div>
       </div>`;
-  }else{
-     card.classList.add('d-none');
   }
+  
   cont.innerHTML=html;
 }
 
 /* ---------- DOM READY ---------- */
 document.addEventListener('DOMContentLoaded',()=>{
   const form=document.getElementById('step2-form');
-  const select=document.getElementById('jenis_laporan');
 
-  if(jenisLaporanAwal) buildGangguanForm(jenisLaporanAwal);
-  select.addEventListener('change',e=>buildGangguanForm(e.target.value));
+  // Build form dengan data existing
+  buildGangguanForm(jenisLaporan);
 
   form.addEventListener('submit',e=>{
     e.preventDefault();
@@ -219,14 +269,6 @@ document.addEventListener('DOMContentLoaded',()=>{
 
     let hasErr=false;
 
-    // validasi dropdown jenis
-    if(select.value === ''){
-       markInvalid(select,'Jenis laporan wajib dipilih');
-       hasErr=true;
-    }else{
-       select.classList.add('is-valid'); // ✅
-    }
-
     // validasi semua field wajib
     form.querySelectorAll('[data-required="true"]').forEach(el=>{
        if(el.value === '' || el.value === null || el.value === undefined){
@@ -235,13 +277,19 @@ document.addEventListener('DOMContentLoaded',()=>{
           markInvalid(el,`${label} wajib diisi`);
           hasErr=true;
        }else{
-          el.classList.add('is-valid');  // ✅
+          el.classList.add('is-valid');
        }
     });
 
-    if(!hasErr) form.submit();
+    if(!hasErr) {
+        // Tampilkan loading atau disable button untuk mencegah double submit
+        const submitBtn = form.querySelector('button[type="submit"]');
+        submitBtn.disabled = true;
+        submitBtn.innerHTML = 'Menyimpan... <i class="fas fa-spinner fa-spin"></i>';
+        
+        form.submit();
+    }
   });
 });
 </script>
 @endpush
-    

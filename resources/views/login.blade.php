@@ -123,10 +123,6 @@
           <button type="submit" class="btn btn-primary btn-block">Log In</button>
         </div>
       </form>
-	  
-      <p class="mb-1">
-        <a href="forgot-password.html">Lupa password?</a>
-      </p>
       
     </div>
 	

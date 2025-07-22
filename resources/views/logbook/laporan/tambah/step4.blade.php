@@ -4,140 +4,165 @@
 <section class="content">
   <div class="container-fluid">
 
-    <!-- Step Navigation -->
+    {{-- STEP NAVIGATION --}}
     <div class="row mb-2">
       <div class="col-lg-12">
-        <div class="card">
-          <div class="card-body py-2">
-            <ul class="step d-flex flex-nowrap justify-content-between mb-0">
-              <li class="step-item completed"><a href="{{ route('tambah.step1') }}">Step 1</a></li>
-              <li class="step-item completed"><a href="{{ route('tambah.step2') }}">Step 2</a></li>
-              <li class="step-item completed"><a href="{{ route('tambah.step3', ['laporan_id' => $laporan->id]) }}">Step 3</a></li>
-              <li class="step-item active"><a href="#">Step 4</a></li>
-              <li class="step-item"><a href="#">Step 5</a></li>
-            </ul>
-          </div>
-        </div>
+        <div class="card"><div class="card-body py-2">
+          <ul class="step d-flex flex-nowrap">
+            <li class="step-item completed"><a href="{{ route('tambah.step1') }}">Pilih Layanan</a></li>
+            <li class="step-item completed"><a href="{{ route('tambah.step2.back',['laporan_id'=>$laporan->id]) }}">Input Gangguan</a></li>
+            <li class="step-item completed"><a href="{{ route('tambah.step3.back',['laporan_id'=>$laporan->id]) }}">Tindaklanjut</a></li>
+            <li class="step-item active"><a href="#">Penggantian</a></li>
+            <li class="step-item"><a href="#">Review</a></li>
+          </ul>
+        </div></div>
       </div>
     </div>
 
-    <!-- Form -->
+    {{-- FORM --}}
     <div class="card">
-      <div class="card-header">
-        <h3 class="card-title">Form Tindak Lanjut</h3>
-      </div>
+      <div class="card-header"><h3 class="card-title">FORM PENGGANTIAN</h3></div>
 
-      <form action="{{ route('tambah.simpanStep4', ['laporan_id' => $laporan->id]) }}" method="POST">
+      <form action="{{ route('tambah.simpanStep4',['laporan_id'=>$laporan->id]) }}" method="POST">
         @csrf
         <input type="hidden" name="laporan_id" value="{{ $laporan->id }}">
         <input type="hidden" name="layanan_id" value="{{ $laporan->layanan_id }}">
         <input type="hidden" name="jenis_laporan" value="{{ $laporan->jenis }}">
         <input type="hidden" name="jenis_tindaklanjut" value="{{ $jenis_tindaklanjut }}">
-        <input type="hidden" name="peralatan_baru_id" id="peralatan_baru_id">
 
         <div class="card-body">
-          {{-- Tampilkan hanya jika penggantian --}}
-          @if($laporan->jenis == 1 && $jenis_tindaklanjut == config('constants.jenis_tindaklanjut.penggantian'))
-          <div class="row">
-            <!-- Peralatan Lama -->
-            <div class="col-md-6">
-              <h5 class="text">Peralatan Lama</h5>
-              @if(count($peralatanLama) > 0)
-                @foreach ($peralatanLama as $peralatan)
-                  @php
-                    $kondisiLama = $peralatan->kondisi ? 'Serviceable' : 'Unserviceable';
-                  @endphp
-                  <div class="form-group row mb-2"><label class="col-sm-4 col-form-label">Kode</label><div class="col-sm-8"><input type="text" class="form-control" value="{{ $peralatan->kode }}" readonly></div></div>
-                  <div class="form-group row mb-2"><label class="col-sm-4 col-form-label">Nama</label><div class="col-sm-8"><input type="text" class="form-control" value="{{ $peralatan->nama }}" readonly></div></div>
-                  <div class="form-group row mb-2"><label class="col-sm-4 col-form-label">Merk</label><div class="col-sm-8"><input type="text" class="form-control" value="{{ $peralatan->merk }}" readonly></div></div>
-                  <div class="form-group row mb-2"><label class="col-sm-4 col-form-label">Tipe</label><div class="col-sm-8"><input type="text" class="form-control" value="{{ $peralatan->tipe }}" readonly></div></div>
-                  <div class="form-group row mb-2"><label class="col-sm-4 col-form-label">Model</label><div class="col-sm-8"><input type="text" class="form-control" value="{{ $peralatan->model }}" readonly></div></div>
-                  <div class="form-group row mb-2"><label class="col-sm-4 col-form-label">Serial Number</label><div class="col-sm-8"><input type="text" class="form-control" value="{{ $peralatan->serial_number }}" readonly></div></div>
-                  <div class="form-group row mb-2"><label class="col-sm-4 col-form-label">Status</label><div class="col-sm-8"><input type="text" class="form-control" value="{{ $peralatan->status }}" readonly></div></div>
-                  <div class="form-group row"><label class="col-sm-4 col-form-label">Kondisi</label><div class="col-sm-8"><input type="text" class="form-control" value="{{ $kondisiLama }}" readonly></div></div>
-                @endforeach
-              @else
-                <p class="text-muted">Belum ada peralatan lama dipilih.</p>
-              @endif
-            </div>
+          @if ($laporan->jenis == 1 && $jenis_tindaklanjut == config('constants.jenis_tindaklanjut.penggantian'))
 
-            <!-- Peralatan Baru -->
-            <div class="col-md-6">
-              <h5 class="d-flex justify-content-between align-items-center">
-                Peralatan Baru
-                <button class="btn btn-success btn-sm float-right" data-toggle="modal" data-target="#modalPilihPeralatanGanti">
-                  Ganti Peralatan
-                </button>
-              </h5>
-              <div>
-                <div class="form-group row mb-2"><label class="col-sm-4 col-form-label">Kode</label><div class="col-sm-8"><input type="text" class="form-control" name="peralatan_baru_kode" id="pb_kode" readonly></div></div>
-                <div class="form-group row mb-2"><label class="col-sm-4 col-form-label">Nama</label><div class="col-sm-8"><input type="text" class="form-control" name="peralatan_baru_nama" id="pb_nama" readonly></div></div>
-                <div class="form-group row mb-2"><label class="col-sm-4 col-form-label">Merk</label><div class="col-sm-8"><input type="text" class="form-control" name="peralatan_baru_merk" id="pb_merk" readonly></div></div>
-                <div class="form-group row mb-2"><label class="col-sm-4 col-form-label">Tipe</label><div class="col-sm-8"><input type="text" class="form-control" name="peralatan_baru_tipe" id="pb_tipe" readonly></div></div>
-                <div class="form-group row mb-2"><label class="col-sm-4 col-form-label">Model</label><div class="col-sm-8"><input type="text" class="form-control" name="peralatan_baru_model" id="pb_model" readonly></div></div>
-                <div class="form-group row mb-2"><label class="col-sm-4 col-form-label">Serial Number</label><div class="col-sm-8"><input type="text" class="form-control" name="peralatan_baru_serial_number" id="pb_serial" readonly></div></div>
-                <div class="form-group row mb-2"><label class="col-sm-4 col-form-label">Status</label><div class="col-sm-8"><input type="text" class="form-control" name="peralatan_baru_status" id="pb_status" readonly></div></div>
-                <div class="form-group row"><label class="col-sm-4 col-form-label">Kondisi</label><div class="col-sm-8"><input type="text" class="form-control" name="peralatan_baru_kondisi" id="pb_kondisi" readonly></div></div>
-              </div>
-            </div>
-          </div>
-          @endif
+            @php $shown = 0; @endphp
 
-          <!-- Kondisi Layanan Setelah -->
-          <div class="form-group row mt-4">
-            <label for="kondisi_setelah" class="col-sm-2 col-form-label">Update Kondisi Layanan</label>
-            <div class="col-sm-4">
-              <select name="kondisi_setelah" class="form-control" required>
-                <option value="">- Pilih -</option>
-                @foreach ($kondisiSetelah as $label => $value)
-                  <option value="{{ $value }}">{{ $label }}</option>
-                @endforeach
-              </select>
-            </div>
+            @foreach ($peralatanLama as $idx => $peralatan)
+  @php
+    $statusText  = $peralatan->status == 1 ? 'Aktif' : 'Tidak Aktif';
+    $kondisiText = $peralatan->kondisi == 1 ? 'Normal' : 'Rusak';
+  @endphp
+
+  @if ($idx > 0) <hr> @endif
+
+  <div class="row">
+    {{-- PERALATAN LAMA --}}
+    <div class="col-md-6 mb-3">
+      <div class="form-group row mb-2">
+        <div class="col-sm-12">
+          <h5 class="mb-2">
+            <span class="badge badge-primary">Peralatan : {{ $peralatan->nama }}</span>
+          </h5>
+        </div>
+      </div>
+
+      {{-- Data peralatan lama --}}
+      @foreach (['kode','nama','merk','tipe','model','serial_number'] as $f)
+        <div class="form-group row mb-2">
+          <label class="col-sm-4 col-form-label">{{ ucwords(str_replace('_',' ',$f)) }}</label>
+          <div class="col-sm-8">
+            <input type="text" class="form-control" value="{{ $peralatan->$f }}" readonly>
           </div>
         </div>
+      @endforeach
 
-        <!-- Card Footer -->
+      <div class="form-group row mb-2">
+        <label class="col-sm-4 col-form-label">Status</label>
+        <div class="col-sm-8">
+          <input type="text" class="form-control" value="{{ $statusText }}" readonly>
+        </div>
+      </div>
+      <div class="form-group row">
+        <label class="col-sm-4 col-form-label">Kondisi</label>
+        <div class="col-sm-8">
+          <input type="text" class="form-control" value="{{ $kondisiText }}" readonly>
+        </div>
+      </div>
+    </div>
+
+    {{-- PERALATAN BARU --}}
+    <div class="col-md-6 mb-3">
+      <div class="form-group row mb-2">
+        <div class="col-sm-8 offset-sm-2 d-flex justify-content-end align-items-center">
+          <button type="button" class="btn btn-success btn-sm btn-ganti-peralatan"
+                  data-toggle="modal"
+                  data-target="#modalPilihPeralatanGanti"
+                  data-index="{{ $idx }}"
+                  data-nama="{{ $peralatan->nama }}">
+            Pilih
+          </button>
+        </div>
+      </div>
+
+      {{-- Input pengiriman ke controller --}}
+      <input type="hidden" name="penggantian[{{ $idx }}][peralatan_lama_id]" value="{{ $peralatan->id }}">
+      <input type="hidden" name="penggantian[{{ $idx }}][peralatan_baru_id]" id="pg_peralatan_baru_id_{{ $idx }}">
+
+      {{-- Tampilan detail peralatan baru (readonly display) --}}
+      @foreach (['kode','nama','merk','tipe','model','serial_number','status','kondisi'] as $f)
+        <div class="form-group row mb-2">
+          <label class="col-sm-2"></label>
+          <div class="col-sm-8">
+            <input type="text" class="form-control"
+                   name="peralatan_baru[{{ $idx }}][{{ $f }}]"
+                   id="pb_{{ $f }}_{{ $idx }}" readonly>
+          </div>
+        </div>
+      @endforeach
+    </div>
+  </div>
+@endforeach
+
+          @endif
+        </div>
+
+        {{-- FOOTER --}}
         <div class="card-footer">
-          <a href="{{ route('tambah.step3', ['laporan_id' => $laporan->id]) }}" class="btn btn-default btn-sm" role="button">
-            <i class="fas fa-angle-left"></i>&nbsp;&nbsp;&nbsp;Kembali
+          <a href="{{ route('tambah.step3.back',['laporan_id'=>$laporan->id]) }}" class="btn btn-success btn-sm">
+            <i class="fas fa-angle-left"></i>&nbsp;Kembali
           </a>
           <button type="submit" class="btn btn-success btn-sm float-right">
-            Lanjut&nbsp;&nbsp;&nbsp;<i class="fas fa-angle-right"></i>
+            Lanjut&nbsp;<i class="fas fa-angle-right"></i>
           </button>
         </div>
       </form>
     </div>
 
-    <!-- Modal Pilih Peralatan -->
-    @include('logbook.laporan.modal_pilih_peralatan') 
+    {{-- MODAL PILIH PERALATAN --}}
+    @include('logbook.laporan.modal_pilih_peralatan')
   </div>
 </section>
 @endsection
 
 @push('scripts')
 <script>
-$(function () {
-  $('#filter-ganti-peralatan-form').on('submit', function (e) {
+$(function(){
+  let selectedIndex = null;
+
+  $('#modalPilihPeralatanGanti').on('show.bs.modal', function(e) {
+    const btn = $(e.relatedTarget);
+    selectedIndex = btn.data('index');
+    const namaPeralatan = btn.data('nama');
+    $('#info-nama-peralatan').text(namaPeralatan || '(data nama peralatan)');
+  });
+
+  $('#filter-ganti-peralatan-form').on('submit', function(e){
     e.preventDefault();
-    $.post('{{ route("laporan.filterPeralatan") }}', $(this).serialize(), function (data) {
+    $.post('{{ route("laporan.filterPeralatan") }}', $(this).serialize(), function(data){
       $('#tabel-peralatan-ganti').html(data);
-    }).fail(function (xhr) {
+    }).fail(xhr => {
       alert('Gagal memuat data: ' + xhr.responseText);
     });
   });
 
-  $('#tabel-peralatan-ganti').on('click', '.btn-pilih-peralatan', function () {
+  $('#tabel-peralatan-ganti').on('click', '.btn-pilih-peralatan', function(){
     const alat = $(this).data('detail');
-    $('#peralatan_baru_id').val(alat.id);
-    $('#pb_kode').val(alat.kode);
-    $('#pb_nama').val(alat.nama);
-    $('#pb_merk').val(alat.merk);
-    $('#pb_tipe').val(alat.tipe);
-    $('#pb_model').val(alat.model);
-    $('#pb_serial').val(alat.serial_number);
-    $('#pb_status').val(alat.status);
-    $('#pb_kondisi').val(alat.kondisi == 1 ? 'Serviceable' : 'Unserviceable');
+    if(selectedIndex !== null){
+      $('#pg_peralatan_baru_id_' + selectedIndex).val(alat.id);
+      ['kode','nama','merk','tipe','model','serial_number'].forEach(f => {
+        $('#pb_' + f + '_' + selectedIndex).val(alat[f]);
+      });
+      $('#pb_status_' + selectedIndex).val(alat.status == 1 ? 'Aktif' : 'Tidak Aktif');
+      $('#pb_kondisi_' + selectedIndex).val(alat.kondisi == 1 ? 'Normal' : 'Rusak');
+    }
     $('#modalPilihPeralatanGanti').modal('hide');
   });
 });

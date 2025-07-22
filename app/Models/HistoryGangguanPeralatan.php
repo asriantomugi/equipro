@@ -4,13 +4,13 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use Carbon\Carbon;
 
-class TlPenggantianPeralatan extends Model
+class HistoriGangguanPeralatan extends Model
 {
     use HasFactory;
 
-    protected $table = 'tl_penggantian_peralatan'; // nama tabel
+    protected $table = 'histori_gangguan_peralatan';
+    
     protected $primaryKey = 'id'; // primary key
 
     /**
@@ -22,50 +22,25 @@ class TlPenggantianPeralatan extends Model
         'id'
     ];
 
-    /**
-     * Function untuk memanggil tl gangguan 
-     */
-    public function gangguan()
-    {
-        return $this->belongsTo(TlGangguanPeralatan::class, 'tl_gangguan_id');
-    }
+    protected $casts = [
+        'waktu_gangguan' => 'datetime',
+        'waktu_normal' => 'datetime',
+        'status' => 'boolean'
+    ];
 
-
-    /**
-     * Function untuk memanggil laporan 
-     */
-    public function laporan()
-    {
-        return $this->belongsTo(Laporan::class);
-    }
-
-    /**
-     * Function untuk memanggil layanan 
-     */
     public function layanan()
     {
         return $this->belongsTo(Layanan::class);
     }
 
-    /**
-     * Relasi ke peralatan lama
-     */
-    public function peralatanLama()
+    public function peralatan()
     {
-        return $this->belongsTo(Peralatan::class, 'peralatan_lama_id');
+        return $this->belongsTo(Peralatan::class);
     }
 
-    /**
-     * Relasi ke peralatan baru
-     */
-    public function peralatanBaru()
+    public function laporan()
     {
-        return $this->belongsTo(Peralatan::class, 'peralatan_baru_id');
-    }
-
-    public function tindaklanjut()
-    {
-        return $this->belongsTo(TlGangguanPeralatan::class, 'tl_gangguan_id', 'id');
+        return $this->belongsTo(Laporan::class);
     }
 
     /**
@@ -101,3 +76,4 @@ class TlPenggantianPeralatan extends Model
         return Carbon::parse($value)->format('d-m-Y H:i:s');
     }
 }
+

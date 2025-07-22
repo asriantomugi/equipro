@@ -52,7 +52,7 @@
                       <td><center>{{ strtoupper($satu->model) }}</center></td>
                       <td><center>{{ strtoupper($satu->serial_number) }}</center></td>
 
-  @if($satu->kondisi == config('constants.kondisi_peralatan.normal'))
+  @if($satu->kondisi == config('constants.kondisi_peralatan.Normal'))
                       <td><center><span class="badge bg-success">NORMAL</span></center></td>
   @else
                       <td><center><span class="badge bg-danger">RUSAK</span></center></td>
@@ -137,7 +137,9 @@
       $(document).Toasts('create', {
           class: 'bg-success',
           title: 'Sukses!',
-          body: 'Data peralatan telah berhasil diubah'
+          body: 'Data peralatan telah berhasil diubah',
+          autohide: true,
+          delay: 3000
         })
     @elseif(session()->get('notif') == 'tambah_gagal')
       $(document).Toasts('create', {
