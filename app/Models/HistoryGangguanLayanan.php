@@ -4,13 +4,13 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use Carbon\Carbon;
 
-class TlGangguanNonPeralatan extends Model
+class HistoriGangguanLayanan extends Model
 {
     use HasFactory;
 
-    protected $table = 'tl_gangguan_non_peralatan'; // nama tabel
+    protected $table = 'histori_gangguan_layanan';
+    
     protected $primaryKey = 'id'; // primary key
 
     /**
@@ -22,29 +22,20 @@ class TlGangguanNonPeralatan extends Model
         'id'
     ];
 
-    /**
-     * Function untuk memanggil gangguan peralatan dari tl gangguan non peralatan.
-     */
-    public function GangguanNonPeralatan()
-    {
-        return $this->belongsTo(GangguanNonPeralatann::class);
-    }
+    protected $casts = [
+        'waktu_unserv' => 'datetime',
+        'waktu_serv' => 'datetime',
+        'status' => 'boolean'
+    ];
 
-
-    /**
-     * Function untuk memanggil laporan dari tl gangguan non peralatan.
-     */
-    public function laporan()
-    {
-        return $this->belongsTo(Laporan::class);
-    }
-
-    /**
-     * Function untuk memanggil layanan dari tl gangguan non peralatan.
-     */
     public function layanan()
     {
         return $this->belongsTo(Layanan::class);
+    }
+
+    public function laporan()
+    {
+        return $this->belongsTo(Laporan::class);
     }
 
     /**
@@ -79,9 +70,5 @@ class TlGangguanNonPeralatan extends Model
     {
         return Carbon::parse($value)->format('d-m-Y H:i:s');
     }
-
-    protected $casts = [
-        'kondisi' => 'string',
-        'waktu' => 'datetime',
-    ];
 }
+

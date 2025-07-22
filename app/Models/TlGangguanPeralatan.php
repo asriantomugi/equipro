@@ -87,4 +87,9 @@ class TlGangguanPeralatan extends Model
     {
         return Carbon::parse($value)->format('d-m-Y H:i:s');
     }
+
+    protected $casts = [
+        'kondisi' => 'string',
+        'waktu' => 'datetime',
+    ];
 }

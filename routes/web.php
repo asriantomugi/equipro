@@ -17,6 +17,7 @@ use App\Http\Controllers\Logbook\LogbookModuleController;
 use App\Http\Controllers\Logbook\LaporanController;
 use App\Http\Controllers\Fasilitas\LayananController;
 use App\Http\Controllers\Logbook\RiwayatController;
+use App\Http\Controllers\Logbook\ExportController;
 
 /*
 Route::get('/', function () {
@@ -334,6 +335,8 @@ Route::get('/logbook/home', [LogbookModuleController::class, 'home']);
 // Menampilkan daftar laporan
 Route::get('/logbook/laporan/daftar', [LaporanController::class, 'daftar'])->name('logbook.laporan.daftar');
 
+/* ====== TAMBAH LAPORAN ====== */
+
 // Step 1 -  Melakukan proses filter
 Route::get('/logbook/laporan/tambah/step1', [LaporanController::class, 'formStep1'])->name('tambah.step1');
 
@@ -393,10 +396,43 @@ Route::post('/logbook/laporan/hapus', [LaporanController::class, 'hapus'])->name
 //untuk menampilkan detail data laporan
 Route::post('/logbook/laporan/detail', [LaporanController::class, 'detail'])->name('logbook.laporan.detail');
 
-Route::get('/logbook/laporan/{id}/edit-step1', [LaporanController::class, 'editStep1'])->name('tambahStep1.edit');
+/* ====== EDIT LAPORAN ====== */
 
-Route::post('/logbook/laporan/{id}/update-step1', [LaporanController::class, 'updateStep1'])->name('tambahStep1.update');
+// GET - Tampilkan form edit step2 untuk laporan draft
+Route::get('/laporan/{id}/edit/step2', [LaporanController::class, 'editStep2'])->name('laporan.edit.step2');
 
+// POST - Simpan hasil edit step2
+Route::post('/laporan/{id}/edit/step2', [LaporanController::class, 'updateStep2'])->name('laporan.edit.step2.update');
+
+// Edit Step 3 - Tindak Lanjut
+Route::get('/laporan/edit/{id}/step3', [LaporanController::class, 'editStep3'])->name('logbook.laporan.edit.step3');
+Route::post('/laporan/edit/{id}/step3', [LaporanController::class, 'updateStep3'])->name('logbook.laporan.edit.step3.update');
+
+// Edit Step 4 - Penggantian
+Route::get('/laporan/edit/{id}/step4', [LaporanController::class, 'editStep4'])->name('logbook.laporan.edit.step4');
+Route::post('/laporan/edit/{id}/step4', [LaporanController::class, 'updateStep4'])->name('logbook.laporan.edit.step4.update');
+
+// Edit Step 5 - Review
+Route::get('/laporan/edit/{id}/step5', [LaporanController::class, 'editStep5'])->name('logbook.laporan.edit.step5');
+Route::post('/laporan/edit/{id}/step5', [LaporanController::class, 'updateStep5'])->name('logbook.laporan.edit.step5.update');
+
+/* ============================== MENU EXPORT ==================================== */
+
+// Menampilkan daftar export
+// Route ini digunakan untuk menampilkan halaman daftar laporan yang dapat diekspor
+Route::get('/logbook/export/daftar', [ExportController::class, 'daftar'])->name('export.daftar');
+
+// Menghandle proses export data laporan ke file Excel
+// Route ini digunakan untuk mengekspor data laporan berdasarkan filter yang dipilih
+Route::get('/logbook/export/export', [ExportController::class, 'export'])->name('laporan.export');
+
+// Mengambil layanan berdasarkan fasilitas yang dipilih
+// Route ini digunakan untuk mendapatkan daftar layanan yang terkait dengan fasilitas tertentu
+Route::get('/logbook/export/get-layanan', [ExportController::class, 'getLayananByFasilitas'])->name('get.layanan.by.fasilitas');
+
+// Mengambil data laporan dengan filter yang diterapkan
+// Route ini digunakan untuk mendapatkan data laporan dengan pagination dan filter yang diterapkan
+Route::get('/logbook/export/get-data', [ExportController::class, 'getData'])->name('export.getData');
 
 
 /** 

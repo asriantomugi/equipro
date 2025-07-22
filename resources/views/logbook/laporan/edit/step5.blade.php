@@ -14,10 +14,10 @@
         <div class="card">
           <div class="card-body py-2">
             <ul class="step d-flex flex-nowrap">
-              <li class="step-item completed"><a href="{{ route('tambah.step1') }}">Pilih Layanan</a></li>
-              <li class="step-item completed"><a href="{{ route('tambah.step2.back', ['laporan_id' => $laporan->id]) }}">Input Gangguan</a></li>
-              <li class="step-item completed"><a href="{{ route('tambah.step3.back', ['laporan_id' => $laporan->id]) }}">Tindaklanjut</a></li>
-              <li class="step-item completed"><a href="{{ route('tambah.step4.back', ['laporan_id' => $laporan->id]) }}">Penggantian</a></li>
+              <li class="step-item completed"><a href="#">Pilih Layanan</a></li>
+              <li class="step-item completed"><a href="#">Input Gangguan</a></li>
+              <li class="step-item completed"><a href="#">Tindak Lanjut</a></li>
+              <li class="step-item completed"><a href="#">Penggantian</a></li>
               <li class="step-item active"><a href="#">Review</a></li>
             </ul>
           </div>
@@ -25,8 +25,9 @@
       </div>
     </div>
 
-    <form action="{{ route('tambah.simpanStep5') }}" method="POST">
+    <form action="{{ route('logbook.laporan.edit.step5.update', $laporan->id) }}" method="POST">
       @csrf
+      @method('POST')
       <input type="hidden" name="laporan_id" value="{{ $laporan->id }}">
 
       {{-- Informasi Layanan --}}
@@ -36,12 +37,12 @@
             <div class="card-header"><h3 class="card-title">INFORMASI LAYANAN</h3></div>
             <div class="card-body">
               <table border="0" cellpadding="5px">
-                <tr><th>Fasilitas</th><td>:</td><td>{{ $laporan->layanan->fasilitas->kode }} - {{ $laporan->layanan->fasilitas->nama }}</td></tr>
-                <tr><th>Kode Layanan</th><td>:</td><td>{{ $laporan->layanan->kode }}</td></tr>
-                <tr><th>Nama Layanan</th><td>:</td><td>{{ $laporan->layanan->nama }}</td></tr>
-                <tr><th>Lokasi Tingkat I</th><td>:</td><td>{{ $laporan->layanan->lokasiTk1->kode }} - {{ $laporan->layanan->lokasiTk1->nama }}</td></tr>
-                <tr><th>Lokasi Tingkat II</th><td>:</td><td>{{ $laporan->layanan->lokasiTk2->kode }} - {{ $laporan->layanan->lokasiTk2->nama }}</td></tr>
-                <tr><th>Lokasi Tingkat III</th><td>:</td><td>{{ $laporan->layanan->lokasiTk3->kode }} - {{ $laporan->layanan->lokasiTk3->nama }}</td></tr>
+                <tr><th>Fasilitas</th><td>:</td><td>{{ $laporan->layanan->fasilitas->kode ?? '-' }} - {{ $laporan->layanan->fasilitas->nama ?? '-' }}</td></tr>
+                <tr><th>Kode Layanan</th><td>:</td><td>{{ $laporan->layanan->kode ?? '-' }}</td></tr>
+                <tr><th>Nama Layanan</th><td>:</td><td>{{ $laporan->layanan->nama ?? '-' }}</td></tr>
+                <tr><th>Lokasi Tingkat I</th><td>:</td><td>{{ $laporan->layanan->lokasiTk1->kode ?? '-' }} - {{ $laporan->layanan->lokasiTk1->nama ?? '-' }}</td></tr>
+                <tr><th>Lokasi Tingkat II</th><td>:</td><td>{{ $laporan->layanan->lokasiTk2->kode ?? '-' }} - {{ $laporan->layanan->lokasiTk2->nama ?? '-' }}</td></tr>
+                <tr><th>Lokasi Tingkat III</th><td>:</td><td>{{ $laporan->layanan->lokasiTk3->kode ?? '-' }} - {{ $laporan->layanan->lokasiTk3->nama ?? '-' }}</td></tr>
                 <tr>
                   <th>Kondisi Saat Ini</th><td>:</td>
                   <td>
@@ -200,11 +201,17 @@
               @endif
             </div>
             <div class="card-footer">
-              <a href="{{ (isset($penggantian) && $penggantian->count() > 0) ? route('tambah.step4.back', ['laporan_id' => $laporan->id]) : route('tambah.step3.back', ['laporan_id' => $laporan->id]) }}" class="btn btn-success btn-sm">
-                <i class="fas fa-angle-left"></i>&nbsp;&nbsp;Kembali
-              </a>
+              @if(isset($penggantian) && $penggantian->count() > 0)
+                <a href="{{ route('logbook.laporan.edit.step4', $laporan->id) }}" class="btn btn-success btn-sm">
+                  <i class="fas fa-angle-left"></i>&nbsp;&nbsp;Kembali
+                </a>
+              @else
+                <a href="{{ route('logbook.laporan.edit.step3', $laporan->id) }}" class="btn btn-success btn-sm">
+                  <i class="fas fa-angle-left"></i>&nbsp;&nbsp;Kembali
+                </a>
+              @endif
               <button type="submit" class="btn btn-success btn-sm float-right">
-                <i class="fas fa-check-circle"></i>&nbsp;&nbsp;Submit
+                <i class="fas fa-check-circle"></i>&nbsp;&nbsp;Update Laporan
               </button>
             </div>
           </div>
@@ -214,4 +221,30 @@
     </form>
   </div>
 </section>
+@endsection
+
+@section('tail')
+<script type="text/javascript">
+$(function(){
+    @if (session()->has('notif'))
+        @if (session()->get('notif') == 'edit_sukses')
+            $(document).Toasts('create', {
+                class: 'bg-success',
+                title: 'Sukses!',
+                body: 'Laporan telah berhasil diperbarui',
+                autohide: true,
+                delay: 3000
+            })
+        @elseif(session()->get('notif') == 'edit_gagal')
+            $(document).Toasts('create', {
+                class: 'bg-danger',
+                title: 'Error!',
+                body: 'Gagal memperbarui laporan',
+                autohide: true,
+                delay: 3000
+            })
+        @endif
+    @endif
+});
+</script>
 @endsection

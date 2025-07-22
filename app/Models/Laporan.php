@@ -22,8 +22,7 @@ class Laporan extends Model
         'id'
     ];
 
-
-     /**
+    /**
      * Function untuk memanggil layanan dari laporan.
      */
     public function layanan()
@@ -32,21 +31,51 @@ class Laporan extends Model
     }
 
     /**
-     * Relasi ke data penggantian peralatan (jika ada)
+     * Relasi ke gangguan peralatan (yang hilang)
      */
-    public function penggantian()
+    public function gangguanPeralatan()
     {
-        return $this->hasOne(TlPenggantianPeralatan::class, 'laporan_id');
+        return $this->hasMany(GangguanPeralatan::class, 'laporan_id');
     }
 
-    public function gangguanPeralatan()
+    /**
+     * Relasi ke gangguan non peralatan
+     */
+    public function gangguanNonPeralatan()
+    {
+        return $this->hasOne(GangguanNonPeralatan::class, 'laporan_id');
+    }
+
+    /**
+     * Relasi ke tindak lanjut gangguan peralatan
+     */
+    public function tlGangguanPeralatan()
     {
         return $this->hasMany(TlGangguanPeralatan::class, 'laporan_id');
     }
 
-    public function gangguanNonPeralatan()
+    /**
+     * Relasi ke tindak lanjut gangguan non peralatan
+     */
+    public function tlGangguanNonPeralatan()
     {
-        return $this->hasOne(TlGangguanNonPeralatan::class, 'laporan_id');
+        return $this->hasMany(TlGangguanNonPeralatan::class, 'laporan_id');
+    }
+
+    /**
+     * Relasi ke penggantian peralatan
+     */
+    public function tlPenggantianPeralatan()
+    {
+        return $this->hasMany(TlPenggantianPeralatan::class, 'laporan_id');
+    }
+
+    /**
+     * Relasi ke data penggantian peralatan (alias untuk backward compatibility)
+     */
+    public function penggantian()
+    {
+        return $this->hasOne(TlPenggantianPeralatan::class, 'laporan_id');
     }
 
     public function getStatusLabelAttribute()
@@ -64,9 +93,6 @@ class Laporan extends Model
         }
     }
 
-
-
-
     /**
      * Function untuk memanggil user created_by.
      */
@@ -82,7 +108,6 @@ class Laporan extends Model
     {
         return $this->hasOne(User::class, 'id', 'updated_by');
     }
-
 
     /**
      * Function untuk memanggil created_at dengan format tertentu.

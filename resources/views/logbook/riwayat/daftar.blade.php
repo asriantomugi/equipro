@@ -16,7 +16,7 @@
                     </div>
                     <div class="card-body">
                         <div class="table-responsive">
-                            <table id="laporan" class="table table-bordered table-striped">
+                            <table id="example" class="table table-bordered table-striped">
                                 <thead>
                                     <tr>
                                         <th style="width: 10px"><center>NO.</center></th>
@@ -94,6 +94,14 @@ $(function(){
                 message = 'Gagal menyimpan data laporan';
                 type = 'bg-danger';
                 title = 'Error!';
+                break;
+            case 'edit_gagal':
+                message = 'Gagal mengubah data laporan';
+                type = 'bg-danger';
+                title = 'Error!';
+                break;
+            case 'edit_sukses':
+                message = 'Data laporan telah berhasil diubah';
                 break;
             case 'item_null':
                 message = 'Gagal menampilkan data laporan';

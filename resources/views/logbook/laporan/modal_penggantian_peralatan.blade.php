@@ -13,18 +13,18 @@
         </tr>
     </thead>
     <tbody>
-        @forelse($peralatan as $index => $alat)
+        @forelse($peralatan as $alat)
             <tr class="table-condensed">
-                <td><center>{{ $index + 1 }}</center></td>
-                <td><center>{{ strtoupper($alat->kode) }}</center></td>
-                <td><center>{{ strtoupper($alat->nama) }}</center></td>
-                <td><center>{{ strtoupper($alat->merk) }}</center></td>
-                <td><center>{{ strtoupper($alat->tipe) }}</center></td>
-                <td><center>{{ strtoupper($alat->model) }}</center></td>
-                <td><center>{{ strtoupper($alat->serial_number) }}</center></td>
+                <td><center>{{ $loop->iteration }}</center></td>
+                <td><center>{{ strtoupper($alat->kode ?? '-') }}</center></td>
+                <td><center>{{ strtoupper($alat->nama ?? '-') }}</center></td>
+                <td><center>{{ strtoupper($alat->merk ?? '-') }}</center></td>
+                <td><center>{{ strtoupper($alat->tipe ?? '-') }}</center></td>
+                <td><center>{{ strtoupper($alat->model ?? '-') }}</center></td>
+                <td><center>{{ strtoupper($alat->serial_number ?? '-') }}</center></td>
                 <td>
                     <center>
-                        @if($alat->kondisi == 1)
+                        @if($alat->kondisi ?? '-' == 1)
                             <span class="badge bg-success">NORMAL</span>
                         @else
                             <span class="badge bg-danger">RUSAK</span>

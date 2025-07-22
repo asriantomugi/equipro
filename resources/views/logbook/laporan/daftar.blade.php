@@ -18,7 +18,7 @@
                     </div>
                     <div class="card-body">
                         <div class="table-responsive"> {{-- Tambahan agar tabel bisa scroll horizontal --}}
-                            <table id="laporan" class="table table-bordered table-striped">
+                            <table id="example" class="table table-bordered table-striped">
                                 <thead>
                                     <tr>
                                         <th style="width: 10px"><center>NO.</center></th>
@@ -50,13 +50,25 @@
                                                 <td><center>{!! $satu->status_label !!}</center></td>
                                                 <td>
                                                     <div class="d-flex justify-content-center">
-                                                        <a class="btn btn-info btn-sm" 
-                                                            href="{{ route('tambahStep1.edit', $satu->id) }}"  
-                                                            role="button"
-                                                            title="Edit Data">
-                                                            <i class="fas fa-pencil-alt"></i>
-                                                        </a>
-
+                                                       {{-- Tombol Edit Berdasarkan Status --}}
+                                                        @if ($satu->status == config('constants.status_laporan.draft'))
+                                                            {{-- Edit untuk Draft (status = 1) - dimulai dari step 2 --}}
+                                                            <a href="{{ route('laporan.edit.step2', ['id' => $satu->id]) }}" 
+                                                            class="btn btn-info btn-sm mr-1" 
+                                                            role="button" 
+                                                            title="Edit Draft">
+                                                                <i class="fas fa-pencil-alt"></i>
+                                                            </a>
+                                                        @elseif ($satu->status == config('constants.status_laporan.open') && $satu->kondisi == 0)
+                                                            {{-- Edit untuk Open (status = 2) dengan kondisi Unserviceable - dimulai dari step 3 --}}
+                                                            <a href="{{ route('logbook.laporan.edit.step3', ['id' => $satu->id]) }}" 
+                                                            class="btn btn-info btn-sm mr-1" 
+                                                            role="button" 
+                                                            title="Tindak Lanjuti">
+                                                                <i class="fas fa-pencil-alt"></i>
+                                                            </a>
+                                                        @endif
+                                
                                                         <button class="btn btn-secondary btn-sm"
                                                                 onclick="detail('{{ $satu->id }}')"
                                                                 title="Detail">

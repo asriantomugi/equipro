@@ -28,10 +28,9 @@
         <div class="row">
             <div class="col-lg-12">
                 <div class="card">
-                    <div class="card-header">
-                        <h3 class="card-title">FORM TINDAK LANJUT</h3>
-                    </div>
+                    <div class="card-header"><h3 class="card-title">FORM TINDAK LANJUT</h3></div>
                     <div class="card-body">
+
                     @if ($errors->any())
                         <div class="alert alert-danger">
                             <ul class="mb-0">
@@ -41,26 +40,34 @@
                             </ul>
                         </div>
                     @endif
+
                         <form action="{{ route('tambah.simpanStep3') }}" method="POST" id="formStep3">
                             @csrf
                             <input type="hidden" name="laporan_id" value="{{ $laporan->id }}">
                             <input type="hidden" name="layanan_id" value="{{ $laporan->layanan_id }}">
                             <input type="hidden" name="jenis_laporan" value="{{ $laporan->jenis == 1 ? 1 : 0 }}">
 
+                            {{-- =============== PERALATAN (jika gangguan_peralatan) =============== --}}
                             @if ($laporan->jenis == 1)
+                                @php $shown = 0; @endphp
                                 @foreach ($layanan->daftarPeralatanLayanan as $index => $dpl)
-                                    @if ($index > 0)
-                                        <hr>
-                                    @endif
+                                    @continue(!in_array($dpl->peralatan->id, $peralatanGangguanIds)) {{-- skip beroperasi --}}
+                                    @php $shown++; @endphp
+                                    @if ($shown > 1)<hr>@endif
+
                                     <div class="mb-3">
-                                        <strong>Peralatan {{ $index + 1 }}: <span class="badge bg-primary">{{ $dpl->peralatan->nama }}</span></strong>
+                                        <strong>Peralatan {{ $shown }}:
+                                            <span class="badge bg-primary">{{ $dpl->peralatan->nama }}</span>
+                                        </strong>
                                     </div>
 
                                     {{-- Jenis --}}
                                     <div class="form-group row">
                                         <label class="col-sm-3 col-form-label">Jenis <span class="text-danger">*</span></label>
                                         <div class="col-sm-9">
-                                            <select name="tindaklanjut[{{ $dpl->peralatan->id }}][jenis]" class="form-control tindak-jenis" data-nama="{{ $dpl->peralatan->nama }}">
+                                            <select name="tindaklanjut[{{ $dpl->peralatan->id }}][jenis]"
+                                                    class="form-control tindak-jenis"
+                                                    data-nama="{{ $dpl->peralatan->nama }}">
                                                 <option value="">- Pilih -</option>
                                                 @foreach ($jenisTindakLanjut as $label => $value)
                                                     <option value="{{ $value ? 1 : 0 }}">{{ ucfirst($label) }}</option>
@@ -73,7 +80,10 @@
                                     <div class="form-group row">
                                         <label class="col-sm-3 col-form-label">Waktu <span class="text-danger">*</span></label>
                                         <div class="col-sm-9">
-                                            <input type="datetime-local" name="tindaklanjut[{{ $dpl->peralatan->id }}][waktu]" class="form-control tindak-waktu" data-nama="{{ $dpl->peralatan->nama }}">
+                                            <input type="datetime-local"
+                                                   name="tindaklanjut[{{ $dpl->peralatan->id }}][waktu]"
+                                                   class="form-control tindak-waktu"
+                                                   data-nama="{{ $dpl->peralatan->nama }}">
                                         </div>
                                     </div>
 
@@ -81,7 +91,8 @@
                                     <div class="form-group row">
                                         <label class="col-sm-3 col-form-label">Deskripsi</label>
                                         <div class="col-sm-9">
-                                            <textarea name="tindaklanjut[{{ $dpl->peralatan->id }}][deskripsi]" class="form-control"></textarea>
+                                            <textarea name="tindaklanjut[{{ $dpl->peralatan->id }}][deskripsi]"
+                                                      class="form-control"></textarea>
                                         </div>
                                     </div>
 
@@ -89,7 +100,9 @@
                                     <div class="form-group row">
                                         <label class="col-sm-3 col-form-label">Kondisi <span class="text-danger">*</span></label>
                                         <div class="col-sm-9">
-                                            <select name="tindaklanjut[{{ $dpl->peralatan->id }}][kondisi]" class="form-control tindak-kondisi" data-nama="{{ $dpl->peralatan->nama }}">
+                                            <select name="tindaklanjut[{{ $dpl->peralatan->id }}][kondisi]"
+                                                    class="form-control tindak-kondisi"
+                                                    data-nama="{{ $dpl->peralatan->nama }}">
                                                 <option value="">- Pilih -</option>
                                                 @foreach ($kondisiTindaklanjut as $label => $value)
                                                     <option value="{{ $value ? 1 : 0 }}">{{ ucfirst($label) }}</option>
@@ -99,7 +112,7 @@
                                     </div>
                                 @endforeach
                             @else
-                                {{-- Non-peralatan --}}
+                                {{-- =============== NON‑PERALATAN =============== --}}
                                 <div class="form-group row">
                                     <label class="col-sm-3 col-form-label">Waktu <span class="text-danger">*</span></label>
                                     <div class="col-sm-9">
@@ -129,25 +142,26 @@
 
                             <hr>
 
-                            {{-- Kondisi Layanan --}}
-                            <div class="form-group row mt-4">
+                            {{-- ==== Update Kondisi Layanan – hidden sampai syarat terpenuhi ==== --}}
+                            <div class="form-group row mt-4 d-none" id="group-kondisi-layanan">
                                 <label class="col-sm-3 col-form-label">Update Kondisi Layanan <span class="text-danger">*</span></label>
                                 <div class="col-sm-9">
                                     <select name="kondisi_setelah" class="form-control">
                                         <option value="">- Pilih -</option>
                                         @foreach ($kondisiSetelah as $label => $value)
-                                            <option value="{{ $value ? '1' : '0' }}">{{ $label }}</option>
+                                            <option value="{{ $value ? 1 : 0 }}">{{ $label }}</option>
                                         @endforeach
                                     </select>
                                 </div>
                             </div>
 
                             <div class="card-footer">
-                                <a href="{{ route('tambah.step2.back', ['laporan_id' => $laporan->id]) }}" class="btn btn-success btn-sm">
-                                    <i class="fas fa-angle-left"></i> &nbsp; Kembali
+                                <a href="{{ route('tambah.step2.back', ['laporan_id' => $laporan->id]) }}"
+                                   class="btn btn-success btn-sm">
+                                   <i class="fas fa-angle-left"></i>&nbsp;Kembali
                                 </a>
-                                <button type="submit" class="btn btn-success btn-sm float-right">
-                                    Lanjut &nbsp; <i class="fas fa-angle-right"></i>
+                                <button type="submit" class="btn btn-success btn-sm float-right" id="btn-submit">
+                                    Lanjut&nbsp;<i class="fas fa-angle-right"></i>
                                 </button>
                             </div>
                         </form>
@@ -161,54 +175,72 @@
 
 @push('scripts')
 <script>
-function markInvalid(el, message) {
-    el.classList.remove('is-valid');
-    el.classList.add('is-invalid');
-    const msg = document.createElement('div');
-    msg.className = 'invalid-feedback dynamic';
-    msg.innerHTML = message;
-    if (!el.parentNode.querySelector('.invalid-feedback.dynamic')) {
-        el.parentNode.appendChild(msg);
+function markInvalid(el,msg){
+    el.classList.remove('is-valid'); el.classList.add('is-invalid');
+    if(!el.parentNode.querySelector('.invalid-feedback.dynamic')){
+        const div=document.createElement('div');
+        div.className='invalid-feedback dynamic'; div.innerHTML=msg;
+        el.parentNode.appendChild(div);
     }
 }
+function markValid(el){
+    el.classList.remove('is-invalid'); el.classList.add('is-valid');
+    const fb=el.parentNode.querySelector('.invalid-feedback.dynamic');
+    if(fb) fb.remove();
+}
 
-function markValid(el) {
-    el.classList.remove('is-invalid');
-    el.classList.add('is-valid');
-    const feedback = el.parentNode.querySelector('.invalid-feedback.dynamic');
-    if (feedback) feedback.remove();
+/* ------------- tampil/sembunyi & enable/disable ------------- */
+function toggleKondisiLayanan(){
+    const grp = document.getElementById('group-kondisi-layanan');
+    const btn = document.getElementById('btn-submit');
+    const selects = [...document.querySelectorAll('.tindak-kondisi')]
+                    .filter(s => s.value !== '');
+    const allOperasi = selects.length > 0 && selects.every(s => s.value === '1');
+
+    if(allOperasi){
+        grp.classList.remove('d-none');
+    }else{
+        grp.classList.add('d-none');
+        grp.querySelector('select').value = '';
+    }
+
+    const dropVal = grp.querySelector('select').value;
+    btn.disabled = !(allOperasi && dropVal !== '');
 }
 
 document.addEventListener('DOMContentLoaded', () => {
     const form = document.getElementById('formStep3');
+    const submitBtn = document.getElementById('btn-submit');
 
-    form.addEventListener('submit', function (e) {
+    /* event change untuk tiap kondisi tindak lanjut */
+    document.querySelectorAll('.tindak-kondisi').forEach(sel=>{
+        sel.addEventListener('change', toggleKondisiLayanan);
+    });
+    /* event change untuk dropdown kondisi layanan */
+    document.getElementById('group-kondisi-layanan')
+            .querySelector('select')
+            .addEventListener('change', toggleKondisiLayanan);
+
+    toggleKondisiLayanan();   // inisialisasi
+
+    /* ========== VALIDASI SUBMIT ========== */
+    form.addEventListener('submit', e => {
         let valid = true;
-
-        // Bersihkan sebelumnya
         form.querySelectorAll('.is-invalid').forEach(el => el.classList.remove('is-invalid'));
         form.querySelectorAll('.invalid-feedback.dynamic').forEach(el => el.remove());
 
         @if ($laporan->jenis == 1)
-            document.querySelectorAll('.tindak-jenis').forEach(el => {
-                if (el.value === "") {
-                    markInvalid(el, 'Jenis tindak lanjut wajib dipilih');
-                    valid = false;
-                } else markValid(el);
+            document.querySelectorAll('.tindak-jenis').forEach(el=>{
+                if(el.value===''){ markInvalid(el,'Jenis tindak lanjut wajib dipilih'); valid=false; }
+                else markValid(el);
             });
-
-            document.querySelectorAll('.tindak-waktu').forEach(el => {
-                if (el.value === "") {
-                    markInvalid(el, 'Waktu wajib diisi');
-                    valid = false;
-                } else markValid(el);
+            document.querySelectorAll('.tindak-waktu').forEach(el=>{
+                if(el.value===''){ markInvalid(el,'Waktu wajib diisi'); valid=false; }
+                else markValid(el);
             });
-
-            document.querySelectorAll('.tindak-kondisi').forEach(el => {
-                if (el.value === "") {
-                    markInvalid(el, 'Kondisi wajib dipilih');
-                    valid = false;
-                } else markValid(el);
+            document.querySelectorAll('.tindak-kondisi').forEach(el=>{
+                if(el.value===''){ markInvalid(el,'Kondisi wajib dipilih'); valid=false; }
+                else markValid(el);
             });
         @else
             const waktu = form.querySelector('[name="waktu"]');
@@ -225,15 +257,16 @@ document.addEventListener('DOMContentLoaded', () => {
             } else markValid(kondisi);
         @endif
 
-        const kondisiSetelah = form.querySelector('[name="kondisi_setelah"]');
-            if (kondisiSetelah.value === "") {
-                markInvalid(kondisiSetelah, 'Kondisi layanan wajib dipilih');
-                valid = false;
-            } else {
-                markValid(kondisiSetelah);
-            }
+        const grp = document.getElementById('group-kondisi-layanan');
+        const kondisiSetelah = grp.querySelector('select');
+        if(!grp.classList.contains('d-none')){
+            if(kondisiSetelah.value===''){
+                markInvalid(kondisiSetelah,'Kondisi layanan wajib dipilih');
+                valid=false;
+            }else markValid(kondisiSetelah);
+        }
 
-        if (!valid) e.preventDefault();
+        if(!valid || submitBtn.disabled) e.preventDefault();
     });
 });
 </script>

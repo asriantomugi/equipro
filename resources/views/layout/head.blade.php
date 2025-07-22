@@ -75,6 +75,8 @@
         color: #0d6efd; 
     }
 
+    
+
   /* Custom styling untuk validasi */
         .form-control.is-invalid {
             border-color: #dc3545;
