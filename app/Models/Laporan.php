@@ -22,7 +22,8 @@ class Laporan extends Model
         'id'
     ];
 
-    /**
+
+     /**
      * Function untuk memanggil layanan dari laporan.
      */
     public function layanan()
@@ -48,6 +49,7 @@ class Laporan extends Model
         return $this->hasOne(TlGangguanNonPeralatan::class, 'laporan_id');
     }
 
+        
     /**
      * Function untuk memanggil user created_by.
      */
@@ -63,6 +65,7 @@ class Laporan extends Model
     {
         return $this->hasOne(User::class, 'id', 'updated_by');
     }
+
 
     /**
      * Function untuk memanggil created_at dengan format tertentu.

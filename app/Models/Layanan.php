@@ -24,6 +24,7 @@ class Layanan extends Model
 
 
     /**
+    /**
      * Function untuk memanggil fasilitas dari layanan.
      */
     public function fasilitas()
@@ -33,45 +34,33 @@ class Layanan extends Model
 
     /**
      * Function untuk memanggil nama Lokasi Tingkat I.
-     * Function untuk memanggil nama Lokasi Tingkat I.
      */
     public function LokasiTk1()
-    public function LokasiTk1()
     {
-        return $this->hasOne(LokasiTk1::class, 'id', 'lokasi_tk_1_id');
         return $this->hasOne(LokasiTk1::class, 'id', 'lokasi_tk_1_id');
     }
 
     /**
      * Function untuk memanggil nama Lokasi Tingkat II.
-     * Function untuk memanggil nama Lokasi Tingkat II.
      */
     public function LokasiTk2()
-    public function LokasiTk2()
     {
-        return $this->hasOne(LokasiTk2::class, 'id', 'lokasi_tk_2_id');
         return $this->hasOne(LokasiTk2::class, 'id', 'lokasi_tk_2_id');
     }
 
     /**
      * Function untuk memanggil nama Lokasi Tingkat III.
-     * Function untuk memanggil nama Lokasi Tingkat III.
      */
     public function LokasiTk3()
-    public function LokasiTk3()
     {
-        return $this->hasOne(LokasiTk3::class, 'id', 'lokasi_tk_3_id');
         return $this->hasOne(LokasiTk3::class, 'id', 'lokasi_tk_3_id');
     }
 
     /**
      * Function untuk memanggil data daftar peralatan layanan.
-     * Function untuk memanggil data daftar peralatan layanan.
      */
     public function daftarPeralatanLayanan()
-    public function daftarPeralatanLayanan()
     {
-        return $this->hasMany(DaftarPeralatanLayanan::class, 'layanan_id');
         return $this->hasMany(DaftarPeralatanLayanan::class, 'layanan_id');
     }
 

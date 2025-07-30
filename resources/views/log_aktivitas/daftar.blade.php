@@ -1,7 +1,24 @@
-@extends('layout.main')
+@extends('log_aktivitas.main')
 
 @section('head')
   <meta name="csrf-token" content="{{ csrf_token() }}" />
+  <style>
+    /* ✅ FIX tampilan select dropdown DataTables */
+    .dataTables_length select {
+      appearance: auto !important;
+      -webkit-appearance: auto !important;
+      -moz-appearance: auto !important;
+      padding-right: 10px;
+      background: none !important;
+      font-family: inherit !important;
+    }
+
+    /* ✅ Hindari icon font mempengaruhi select */
+    select.form-control,
+    select.custom-select {
+      font-family: 'Arial', sans-serif !important;
+    }
+  </style>
 @endsection
 
 @section('content')
@@ -59,6 +76,11 @@
       responsive: true,
       autoWidth: false,
       pageLength: 10,
+
+      // ✅ Tambah class form-control biar dropdownnya konsisten
+      initComplete: function () {
+        $('.dataTables_length select').addClass('form-control form-control-sm');
+      }
     });
   });
 </script>

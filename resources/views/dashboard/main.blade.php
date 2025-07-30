@@ -6,7 +6,7 @@
 
   <!-- spesific head -->
   @yield('head')
-
+  
 </head>
 <body class="hold-transition sidebar-mini layout-fixed">
 <div class="wrapper">
@@ -22,7 +22,7 @@
   @include('layout.navbar')
 
   <!-- menu side bar -->
-  @include('log_aktivitas.sidebar')
+  @include('dashboard.sidebar')
 
   <!-- Content Wrapper. Contains page content -->
   <div class="content-wrapper">
@@ -45,6 +45,9 @@
 
 <!-- tail -->
 @include('layout.tail')
+
+<!-- JS untuk menampilkan chart - dipindah ke sini -->
+<script src="{{asset('/plugins/chart.js/Chart.min.js')}}"></script>
 
 <!-- spesific tail -->
 @yield('tail')

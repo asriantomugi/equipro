@@ -18,8 +18,9 @@ use App\Http\Controllers\Logbook\LaporanController;
 use App\Http\Controllers\Fasilitas\LayananController;
 use App\Http\Controllers\Logbook\RiwayatController;
 use App\Http\Controllers\Logbook\ExportController;
-use App\Http\Controllers\Fasilitas\LayananController;
 use App\Http\Controllers\LogAktivitas\LogAktivitasController;
+use App\Http\Controllers\Dashboard\DashboardLaporanController;
+use App\Http\Controllers\Dashboard\DashboardFasilitasController;
 
 /*
 Route::get('/', function () {
@@ -601,13 +602,61 @@ Route::get('/logbook/export/get-data', [ExportController::class, 'getData'])->na
 Route::post('/logbook/laporan/tambah/step5/simpan', [LaporanController::class, 'simpanStep5'])->name('tambah.simpanStep5');
 
 
-/* ============================== MENU LAPORAN ==================================== */
+/* ============================== LOG AKTIVITAS ==================================== */
 Route::get('/log_aktivitas/daftar', [LogAktivitasController::class, 'daftar'])->name('log-aktivitas.daftar');
 
 
 
 /** 
  * ------------------------------------------------------------------------------------
- *                            END OF MODULE LOGBOOK
+ *                            END OF MODULE LOG AKTIVITAS
+ * ------------------------------------------------------------------------------------
+ */ 
+
+
+
+/* ============================== DASHBOARD ==================================== */
+
+Route::prefix('dashboard')->group(function () {
+    // Rute untuk menampilkan laporan
+    Route::get('/laporan', [DashboardLaporanController::class, 'laporan'])->name('dashboard.laporan');
+    
+    // Rute untuk memfilter laporan (POST)
+    Route::post('/laporan/filter', [DashboardLaporanController::class, 'filter'])->name('dashboard.laporan.filter');
+
+    
+// Rute untuk menampilkan halaman laporan dashboard
+Route::get('/dashboard/laporan', [DashboardLaporanController::class, 'laporan'])->name('dashboard.laporan');
+
+// Rute untuk filter laporan berdasarkan tanggal
+Route::post('/dashboard/laporan/filter', [DashboardLaporanController::class, 'filter'])->name('dashboard.laporan.filter');
+
+// Rute untuk menampilkan laporan fasilitas
+Route::get('/dashboard/fasilitas-laporan', [DashboardLaporanController::class, 'fasilitas'])->name('dashboard.fasilitas.laporan');
+
+    // Rute untuk menampilkan semua fasilitas
+    Route::get('/fasilitas', [DashboardFasilitasController::class, 'index'])->name('dashboard.fasilitas');
+    
+    // Rute untuk menampilkan daftar layanan fasilitas
+    Route::get('/dashboarddaftar', [DashboardFasilitasController::class, 'dashboarddaftarIndex'])->name('dashboard.dashboarddaftar.index');
+    
+    // Rute untuk memfilter daftar layanan fasilitas (POST)
+    Route::post('/dashboarddaftar/filter', [DashboardFasilitasController::class, 'dashboarddaftarFilter'])->name('dashboard.dashboarddaftar.filter');
+    
+    // Rute untuk menampilkan daftar layanan berdasarkan fasilitas_id
+    Route::get('/dashboarddaftar/{fasilitas_id}', [DashboardFasilitasController::class, 'dashboarddaftar'])->name('dashboard.dashboarddaftar');
+
+    
+});
+
+
+
+
+
+
+
+/** 
+ * ------------------------------------------------------------------------------------
+ *                            END OF MODULE DASHBOARD
  * ------------------------------------------------------------------------------------
  */ 

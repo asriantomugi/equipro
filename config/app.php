@@ -126,7 +126,7 @@ return [
 
     // Provider kustom kamu
     App\Providers\AppServiceProvider::class,
-    App\Providers\EventServiceProvider::class, // ⬅️ PENTING!
+    App\Providers\EventServiceProvider::class,
 
     ];
 
