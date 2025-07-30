@@ -16,6 +16,7 @@ use App\Http\Controllers\Fasilitas\PeralatanController;
 use App\Http\Controllers\Logbook\LogbookModuleController;
 use App\Http\Controllers\Logbook\LaporanController;
 use App\Http\Controllers\Fasilitas\LayananController;
+use App\Http\Controllers\Fasilitas\ExportLayananController;
 use App\Http\Controllers\Logbook\RiwayatController;
 use App\Http\Controllers\Logbook\ExportController;
 use App\Http\Controllers\Profile\ProfileController;
@@ -317,6 +318,25 @@ Route::prefix('/fasilitas/layanan')->name('fasilitas.layanan.')->group(function 
     Route::post('/peralatan/detail', [LayananController::class, 'detailPeralatan'])->name('peralatan.detail');
 });
 /* =========================== END OF MENU LAYANAN ================================ */
+
+/* ============================== MENU EXPORT ==================================== */
+Route::prefix('fasilitas/layanan/export')->group(function() {
+    // Menampilkan halaman daftar export
+    Route::get('/daftar', [ExportLayananController::class, 'daftar'])->name('fasilitas.layanan.export.daftar');
+    
+    // AJAX: Mengambil data dengan filter
+    Route::get('/data', [ExportLayananController::class, 'getData'])->name('fasilitas.layanan.export.data');
+    
+    // Export ke Excel
+    Route::post('/', [ExportLayananController::class, 'export'])->name('fasilitas.layanan.export');
+    
+    // AJAX: Mendapatkan Lokasi Tk 2 berdasarkan Tk 1
+    Route::get('/lokasi-tk2', [ExportLayananController::class, 'getLokasiTk2ByTk1'])->name('fasilitas.layanan.lokasi-tk2');
+    
+    // AJAX: Mendapatkan Lokasi Tk 3 berdasarkan Tk 2
+    Route::get('/lokasi-tk3', [ExportLayananController::class, 'getLokasiTk3ByTk2'])->name('fasilitas.layanan.lokasi-tk3');
+});
+/* ============================== END OF MENU EXPORT ==================================== */
 
 /* ============================== MENU LAYANAN ==================================== */
 Route::prefix('/fasilitas/layanan')->name('fasilitas.layanan.')->group(function () {

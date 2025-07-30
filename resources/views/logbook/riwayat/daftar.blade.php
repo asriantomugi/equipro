@@ -177,8 +177,7 @@ $(document).ready(function(){
                     class: type,
                     title: title,
                     body: message,
-                    autohide: true,
-                    delay: 3000
+                    autohide: true
                 });
             }
         }
