@@ -23,7 +23,7 @@
             <td><center>{{ strtoupper($satu->model) }}</center></td>
             <td><center>{{ strtoupper($satu->serial_number) }}</center></td>
 
-        @if($satu->kondisi == config('constants.kondisi_peralatan.normal'))
+        @if($satu->kondisi == config('constants.kondisi_peralatan.Normal'))
             <td><center><span class="badge bg-success">NORMAL</span></center></td>
         @else
             <td><center><span class="badge bg-danger">RUSAK</span></center></td>

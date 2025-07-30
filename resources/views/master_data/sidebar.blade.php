@@ -26,6 +26,7 @@
             <p>Module</p>
           </a>
         </li>
+        </li>
 
         <li class="nav-header">MENU</li>
 

@@ -161,3 +161,5 @@
   <!-- Asterik Sign -->
   <link rel="stylesheet" href="{{asset('/dist/css/asterik.css')}}">
 
+<!-- Flatpickr CSS -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">

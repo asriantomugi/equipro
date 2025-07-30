@@ -16,7 +16,7 @@
                         <ul class="step d-flex flex-nowrap">
                             <li class="step-item completed"><a href="{{ route('tambah.step1') }}">Pilih Layanan</a></li>
                             <li class="step-item completed"><a href="{{ route('tambah.step2.back', ['laporan_id' => $laporan->id]) }}">Input Gangguan</a></li>
-                            <li class="step-item active"><a href="#">Tindaklanjut</a></li>
+                            <li class="step-item active"><a href="#">Tindak Lanjut</a></li>
                             <li class="step-item"><a href="#">Review</a></li>
                         </ul>
                     </div>
@@ -46,6 +46,9 @@
                             <input type="hidden" name="laporan_id" value="{{ $laporan->id }}">
                             <input type="hidden" name="layanan_id" value="{{ $laporan->layanan_id }}">
                             <input type="hidden" name="jenis_laporan" value="{{ $laporan->jenis == 1 ? 1 : 0 }}">
+                            
+                            {{-- Hidden field untuk kondisi layanan yang akan diset otomatis --}}
+                            <input type="hidden" name="kondisi_setelah" id="kondisi_setelah_hidden" value="">
 
                             {{-- =============== PERALATAN (jika gangguan_peralatan) =============== --}}
                             @if ($laporan->jenis == 1)
@@ -73,6 +76,7 @@
                                                     <option value="{{ $value ? 1 : 0 }}">{{ ucfirst($label) }}</option>
                                                 @endforeach
                                             </select>
+                                            <div class="invalid-feedback dynamic"></div>
                                         </div>
                                     </div>
 
@@ -84,6 +88,7 @@
                                                    name="tindaklanjut[{{ $dpl->peralatan->id }}][waktu]"
                                                    class="form-control tindak-waktu"
                                                    data-nama="{{ $dpl->peralatan->nama }}">
+                                            <div class="invalid-feedback dynamic"></div>
                                         </div>
                                     </div>
 
@@ -92,7 +97,8 @@
                                         <label class="col-sm-3 col-form-label">Deskripsi</label>
                                         <div class="col-sm-9">
                                             <textarea name="tindaklanjut[{{ $dpl->peralatan->id }}][deskripsi]"
-                                                      class="form-control"></textarea>
+                                                      class="form-control"
+                                                      rows="3"></textarea>
                                         </div>
                                     </div>
 
@@ -108,6 +114,7 @@
                                                     <option value="{{ $value ? 1 : 0 }}">{{ ucfirst($label) }}</option>
                                                 @endforeach
                                             </select>
+                                            <div class="invalid-feedback dynamic"></div>
                                         </div>
                                     </div>
                                 @endforeach
@@ -116,44 +123,35 @@
                                 <div class="form-group row">
                                     <label class="col-sm-3 col-form-label">Waktu <span class="text-danger">*</span></label>
                                     <div class="col-sm-9">
-                                        <input type="datetime-local" name="waktu" class="form-control">
+                                        <input type="datetime-local" 
+                                               name="waktu" 
+                                               class="form-control">
+                                        <div class="invalid-feedback dynamic"></div>
                                     </div>
                                 </div>
 
                                 <div class="form-group row">
                                     <label class="col-sm-3 col-form-label">Deskripsi</label>
                                     <div class="col-sm-9">
-                                        <textarea name="deskripsi" class="form-control"></textarea>
+                                        <textarea name="deskripsi" 
+                                                  class="form-control"
+                                                  rows="3"></textarea>
                                     </div>
                                 </div>
 
                                 <div class="form-group row">
                                     <label class="col-sm-3 col-form-label">Kondisi <span class="text-danger">*</span></label>
                                     <div class="col-sm-9">
-                                        <select name="kondisi" class="form-control">
+                                        <select name="kondisi" class="form-control non-peralatan-kondisi">
                                             <option value="">- Pilih -</option>
                                             @foreach ($kondisiTindaklanjut as $label => $value)
                                                 <option value="{{ $value ? 1 : 0 }}">{{ ucfirst($label) }}</option>
                                             @endforeach
                                         </select>
+                                        <div class="invalid-feedback dynamic"></div>
                                     </div>
                                 </div>
                             @endif
-
-                            <hr>
-
-                            {{-- ==== Update Kondisi Layanan – hidden sampai syarat terpenuhi ==== --}}
-                            <div class="form-group row mt-4 d-none" id="group-kondisi-layanan">
-                                <label class="col-sm-3 col-form-label">Update Kondisi Layanan <span class="text-danger">*</span></label>
-                                <div class="col-sm-9">
-                                    <select name="kondisi_setelah" class="form-control">
-                                        <option value="">- Pilih -</option>
-                                        @foreach ($kondisiSetelah as $label => $value)
-                                            <option value="{{ $value ? 1 : 0 }}">{{ $label }}</option>
-                                        @endforeach
-                                    </select>
-                                </div>
-                            </div>
 
                             <div class="card-footer">
                                 <a href="{{ route('tambah.step2.back', ['laporan_id' => $laporan->id]) }}"
@@ -173,100 +171,112 @@
 </section>
 @endsection
 
+@push('styles')
+<style>
+/* hilangkan pseudo‑asterisk bawaan browser / bootstrap */
+input[type="datetime-local"]::after,
+input.form-control:required::after,
+input[type="datetime-local"]:required::after {
+    content: none !important;
+    display: none !important;
+    color: transparent !important;
+}
+</style>
+@endpush
+
 @push('scripts')
 <script>
-function markInvalid(el,msg){
-    el.classList.remove('is-valid'); el.classList.add('is-invalid');
-    if(!el.parentNode.querySelector('.invalid-feedback.dynamic')){
-        const div=document.createElement('div');
-        div.className='invalid-feedback dynamic'; div.innerHTML=msg;
-        el.parentNode.appendChild(div);
-    }
-}
-function markValid(el){
-    el.classList.remove('is-invalid'); el.classList.add('is-valid');
-    const fb=el.parentNode.querySelector('.invalid-feedback.dynamic');
-    if(fb) fb.remove();
-}
-
-/* ------------- tampil/sembunyi & enable/disable ------------- */
-function toggleKondisiLayanan(){
-    const grp = document.getElementById('group-kondisi-layanan');
-    const btn = document.getElementById('btn-submit');
-    const selects = [...document.querySelectorAll('.tindak-kondisi')]
-                    .filter(s => s.value !== '');
-    const allOperasi = selects.length > 0 && selects.every(s => s.value === '1');
-
-    if(allOperasi){
-        grp.classList.remove('d-none');
-    }else{
-        grp.classList.add('d-none');
-        grp.querySelector('select').value = '';
-    }
-
-    const dropVal = grp.querySelector('select').value;
-    btn.disabled = !(allOperasi && dropVal !== '');
+function markInvalid(el, msg) {
+    el.classList.remove('is-valid'); 
+    el.classList.add('is-invalid');
+    
+    // Hapus error message yang ada
+    const existingError = el.closest('.form-group').querySelector('.invalid-feedback.dynamic');
+    if (existingError) existingError.remove();
+    
+    // Tambah error message baru
+    const div = document.createElement('div');
+    div.className = 'invalid-feedback dynamic d-block'; 
+    div.innerHTML = msg;
+    
+    el.parentNode.appendChild(div);
 }
 
-document.addEventListener('DOMContentLoaded', () => {
+function markValid(el) {
+    el.classList.remove('is-invalid'); 
+    el.classList.add('is-valid');
+    
+    // Hapus error message
+    const fb = el.closest('.form-group').querySelector('.invalid-feedback.dynamic');
+    if (fb) fb.remove();
+}
+
+document.addEventListener('DOMContentLoaded', function () {
     const form = document.getElementById('formStep3');
     const submitBtn = document.getElementById('btn-submit');
-
-    /* event change untuk tiap kondisi tindak lanjut */
-    document.querySelectorAll('.tindak-kondisi').forEach(sel=>{
-        sel.addEventListener('change', toggleKondisiLayanan);
-    });
-    /* event change untuk dropdown kondisi layanan */
-    document.getElementById('group-kondisi-layanan')
-            .querySelector('select')
-            .addEventListener('change', toggleKondisiLayanan);
-
-    toggleKondisiLayanan();   // inisialisasi
+    const jenisLaporan = {{ $laporan->jenis }};
 
     /* ========== VALIDASI SUBMIT ========== */
     form.addEventListener('submit', e => {
         let valid = true;
+        
+        // Reset semua error state
         form.querySelectorAll('.is-invalid').forEach(el => el.classList.remove('is-invalid'));
         form.querySelectorAll('.invalid-feedback.dynamic').forEach(el => el.remove());
 
-        @if ($laporan->jenis == 1)
-            document.querySelectorAll('.tindak-jenis').forEach(el=>{
-                if(el.value===''){ markInvalid(el,'Jenis tindak lanjut wajib dipilih'); valid=false; }
-                else markValid(el);
+        if (jenisLaporan == 1) {
+            // Validasi untuk gangguan peralatan
+            document.querySelectorAll('.tindak-jenis').forEach(el => {
+                if(el.value === '') { 
+                    markInvalid(el, 'Jenis tindak lanjut wajib dipilih'); 
+                    valid = false; 
+                } else {
+                    markValid(el);
+                }
             });
-            document.querySelectorAll('.tindak-waktu').forEach(el=>{
-                if(el.value===''){ markInvalid(el,'Waktu wajib diisi'); valid=false; }
-                else markValid(el);
+            
+            document.querySelectorAll('.tindak-waktu').forEach(el => {
+                if(el.value === '' || el.value.trim() === '') { 
+                    markInvalid(el, 'Waktu wajib diisi'); 
+                    valid = false; 
+                } else {
+                    markValid(el);
+                }
             });
-            document.querySelectorAll('.tindak-kondisi').forEach(el=>{
-                if(el.value===''){ markInvalid(el,'Kondisi wajib dipilih'); valid=false; }
-                else markValid(el);
+            
+            document.querySelectorAll('.tindak-kondisi').forEach(el => {
+                if(el.value === '') { 
+                    markInvalid(el, 'Kondisi wajib dipilih'); 
+                    valid = false; 
+                } else {
+                    markValid(el);
+                }
             });
-        @else
+        } else {
+            // Validasi untuk gangguan non-peralatan
             const waktu = form.querySelector('[name="waktu"]');
             const kondisi = form.querySelector('[name="kondisi"]');
 
-            if (!waktu.value) {
+            if (!waktu.value || waktu.value.trim() === '') {
                 markInvalid(waktu, 'Waktu wajib diisi');
                 valid = false;
-            } else markValid(waktu);
+            } else {
+                markValid(waktu);
+            }
 
             if (!kondisi.value) {
                 markInvalid(kondisi, 'Kondisi wajib dipilih');
                 valid = false;
-            } else markValid(kondisi);
-        @endif
-
-        const grp = document.getElementById('group-kondisi-layanan');
-        const kondisiSetelah = grp.querySelector('select');
-        if(!grp.classList.contains('d-none')){
-            if(kondisiSetelah.value===''){
-                markInvalid(kondisiSetelah,'Kondisi layanan wajib dipilih');
-                valid=false;
-            }else markValid(kondisiSetelah);
+            } else {
+                markValid(kondisi);
+            }
         }
 
-        if(!valid || submitBtn.disabled) e.preventDefault();
+        
+
+        if (!valid) {
+            e.preventDefault();
+        }
     });
 });
 </script>

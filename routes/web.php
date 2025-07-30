@@ -18,6 +18,7 @@ use App\Http\Controllers\Logbook\LaporanController;
 use App\Http\Controllers\Fasilitas\LayananController;
 use App\Http\Controllers\Logbook\RiwayatController;
 use App\Http\Controllers\Logbook\ExportController;
+use App\Http\Controllers\Profile\ProfileController;
 
 /*
 Route::get('/', function () {
@@ -434,11 +435,13 @@ Route::get('/logbook/laporan/tambah/step3/{laporan_id}', [LaporanController::cla
 // Step 3 - Menyimpan Tindaklanjut
 Route::post('/logbook/laporan/tambah/step3/simpan', [LaporanController::class, 'simpanStep3'])->name('tambah.simpanStep3');
 
-// Menampilkan form Step 3 saat kembali dari Step 4
-Route::get('/logbook/laporan/tambah/step3/back/{laporan_id}', [LaporanController::class, 'formStep3Back'])->name('tambah.step3.back');
+// Route untuk menampilkan form step3 back
+Route::get('/logbook/laporan/tambah/step3/back/{laporan_id}', [LaporanController::class, 'formStep3Back'])
+    ->name('tambah.step3.form.back');
 
-// Menyimpan data dari Step 3 Back
-Route::post('/logbook/laporan/tambah/step3/back/simpan', [LaporanController::class, 'tambahStep3Back'])->name('tambah.simpanStep3Back');
+// Route untuk memproses update step3 back
+Route::post('/logbook/laporan/tambah/step3/back/{laporan_id}', [LaporanController::class, 'tambahStep3Back'])
+    ->name('tambah.step3.back');
 
 // Step 4 - Menampilkan Form Step 4
 Route::get('/logbook/laporan/tambah/step4/{laporan_id}', [LaporanController::class, 'step4'])->name('tambah.step4');
@@ -469,6 +472,9 @@ Route::post('/logbook/laporan/hapus', [LaporanController::class, 'hapus'])->name
 //untuk menampilkan detail data laporan
 Route::post('/logbook/laporan/detail', [LaporanController::class, 'detail'])->name('logbook.laporan.detail');
 
+//untuk menampilkan detail data riwayat
+Route::post('/logbook/riwayat/detail', [RiwayatController::class, 'detail'])->name('logbook.riwayat.detail');
+
 /* ====== EDIT LAPORAN ====== */
 
 // GET - Tampilkan form edit step2 untuk laporan draft
@@ -488,6 +494,8 @@ Route::post('/laporan/edit/{id}/step4', [LaporanController::class, 'updateStep4'
 // Edit Step 5 - Review
 Route::get('/laporan/edit/{id}/step5', [LaporanController::class, 'editStep5'])->name('logbook.laporan.edit.step5');
 Route::post('/laporan/edit/{id}/step5', [LaporanController::class, 'updateStep5'])->name('logbook.laporan.edit.step5.update');
+// Route untuk AJAX tindak lanjut
+Route::post('/logbook/laporan/edit/{id}/step3/delete', [LaporanController::class, 'deleteTindakLanjut'])->name('logbook.laporan.edit.step3.delete');
 
 /* ============================== MENU EXPORT ==================================== */
 
@@ -507,9 +515,40 @@ Route::get('/logbook/export/get-layanan', [ExportController::class, 'getLayananB
 // Route ini digunakan untuk mendapatkan data laporan dengan pagination dan filter yang diterapkan
 Route::get('/logbook/export/get-data', [ExportController::class, 'getData'])->name('export.getData');
 
-
 /** 
  * ------------------------------------------------------------------------------------
  *                            END OF MODULE LOGBOOK
+ * ------------------------------------------------------------------------------------
+ */ 
+
+/** 
+ * ------------------------------------------------------------------------------------
+ *                             MENU PROFIL
+ * ------------------------------------------------------------------------------------
+ */ 
+
+
+// Routes untuk profil (harus login)
+Route::middleware(['auth'])->group(function () {
+    Route::prefix('profile')->group(function () {
+        // Halaman utama profil
+        Route::get('/', [ProfileController::class, 'profile']);
+        
+        // Edit profil
+        Route::get('/edit', [ProfileController::class, 'formEditProfil']);
+        Route::post('/update', [ProfileController::class, 'updateProfil']);
+        
+        // Ubah password
+        Route::get('/ubah_password', [ProfileController::class, 'formUbahPassword']);
+        Route::post('/ubah_password', [ProfileController::class, 'ubahPassword']);
+    });
+});
+
+
+
+
+/** 
+ * ------------------------------------------------------------------------------------
+ *                            END OF MENU PROFIL
  * ------------------------------------------------------------------------------------
  */ 

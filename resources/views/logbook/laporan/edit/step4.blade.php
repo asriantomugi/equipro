@@ -51,27 +51,26 @@
                     @endif
 
                     @if ($laporan->jenis == 1 && $jenis_tindaklanjut == config('constants.jenis_tindaklanjut.penggantian'))
-                        @php $shown = 0; @endphp
+                        
 
                         @foreach ($peralatanLama as $idx => $peralatan)
+                        @if ($loop->iteration > 1) <hr> @endif
                             @php
                                 $statusText = $peralatan->status == 1 ? 'Aktif' : 'Tidak Aktif';
-                                $kondisiText = $peralatan->kondisi == 1 ? 'Normal' : 'Rusak';
-                                
                                 // Ambil data penggantian yang sudah ada
                                 $existingPenggantian = $penggantiPeralatan->get($peralatan->id);
                             @endphp
-
-                            @if ($idx > 0) <hr> @endif
 
                             <div class="row">
                                 {{-- PERALATAN LAMA --}}
                                 <div class="col-md-6 mb-3">
                                     <div class="form-group row mb-2">
                                         <div class="col-sm-12">
-                                            <h5 class="mb-2">
-                                                <span class="badge badge-primary">Peralatan : {{ $peralatan->nama }}</span>
-                                            </h5>
+                                            <div class="mb-3">
+                                                <strong>Peralatan {{ $loop->iteration }}:
+                                                    <span class="badge bg-primary">{{ $peralatan->nama }}</span>
+                                                </strong>
+                                            </div>
                                         </div>
                                     </div>
 
@@ -91,12 +90,7 @@
                                             <input type="text" class="form-control" value="{{ $statusText }}" readonly>
                                         </div>
                                     </div>
-                                    <div class="form-group row">
-                                        <label class="col-sm-4 col-form-label">Kondisi</label>
-                                        <div class="col-sm-8">
-                                            <input type="text" class="form-control" value="{{ $kondisiText }}" readonly>
-                                        </div>
-                                    </div>
+                                
                                 </div>
 
                                 {{-- PERALATAN BARU --}}
@@ -147,17 +141,7 @@
                                                    readonly>
                                         </div>
                                     </div>
-                                    <div class="form-group row">
-                                    <label class="col-sm-2"></label>
-                                        <div class="col-sm-8">
-                                            <input type="text" class="form-control"
-                                                   name="peralatan_baru[{{ $idx }}][kondisi]"
-                                                   id="pb_kondisi_{{ $idx }}" 
-                                                   value="{{ old("peralatan_baru.{$idx}.kondisi", $existingPenggantian && $existingPenggantian->peralatanBaru ? ($existingPenggantian->peralatanBaru->kondisi == 1 ? 'Normal' : 'Rusak') : '') }}"
-                                                   placeholder="Kondisi"
-                                                   readonly>
-                                        </div>
-                                    </div>
+                                    
                                 </div>
                             </div>
                         @endforeach
