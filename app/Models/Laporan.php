@@ -45,7 +45,7 @@ class Laporan extends Model
         });
     }
 
-    /**
+     /**
      * Function untuk memanggil layanan dari laporan.
      */
     public function layanan()
@@ -101,21 +101,17 @@ class Laporan extends Model
         return $this->hasOne(TlPenggantianPeralatan::class, 'laporan_id');
     }
 
-    public function getStatusLabelAttribute()
+    public function gangguanPeralatan()
     {
-        $status = $this->status;
-
-        if ($status == config('constants.status_laporan.draft')) {
-            return '<span class="badge bg-warning">DRAFT</span>';
-        } elseif ($status == config('constants.status_laporan.open')) {
-            return '<span class="badge bg-success">OPEN</span>';
-        } elseif ($status == config('constants.status_laporan.closed')) {
-            return '<span class="badge bg-secondary">CLOSED</span>';
-        } else {
-            return '<span class="badge bg-dark">UNKNOWN</span>';
-        }
+        return $this->hasMany(TlGangguanPeralatan::class, 'laporan_id');
     }
 
+    public function gangguanNonPeralatan()
+    {
+        return $this->hasOne(TlGangguanNonPeralatan::class, 'laporan_id');
+    }
+
+        
     /**
      * Function untuk memanggil user created_by.
      */
@@ -131,6 +127,7 @@ class Laporan extends Model
     {
         return $this->hasOne(User::class, 'id', 'updated_by');
     }
+
 
     /**
      * Function untuk mendapatkan waktu open dalam format yang diinginkan

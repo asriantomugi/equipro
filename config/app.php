@@ -123,4 +123,9 @@ return [
         'store' => env('APP_MAINTENANCE_STORE', 'database'),
     ],
 
-];
+    // Provider kustom kamu
+    App\Providers\AppServiceProvider::class,
+    App\Providers\EventServiceProvider::class,
+
+    ];
+

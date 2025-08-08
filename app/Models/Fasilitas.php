@@ -10,41 +10,48 @@ class Fasilitas extends Model
 {
     use HasFactory;
 
-    protected $table = 'fasilitas'; // nama tabel
-    protected $primaryKey = 'id'; // primary key
+    protected $table = 'fasilitas'; // Nama tabel
+    protected $primaryKey = 'id';   // Primary key
 
     /**
-     * The attributes that are guarded.
-     *
-     * @var array<int, string>
+     * Atribut yang tidak boleh diisi secara massal.
      */
     protected $guarded = [
         'id'
     ];
 
     /**
-     * Function untuk memanggil layanan dari fasilitas tsb.
+     * Relasi: Fasilitas memiliki banyak layanan.
      */
     public function getLayanan()
     {
         return $this->hasMany(Layanan::class);
     }
 
-    // Fungsi untuk memanggil jumlah layanan serviceable dari fasilitas tsb (status = TRUE dan kondisi = TRUE).
+    /**
+     * Menghitung jumlah layanan serviceable (status TRUE, kondisi TRUE).
+     */
     public function getJlhLayananServ()
     {
-        return $this->getLayanan()->where('status', TRUE)->where('kondisi', TRUE)->count();
-    }
-
-    
-    // Fungsi untuk memanggil jumlah layanan unserviceable dari fasilitas tsb (status = TRUE dan kondisi = FALSE).
-    public function getJlhLayananUnserv()
-    {
-        return $this->getLayanan()->where('status', TRUE)->where('kondisi', FALSE)->count();
+        return $this->getLayanan()
+                    ->where('status', true)
+                    ->where('kondisi', true)
+                    ->count();
     }
 
     /**
-     * Function untuk memanggil user created_by.
+     * Menghitung jumlah layanan unserviceable (status TRUE, kondisi FALSE).
+     */
+    public function getJlhLayananUnserv()
+    {
+        return $this->getLayanan()
+                    ->where('status', true)
+                    ->where('kondisi', false)
+                    ->count();
+    }
+
+    /**
+     * Relasi: User yang membuat fasilitas.
      */
     public function getCreatedName()
     {
@@ -52,16 +59,15 @@ class Fasilitas extends Model
     }
 
     /**
-     * Function untuk memanggil user updated_by.
+     * Relasi: User yang mengupdate fasilitas.
      */
     public function getUpdatedName()
     {
         return $this->hasOne(User::class, 'id', 'updated_by');
     }
 
-
     /**
-     * Function untuk memanggil created_at dengan format tertentu.
+     * Format custom untuk created_at.
      */
     public function getCreatedAtAttribute($value)
     {
@@ -69,10 +75,19 @@ class Fasilitas extends Model
     }
 
     /**
-     * Function untuk memanggil updated_at dengan format tertentu.
+     * Format custom untuk updated_at.
      */
     public function getUpdatedAtAttribute($value)
     {
         return Carbon::parse($value)->format('d-m-Y H:i:s');
     }
+
+    /**
+     * ✅ Relasi: Fasilitas memiliki banyak laporan.
+     */
+   public function laporan()
+{
+    return $this->hasMany(Laporan::class, 'layanan_id', 'id');
+}
+
 }

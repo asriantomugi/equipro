@@ -603,6 +603,7 @@ public function filter(Request $request)
         }
 
         DB::commit();
+        DB::commit();
 
         Log::info("Proses Step 2 selesai. Redirect ke Step 3.", ['laporan_id' => $laporan->id]);
         return redirect()

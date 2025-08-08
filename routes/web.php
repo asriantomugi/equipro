@@ -20,6 +20,9 @@ use App\Http\Controllers\Fasilitas\ExportLayananController;
 use App\Http\Controllers\Logbook\RiwayatController;
 use App\Http\Controllers\Logbook\ExportController;
 use App\Http\Controllers\Profile\ProfileController;
+use App\Http\Controllers\LogAktivitas\LogAktivitasController;
+use App\Http\Controllers\Dashboard\DashboardLaporanController;
+use App\Http\Controllers\Dashboard\DashboardFasilitasController;
 
 /*
 Route::get('/', function () {
@@ -211,6 +214,9 @@ Route::post('/json/lokasi-tk-3/daftar', [LokasiTk3Controller::class, 'daftarJson
 // Menampilkan JSON data lokasi tingkat III berdasarkan lokasi tingkat II
 Route::post('/json/lokasi-tk-3/daftar', [LokasiTk3Controller::class, 'daftarJson']);
 
+// Menampilkan JSON data lokasi tingkat III berdasarkan lokasi tingkat II
+Route::post('/json/lokasi-tk-3/daftar', [LokasiTk3Controller::class, 'daftarJson']);
+
 /* =========================== END OF MENU LOKASI TINGKAT II ================================ */
 
 /** 
@@ -248,6 +254,76 @@ Route::post('/fasilitas/peralatan/edit', [PeralatanController::class, 'edit']);
 Route::post('/fasilitas/peralatan/detail', [PeralatanController::class, 'detail']);
 
 /* =========================== END OF MENU PERALATAN ================================ */
+
+/* ============================== MENU LAYANAN ==================================== */
+Route::prefix('/fasilitas/layanan')->name('fasilitas.layanan.')->group(function () {
+    // Menampilkan daftar layanan
+    Route::get('/daftar', [LayananController::class, 'daftar'])->name('daftar');
+
+    // Menampilkan form tambah layanan step 1
+    Route::get('/tambah/step1', [LayananController::class, 'formTambahStep1'])->name('tambah.step1.form');
+
+    // Menampilkan form tambah layanan step 1 (tombol back)
+    Route::get('/tambah/step1/back/{id}', [LayananController::class, 'formTambahStep1Back'])->name('tambah.step1.back.form');
+
+    // Melakukan proses tambah layanan step 1
+    Route::post('/tambah/step1', [LayananController::class, 'tambahStep1'])->name('tambah.step1.form');
+
+    // Melakukan proses tambah layanan step 1 (tombol back)
+    Route::post('/tambah/step1/back', [LayananController::class, 'tambahStep1Back'])->name('tambah.step1.back');
+
+    // Menampilkan form tambah layanan step 2
+    Route::get('/tambah/step2/{id}', [LayananController::class, 'formTambahStep2'])->name('tambah.step2.form');
+
+    // Melakukan proses tambah layanan step 2
+    Route::post('/tambah/step2', [LayananController::class, 'tambahStep2'])->name('tambah.step2');
+
+    // Menampilkan form tambah layanan step 3
+    Route::get('/tambah/step3/{id}', [LayananController::class, 'formTambahStep3'])->name('tambah.step3.form');
+
+    // Melakukan proses tambah layanan step 3
+    Route::post('/tambah/step3', [LayananController::class, 'tambahStep3'])->name('tambah.step3');
+
+    // Melakukan menghapus draft layanan
+    Route::post('/hapus', [LayananController::class, 'hapus'])->name('hapus');
+
+    // Menampilkan form edit layanan step 1
+    Route::get('/edit/step1/{id}', [LayananController::class, 'formEditStep1'])->name('edit.step1.form');
+
+    // Melakukan proses edit layanan step 1
+    Route::post('/edit/step1', [LayananController::class, 'editStep1'])->name('edit.step1');
+
+    // Menampilkan form edit layanan step 2
+    Route::get('/edit/step2/{id}', [LayananController::class, 'formEditStep2'])->name('edit.step2.form');
+
+    // Menampilkan form edit layanan step 3
+    Route::get('/edit/step3/{id}', [LayananController::class, 'formEditStep3'])->name('edit.step3.form');
+
+    // Melakukan proses edit layanan step 3
+    Route::post('/edit/step3', [LayananController::class, 'editStep3'])->name('edit.step3');
+
+    // Melakukan proses filter layanan
+    Route::post('/filter', [LayananController::class, 'filter'])->name('filter');
+
+    // Menampilkan JSON data layanan
+    Route::post('/detail', [LayananController::class, 'detail'])->name('detail');
+
+    // Menampilkan daftar peralatan tersedia berdasarkan filter
+    Route::post('/peralatan/filter', [LayananController::class, 'peralatanFilter'])->name('peralatan.filter');
+
+    // Melakukan proses tambah peralatan ke layanan
+    Route::post('/peralatan/tambah', [LayananController::class, 'tambahPeralatan'])->name('peralatan.tambah');
+
+    // Menampilkan halaman edit ip address peralatan
+    Route::post('/peralatan/edit', [LayananController::class, 'editPeralatan'])->name('peralatan.edit');
+
+    // Menghapus peralatan dari layanan
+    Route::post('/peralatan/hapus', [LayananController::class, 'hapusPeralatan'])->name('peralatan.hapus');
+
+    // Menampilkan JSON data layanan
+    Route::post('/peralatan/detail', [LayananController::class, 'detailPeralatan'])->name('peralatan.detail');
+});
+/* =========================== END OF MENU LAYANAN ================================ */
 
 /* ============================== MENU LAYANAN ==================================== */
 Route::prefix('/fasilitas/layanan')->name('fasilitas.layanan.')->group(function () {
@@ -430,9 +506,14 @@ Route::get('/logbook/home', [LogbookModuleController::class, 'home']);
 Route::get('/logbook/laporan/daftar', [LaporanController::class, 'daftar'])->name('logbook.laporan.daftar');
 
 /* ====== TAMBAH LAPORAN ====== */
+Route::get('/logbook/laporan/daftar', [LaporanController::class, 'daftar'])->name('logbook.laporan.daftar');
 
 // Step 1 -  Melakukan proses filter
+// Step 1 -  Melakukan proses filter
 Route::get('/logbook/laporan/tambah/step1', [LaporanController::class, 'formStep1'])->name('tambah.step1');
+
+// Step 1 -  menampilkan filter
+Route::post('/logbook/laporan/filter', [LaporanController::class, 'filter'])->name('logbook.laporan.filter');
 
 // Step 1 -  menampilkan filter
 Route::post('/logbook/laporan/filter', [LaporanController::class, 'filter'])->name('logbook.laporan.filter');
@@ -451,8 +532,10 @@ Route::post('/logbook/laporan/tambah/step2/back/simpan', [LaporanController::cla
 
 // Step 3 - Menampilkan Form Tindaklanjut
 Route::get('/logbook/laporan/tambah/step3/{laporan_id}', [LaporanController::class, 'formStep3'])->name('tambah.step3');
+Route::get('/logbook/laporan/tambah/step3/{laporan_id}', [LaporanController::class, 'formStep3'])->name('tambah.step3');
 
 // Step 3 - Menyimpan Tindaklanjut
+Route::post('/logbook/laporan/tambah/step3/simpan', [LaporanController::class, 'simpanStep3'])->name('tambah.simpanStep3');
 Route::post('/logbook/laporan/tambah/step3/simpan', [LaporanController::class, 'simpanStep3'])->name('tambah.simpanStep3');
 
 // Route untuk menampilkan form step3 back
@@ -465,7 +548,11 @@ Route::post('/logbook/laporan/tambah/step3/back/{laporan_id}', [LaporanControlle
 
 // Step 4 - Menampilkan Form Step 4
 Route::get('/logbook/laporan/tambah/step4/{laporan_id}', [LaporanController::class, 'step4'])->name('tambah.step4');
+// Step 4 - Menampilkan Form Step 4
+Route::get('/logbook/laporan/tambah/step4/{laporan_id}', [LaporanController::class, 'step4'])->name('tambah.step4');
 
+// Step 4 - Simpan Data Step 4 (pakai parameter laporan_id)
+Route::post('/logbook/laporan/tambah/step4/{laporan_id}/simpan', [LaporanController::class, 'simpanStep4'])->name('tambah.simpanStep4');
 // Step 4 - Simpan Data Step 4 (pakai parameter laporan_id)
 Route::post('/logbook/laporan/tambah/step4/{laporan_id}/simpan', [LaporanController::class, 'simpanStep4'])->name('tambah.simpanStep4');
 
@@ -485,6 +572,8 @@ Route::post('/logbook/laporan/tambah/step5', [LaporanController::class, 'simpanS
 
 // Halaman riwayat laporan (jika serviceable)
 Route::get('/logbook/riwayat/daftar', [RiwayatController::class, 'daftar'])->name('logbook.riwayat.daftar');
+// Step 4 - filter peralatan
+Route::post('/logbook/laporan/peralatan/filter', [LaporanController::class, 'filterPeralatanPengganti'])->name('laporan.filterPeralatan');
 
 //untuk menghapus laporan yang berstatus DRAFT
 Route::post('/logbook/laporan/hapus', [LaporanController::class, 'hapus'])->name('logbook.laporan.hapus');
@@ -510,6 +599,8 @@ Route::post('/laporan/edit/{id}/step3', [LaporanController::class, 'updateStep3'
 // Edit Step 4 - Penggantian
 Route::get('/laporan/edit/{id}/step4', [LaporanController::class, 'editStep4'])->name('logbook.laporan.edit.step4');
 Route::post('/laporan/edit/{id}/step4', [LaporanController::class, 'updateStep4'])->name('logbook.laporan.edit.step4.update');
+// Step 5 Menampilkan Review
+Route::get('/logbook/laporan/tambah/step5/{laporan_id}', [LaporanController::class, 'step5'])->name('tambah.step5');
 
 // Edit Step 5 - Review
 Route::get('/laporan/edit/{id}/step5', [LaporanController::class, 'editStep5'])->name('logbook.laporan.edit.step5');
@@ -535,9 +626,66 @@ Route::get('/logbook/export/get-layanan', [ExportController::class, 'getLayananB
 // Route ini digunakan untuk mendapatkan data laporan dengan pagination dan filter yang diterapkan
 Route::get('/logbook/export/get-data', [ExportController::class, 'getData'])->name('export.getData');
 
+// Step 5 Simpan Laporan
+Route::post('/logbook/laporan/tambah/step5/simpan', [LaporanController::class, 'simpanStep5'])->name('tambah.simpanStep5');
+
+
+/* ============================== LOG AKTIVITAS ==================================== */
+Route::get('/log_aktivitas/daftar', [LogAktivitasController::class, 'daftar'])->name('log-aktivitas.daftar');
+
+
+
 /** 
  * ------------------------------------------------------------------------------------
- *                            END OF MODULE LOGBOOK
+ *                            END OF MODULE LOG AKTIVITAS
+ * ------------------------------------------------------------------------------------
+ */ 
+
+
+
+/* ============================== DASHBOARD ==================================== */
+
+Route::prefix('dashboard')->group(function () {
+    // Rute untuk menampilkan laporan
+    Route::get('/laporan', [DashboardLaporanController::class, 'laporan'])->name('dashboard.laporan');
+    
+    // Rute untuk memfilter laporan (POST)
+    Route::post('/laporan/filter', [DashboardLaporanController::class, 'filter'])->name('dashboard.laporan.filter');
+
+    
+// Rute untuk menampilkan halaman laporan dashboard
+Route::get('/dashboard/laporan', [DashboardLaporanController::class, 'laporan'])->name('dashboard.laporan');
+
+// Rute untuk filter laporan berdasarkan tanggal
+Route::post('/dashboard/laporan/filter', [DashboardLaporanController::class, 'filter'])->name('dashboard.laporan.filter');
+
+// Rute untuk menampilkan laporan fasilitas
+Route::get('/dashboard/fasilitas-laporan', [DashboardLaporanController::class, 'fasilitas'])->name('dashboard.fasilitas.laporan');
+
+    // Rute untuk menampilkan semua fasilitas
+    Route::get('/fasilitas', [DashboardFasilitasController::class, 'index'])->name('dashboard.fasilitas');
+    
+    // Rute untuk menampilkan daftar layanan fasilitas
+    Route::get('/dashboarddaftar', [DashboardFasilitasController::class, 'dashboarddaftarIndex'])->name('dashboard.dashboarddaftar.index');
+    
+    // Rute untuk memfilter daftar layanan fasilitas (POST)
+    Route::post('/dashboarddaftar/filter', [DashboardFasilitasController::class, 'dashboarddaftarFilter'])->name('dashboard.dashboarddaftar.filter');
+    
+    // Rute untuk menampilkan daftar layanan berdasarkan fasilitas_id
+    Route::get('/dashboarddaftar/{fasilitas_id}', [DashboardFasilitasController::class, 'dashboarddaftar'])->name('dashboard.dashboarddaftar');
+
+    
+});
+
+
+
+
+
+
+
+/** 
+ * ------------------------------------------------------------------------------------
+ *                            END OF MODULE DASHBOARD
  * ------------------------------------------------------------------------------------
  */ 
 
