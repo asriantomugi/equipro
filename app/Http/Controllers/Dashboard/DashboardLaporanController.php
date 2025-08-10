@@ -31,11 +31,60 @@ class DashboardLaporanController extends Controller
         }
         // ===================== AKHIR PROSES VERIFIKASI =======================
 
+        // ===================== KONSTANTA STATUS LAPORAN =======================
+        $STATUS_OPEN = config('constants.status_laporan.open');     // 2
+        $STATUS_CLOSED = config('constants.status_laporan.closed'); // 3
+
+        // ===================== TAMPILKAN SEMUA DATA LAPORAN (DEFAULT) =======================
+        $fasilitas = Fasilitas::select('fasilitas.*')
+            ->selectRaw("
+                COUNT(laporan.id) as total_laporan,
+                COUNT(CASE WHEN laporan.status = {$STATUS_OPEN} THEN 1 END) as laporan_open,
+                COUNT(CASE WHEN laporan.status = {$STATUS_CLOSED} THEN 1 END) as laporan_close
+            ")
+            ->leftJoin('layanan', 'fasilitas.id', '=', 'layanan.fasilitas_id')
+            ->leftJoin('laporan', 'layanan.id', '=', 'laporan.layanan_id')
+            ->groupBy('fasilitas.id', 'fasilitas.kode', 'fasilitas.nama', 'fasilitas.status', 
+                     'fasilitas.created_by', 'fasilitas.updated_by', 'fasilitas.created_at', 'fasilitas.updated_at')
+            ->having('total_laporan', '>', 0) // Hanya fasilitas yang memiliki laporan
+            ->orderBy('fasilitas.nama', 'ASC')
+            ->get();
+
+        // ===================== PERHITUNGAN SUMMARY DATA =======================
+        $total_laporan_semua = $fasilitas->sum('total_laporan');
+        $total_open_semua = $fasilitas->sum('laporan_open');
+        $total_close_semua = $fasilitas->sum('laporan_close');
+
+        // ===================== DATA UNTUK CHART PIE LAPORAN PER FASILITAS =======================
+        $laporanPerFasilitas = Fasilitas::select('fasilitas.id', 'fasilitas.kode', 'fasilitas.nama')
+            ->selectRaw('COUNT(laporan.id) as total_laporan')
+            ->leftJoin('layanan', 'fasilitas.id', '=', 'layanan.fasilitas_id')
+            ->leftJoin('laporan', 'layanan.id', '=', 'laporan.layanan_id')
+            ->groupBy('fasilitas.id', 'fasilitas.kode', 'fasilitas.nama')
+            ->having('total_laporan', '>', 0)
+            ->orderBy('total_laporan', 'DESC')
+            ->get();
+
         return view('dashboard.laporan', [
             'judul' => 'Laporan Dashboard',
             'module' => 'Dashboard',
             'menu' => 'Laporan',
             'menu_url' => route('dashboard.laporan'),
+            // Data fasilitas dengan laporan (semua data)
+            'fasilitas' => $fasilitas,
+            // Data summary (untuk MENU LAPORAN)
+            'total_laporan_semua' => $total_laporan_semua,
+            'total_open' => $total_open_semua,
+            'total_close' => $total_close_semua,
+            // Data untuk chart pie laporan per fasilitas
+            'laporanPerFasilitas' => $laporanPerFasilitas,
+            // Status constants untuk view
+            'STATUS_OPEN' => $STATUS_OPEN,
+            'STATUS_CLOSED' => $STATUS_CLOSED,
+            // Default values untuk form filter
+            'tanggal_mulai' => null,
+            'tanggal_selesai' => null,
+            'show_all_data' => true, // Flag untuk menandakan menampilkan semua data
         ]);
     }
 
@@ -78,22 +127,26 @@ class DashboardLaporanController extends Controller
         $end = Carbon::parse($tanggal_selesai)->endOfDay();
         // ===================== AKHIR PROSES FILTER TANGGAL =======================
 
-        // ===================== PROSES PENGAMBILAN DATA LAPORAN PER FASILITAS =======================
+        // ===================== KONSTANTA STATUS LAPORAN =======================
+        $STATUS_OPEN = config('constants.status_laporan.open');     // 2
+        $STATUS_CLOSED = config('constants.status_laporan.closed'); // 3
+
+        // ===================== PROSES PENGAMBILAN DATA LAPORAN PER FASILITAS (FILTERED) =======================
         $fasilitas = Fasilitas::select('fasilitas.*')
-            ->selectRaw('
+            ->selectRaw("
                 COUNT(laporan.id) as total_laporan,
-                COUNT(CASE WHEN laporan.status = 1 THEN 1 END) as laporan_open,
-                COUNT(CASE WHEN laporan.status = 2 THEN 1 END) as laporan_close
-            ')
+                COUNT(CASE WHEN laporan.status = {$STATUS_OPEN} THEN 1 END) as laporan_open,
+                COUNT(CASE WHEN laporan.status = {$STATUS_CLOSED} THEN 1 END) as laporan_close
+            ")
             ->leftJoin('layanan', 'fasilitas.id', '=', 'layanan.fasilitas_id')
             ->leftJoin('laporan', function($join) use ($start, $end) {
                 $join->on('layanan.id', '=', 'laporan.layanan_id')
-                     ->whereBetween('laporan.waktu', [$start, $end]);
+                     ->whereBetween('laporan.waktu_open', [$start, $end]);
             })
             ->groupBy('fasilitas.id', 'fasilitas.kode', 'fasilitas.nama', 'fasilitas.status', 
                      'fasilitas.created_by', 'fasilitas.updated_by', 'fasilitas.created_at', 'fasilitas.updated_at')
             ->having('total_laporan', '>', 0) // Hanya fasilitas yang memiliki laporan
-            ->orderBy('fasilitas.nama', 'ASC') // Tambahkan ordering untuk konsistensi
+            ->orderBy('fasilitas.nama', 'ASC')
             ->get();
 
         // ===================== PERHITUNGAN SUMMARY DATA =======================
@@ -101,21 +154,18 @@ class DashboardLaporanController extends Controller
         $total_open_semua = $fasilitas->sum('laporan_open');
         $total_close_semua = $fasilitas->sum('laporan_close');
 
-        // ===================== TAMBAHAN: DATA UNTUK CHART PIE LAPORAN PER FASILITAS =======================
+        // ===================== DATA UNTUK CHART PIE LAPORAN PER FASILITAS (FILTERED) =======================
         $laporanPerFasilitas = Fasilitas::select('fasilitas.id', 'fasilitas.kode', 'fasilitas.nama')
             ->selectRaw('COUNT(laporan.id) as total_laporan')
             ->leftJoin('layanan', 'fasilitas.id', '=', 'layanan.fasilitas_id')
             ->leftJoin('laporan', function($join) use ($start, $end) {
                 $join->on('layanan.id', '=', 'laporan.layanan_id')
-                     ->whereBetween('laporan.waktu', [$start, $end]);
+                     ->whereBetween('laporan.waktu_open', [$start, $end]);
             })
             ->groupBy('fasilitas.id', 'fasilitas.kode', 'fasilitas.nama')
-            ->having('total_laporan', '>', 0) // Hanya fasilitas yang memiliki laporan
-            ->orderBy('total_laporan', 'DESC') // Urutkan berdasarkan jumlah laporan terbanyak
+            ->having('total_laporan', '>', 0)
+            ->orderBy('total_laporan', 'DESC')
             ->get();
-        // ===================== AKHIR TAMBAHAN =======================
-
-        // ===================== AKHIR PROSES PENGAMBILAN DATA LAPORAN =======================
 
         return view('dashboard.laporan', [
             'judul' => 'Laporan Dashboard',
@@ -125,14 +175,18 @@ class DashboardLaporanController extends Controller
             // Data filter
             'tanggal_mulai' => $tanggal_mulai,
             'tanggal_selesai' => $tanggal_selesai,
-            // Data fasilitas dengan laporan
+            // Data fasilitas dengan laporan (filtered)
             'fasilitas' => $fasilitas,
             // Data summary (untuk MENU LAPORAN)
             'total_laporan_semua' => $total_laporan_semua,
-            'total_open' => $total_open_semua, // Mengembalikan total_open
-            'total_close' => $total_close_semua, // Mengembalikan total_close
-            // TAMBAHAN: Data untuk chart pie laporan per fasilitas
+            'total_open' => $total_open_semua,
+            'total_close' => $total_close_semua,
+            // Data untuk chart pie laporan per fasilitas (filtered)
             'laporanPerFasilitas' => $laporanPerFasilitas,
+            // Status constants untuk view
+            'STATUS_OPEN' => $STATUS_OPEN,
+            'STATUS_CLOSED' => $STATUS_CLOSED,
+            'show_all_data' => false, // Flag untuk menandakan data sudah difilter
         ]);
     }
 
@@ -155,13 +209,17 @@ class DashboardLaporanController extends Controller
         }
         // ===================== AKHIR PROSES VERIFIKASI =======================
 
+        // ===================== KONSTANTA STATUS LAPORAN =======================
+        $STATUS_OPEN = config('constants.status_laporan.open');     // 2
+        $STATUS_CLOSED = config('constants.status_laporan.closed'); // 3
+
         // Ambil semua fasilitas dengan relasi laporan melalui layanan dan hitung jumlah laporan
         $fasilitas = Fasilitas::select('fasilitas.*')
-            ->selectRaw('
+            ->selectRaw("
                 COUNT(laporan.id) as laporan_count,
-                COUNT(CASE WHEN laporan.status = 1 THEN 1 END) as laporan_open,
-                COUNT(CASE WHEN laporan.status = 2 THEN 1 END) as laporan_close
-            ')
+                COUNT(CASE WHEN laporan.status = {$STATUS_OPEN} THEN 1 END) as laporan_open,
+                COUNT(CASE WHEN laporan.status = {$STATUS_CLOSED} THEN 1 END) as laporan_close
+            ")
             ->leftJoin('layanan', 'fasilitas.id', '=', 'layanan.fasilitas_id')
             ->leftJoin('laporan', 'layanan.id', '=', 'laporan.layanan_id')
             ->groupBy('fasilitas.id', 'fasilitas.kode', 'fasilitas.nama', 'fasilitas.status', 

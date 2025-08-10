@@ -101,16 +101,6 @@ class Laporan extends Model
         return $this->hasOne(TlPenggantianPeralatan::class, 'laporan_id');
     }
 
-    public function gangguanPeralatan()
-    {
-        return $this->hasMany(TlGangguanPeralatan::class, 'laporan_id');
-    }
-
-    public function gangguanNonPeralatan()
-    {
-        return $this->hasOne(TlGangguanNonPeralatan::class, 'laporan_id');
-    }
-
         
     /**
      * Function untuk memanggil user created_by.
@@ -159,5 +149,20 @@ class Laporan extends Model
     public function getUpdatedAtFormattedAttribute()
     {
         return $this->updated_at ? $this->updated_at->format('d-m-Y H:i:s') : null;
+    }
+
+    // Di model Laporan.php
+    public function getStatusLabelAttribute()
+    {
+        switch ($this->status) {
+            case config('constants.status_laporan.draft'):
+                return '<span class="badge badge-warning">DRAFT</span>';
+            case config('constants.status_laporan.open'):
+                return '<span class="badge badge-success">OPEN</span>';
+            case config('constants.status_laporan.closed'):
+                return '<span class="badge badge-secondary">CLOSED</span>';
+            default:
+                return '<span class="badge badge-light">UNKNOWN</span>';
+        }
     }
 }

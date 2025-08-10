@@ -62,7 +62,7 @@ class LaporanController extends Controller
         if($status != TRUE){
             return redirect('/logout');
         }
-        // cek role user, hanya bisa diakses oleh super admin dan admin
+        // cek role user, hanya bisa diakses oleh super admin, admin dan teknisi
         if(session()->get('role_id') != config('constants.role.super_admin')
          && session()->get('role_id') != config('constants.role.admin')
          && session()->get('role_id') != config('constants.role.teknisi')){
@@ -1744,9 +1744,11 @@ public function step5($laporan_id)
     $detailGangguanPeralatan = collect();
     $penggantian = collect();
     $perbaikan = collect();
-    $tindaklanjut = null;
+    $semuaTindakLanjut = collect(); // Untuk non-peralatan
+    $gangguanNonPeralatan = null;
 
     if ($laporan->jenis == 1) {
+        // =============== GANGGUAN PERALATAN ===============
         // Ambil semua gangguan peralatan
         $detailGangguanPeralatan = GangguanPeralatan::with('peralatan')
             ->where('laporan_id', $laporan->id)
@@ -1766,34 +1768,47 @@ public function step5($laporan_id)
             ])
             ->where('laporan_id', $laporan->id)
             ->get();
-        } else {
-            // Jika tidak ada penggantian, ambil tindaklanjut langsung
-            $tindaklanjut = TlGangguanPeralatan::where('laporan_id', $laporan->id)
-                ->latest('waktu')
-                ->first();
         }
 
-        // Ambil semua data perbaikan untuk keperluan lain jika diperlukan
+        // Ambil semua data perbaikan
         $perbaikan = TlGangguanPeralatan::with(['peralatan'])
             ->where('laporan_id', $laporan->id)
             ->where('jenis_tindaklanjut', config('constants.jenis_tindaklanjut.perbaikan'))
             ->get();
 
+        // Update kondisi layanan berdasarkan peralatan
+        $kondisiLayanan = TlGangguanPeralatan::where('laporan_id', $laporan->id)
+            ->pluck('kondisi')
+            ->toArray();
+
+        // Jika ada peralatan yang masih dalam kondisi GANGGUAN (0), set kondisi layanan menjadi UNSERVICEABLE
+        $isServiceable = !in_array(0, $kondisiLayanan); // 0 = GANGGUAN
+        $laporan->kondisi_layanan_temp = $isServiceable ? 1 : 0; // 1 = SERVICEABLE, 0 = UNSERVICEABLE
+
     } else {
-        // Untuk gangguan non-peralatan
-        $tindaklanjut = TlGangguanNonPeralatan::where('laporan_id', $laporan->id)
-            ->latest('waktu')
+        // =============== GANGGUAN NON-PERALATAN ===============
+        // Ambil data gangguan non-peralatan
+        $gangguanNonPeralatan = GangguanNonPeralatan::where('laporan_id', $laporan->id)
+            ->latest()
             ->first();
+
+        // Ambil semua tindak lanjut non-peralatan
+        $semuaTindakLanjut = TlGangguanNonPeralatan::where('laporan_id', $laporan->id)
+            ->orderBy('waktu', 'desc')
+            ->get();
+
+        // Update kondisi layanan berdasarkan tindak lanjut non-peralatan terbaru
+        if ($semuaTindakLanjut->isNotEmpty()) {
+            $tindakLanjutTerbaru = $semuaTindakLanjut->first();
+            $laporan->kondisi_layanan_temp = $tindakLanjutTerbaru->kondisi;
+        } else {
+            // Jika belum ada tindak lanjut, kondisi tetap unserviceable
+            $laporan->kondisi_layanan_temp = 0;
+        }
     }
 
-    // Cek kondisi layanan berdasarkan peralatan
-    $kondisiLayanan = TlGangguanPeralatan::where('laporan_id', $laporan->id)
-        ->pluck('kondisi')
-        ->toArray();
-
-    // Jika ada peralatan yang masih dalam kondisi GANGGUAN (0), set kondisi layanan menjadi UNSERVICEABLE
-    $isServiceable = !in_array(0, $kondisiLayanan); // 0 = GANGGUAN
-    $laporan->kondisi_layanan_temp = $isServiceable ? 1 : 0; // 1 = SERVICEABLE, 0 = UNSERVICEABLE
+    // Simpan perubahan kondisi layanan
+    $laporan->save();
 
     return view('logbook.laporan.tambah.step5', [
         'judul' => 'Laporan',
@@ -1805,7 +1820,8 @@ public function step5($laporan_id)
         'detailGangguanPeralatan' => $detailGangguanPeralatan,
         'penggantian' => $penggantian,
         'perbaikan' => $perbaikan,
-        'tindaklanjut' => $tindaklanjut,
+        'semuaTindakLanjut' => $semuaTindakLanjut, // Untuk non-peralatan
+        'gangguanNonPeralatan' => $gangguanNonPeralatan, // Data gangguan non-peralatan
     ]);
 }
 
@@ -2452,6 +2468,26 @@ public function editStep3($id)
     $jenisTindakLanjut = config('constants.jenis_tindaklanjut');
     $kondisiTindaklanjut = config('constants.kondisi_tindaklanjut');
 
+    // ========== TAMBAHAN: DATA GANGGUAN UNTUK DITAMPILKAN ==========
+    
+    // Ambil data gangguan peralatan dengan relasi peralatan
+    $gangguanPeralatanData = null;
+    $gangguanNonPeralatanData = null;
+    
+    if ($laporan->jenis == 1) {
+        // Untuk gangguan peralatan - ambil dengan relasi peralatan
+        $gangguanPeralatanData = GangguanPeralatan::with('peralatan')
+            ->where('laporan_id', $laporan->id)
+            ->orderBy('created_at')
+            ->get();
+    } else {
+        // Untuk gangguan non-peralatan
+        $gangguanNonPeralatanData = GangguanNonPeralatan::where('laporan_id', $laporan->id)
+            ->first();
+    }
+
+    // =================================================================
+
     // Ambil data gangguan peralatan untuk menentukan peralatan mana yang perlu tindak lanjut
     $gangguanPeralatan = GangguanPeralatan::where('laporan_id', $laporan->id)->get();
     $peralatanGangguanIds = $gangguanPeralatan->where('kondisi', 0)->pluck('peralatan_id')->toArray();
@@ -2519,7 +2555,11 @@ public function editStep3($id)
         'existingTindakLanjut'  => $existingTindakLanjut,
         'tindaklanjutPeralatan' => $tlPeralatan,
         'tindaklanjutNonPeralatan' => $tlNon,
-        'kondisiTerbaru'        => $kondisiTerbaru, //Data kondisi terbaru
+        'kondisiTerbaru'        => $kondisiTerbaru,
+        // ========== TAMBAHAN DATA GANGGUAN ==========
+        'gangguanPeralatanData' => $gangguanPeralatanData,
+        'gangguanNonPeralatanData' => $gangguanNonPeralatanData,
+        // ============================================
         'isEdit'                => true,
     ]);
 }
@@ -2669,7 +2709,7 @@ private function getNextStepUrl($laporan, $jenisTindakLanjutTerbaru, $id)
 }
 
 /**
- * Handle form tindak lanjut untuk status draft - DIPERBAIKI dengan Dynamic Next Step
+ * Handle form tindak lanjut untuk status draft - dengan Dynamic Next Step
  * 
  * @param Request $request
  * @param Laporan $laporan
@@ -2734,7 +2774,7 @@ private function handleDraftFormTindakLanjut(Request $request, $laporan, $userId
                     $semuaBeroperasi = false;
                 }
 
-                // PERBAIKAN: Cari jenis tindak lanjut dengan waktu terbaru
+                //  Cari jenis tindak lanjut dengan waktu terbaru
                 $waktuInput = \Carbon\Carbon::parse($tindakData['waktu']);
                 if ($waktuTerbaru === null || $waktuInput->greaterThan($waktuTerbaru)) {
                     $waktuTerbaru = $waktuInput;
@@ -2785,8 +2825,8 @@ private function handleDraftFormTindakLanjut(Request $request, $laporan, $userId
         // UPDATE KONDISI LAYANAN DAN JENIS TINDAK LANJUT TERBARU
         $laporan->kondisi_layanan_temp = $kondisiLayanan;
         
-        // PERBAIKAN: Simpan jenis tindak lanjut terbaru untuk menentukan step selanjutnya
-        // Anda bisa menambah field baru atau menggunakan field existing
+        //  Simpan jenis tindak lanjut terbaru untuk menentukan step selanjutnya
+        //  bisa menambah field baru atau menggunakan field existing
         // Misalnya menggunakan field yang sudah ada atau menambah field temp
         if ($laporan->jenis == 1) {
             // Simpan informasi jenis tindak lanjut terbaru ke field temp atau session
@@ -2826,7 +2866,7 @@ private function handleDraftFormTindakLanjut(Request $request, $laporan, $userId
 }
 
 /**
- * Handle AJAX tindak lanjut untuk status open - DIPERBAIKI dengan Dynamic Next Step
+ * Handle AJAX tindak lanjut untuk status open -  dengan Dynamic Next Step
  */
 private function handleAjaxTindakLanjut(Request $request, $laporan, $userId, $id)
 {

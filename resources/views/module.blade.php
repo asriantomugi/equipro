@@ -1,6 +1,5 @@
 @extends('layout.main')
 
-
 @section('content')
   <!-- Main content -->
     <section class="content">
@@ -8,8 +7,9 @@
 
             <div class="row">
 
+{{-- MASTER DATA - Hanya untuk Super Admin dan Admin --}}
 @if(session()->get('role_id') == config('constants.role.super_admin') || 
-    session()->get('role_id') == config('constants.role.super_admin'))
+    session()->get('role_id') == config('constants.role.admin'))
 
               <div class="col-lg-2 col-6">            
                 <div class="small-box bg-info">
@@ -23,8 +23,8 @@
                 </div>
               </div>
               <!-- ./col -->
-@endif
 
+{{-- FASILITAS - Hanya untuk Super Admin dan Admin --}}
               <div class="col-lg-2 col-6">            
                 <div class="small-box bg-success">
                   <div class="inner">
@@ -38,6 +38,23 @@
               </div>
               <!-- ./col -->
 
+{{-- LOG AKTIVITAS - Hanya untuk Super Admin dan Admin --}}
+              <div class="col-lg-2 col-6">            
+                <div class="small-box bg-warning">
+                  <div class="inner">
+                    <center>
+                      <h4>LOG AKTIVITAS</h4>
+                    </center>
+                  </div>
+                 
+                  <a href="{{url('/log_aktivitas/daftar')}}" class="small-box-footer">Masuk <i class="fas fa-arrow-circle-right"></i></a>
+                </div>
+              </div>
+              <!-- ./col -->
+
+@endif
+
+{{-- LOGBOOK - Untuk semua role (Super Admin, Admin, dan Teknisi) --}}
               <div class="col-lg-2 col-6">            
                 <div class="small-box bg-danger">
                   <div class="inner">
@@ -51,6 +68,7 @@
               </div>
               <!-- ./col -->
 
+{{-- DASHBOARD - Untuk semua role (Super Admin, Admin, dan Teknisi) --}}
               <div class="col-lg-2 col-6">            
                 <div class="small-box bg-primary">
                   <div class="inner">
@@ -63,19 +81,6 @@
                 </div>
               </div>
               <!-- ./col -->
-
-              <div class="col-lg-2 col-6">            
-                <div class="small-box bg-warning">
-                  <div class="inner">
-                    <center>
-                      <h4>LOG AKTIVITAS</h4>
-                    </center>
-                  </div>
-                 
-                  <a href="{{url('/log_aktivitas/daftar')}}" class="small-box-footer">Masuk <i class="fas fa-arrow-circle-right"></i></a>
-                </div>
-              </div>
-              <!-- ./col -->
 			  
             </div>
             <!-- /.row -->        
@@ -85,4 +90,4 @@
     <!-- /.content -->
 
     
-@endsection   
+@endsection

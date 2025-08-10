@@ -15,6 +15,15 @@
             console.log('Chart.js version:', Chart.version);
         }
         
+        // Status constants from PHP
+        const STATUS_OPEN = {{ isset($STATUS_OPEN) ? $STATUS_OPEN : 2 }};
+        const STATUS_CLOSED = {{ isset($STATUS_CLOSED) ? $STATUS_CLOSED : 3 }};
+        
+        console.log('Status constants:', {
+            open: STATUS_OPEN,
+            closed: STATUS_CLOSED
+        });
+        
         // Redirect functions
         function redirectToLaporan(status = null) {
             let url = '/dashboard/laporandaftar?';
@@ -52,11 +61,16 @@
                     const totalOpen = {{ isset($total_open) ? $total_open : 0 }};
                     const totalClose = {{ isset($total_close) ? $total_close : 0 }};
                     
+                    console.log('Chart totals:', {
+                        open: totalOpen,
+                        close: totalClose
+                    });
+                    
                     const chartData = {
                         labels: ['Open', 'Close'],
                         datasets: [{
                             data: [totalOpen, totalClose],
-                            backgroundColor: ['#dc3545', '#28a745'],
+                            backgroundColor: ['#dc3545', '#28a745'], // Danger, Success
                             borderColor: '#fff',
                             borderWidth: 2
                         }]
@@ -73,12 +87,6 @@
                             plugins: {
                                 legend: {
                                     position: 'bottom'
-                                }
-                            },
-                            onClick: function(event, elements) {
-                                if (elements.length > 0) {
-                                    const status = elements[0].index === 0 ? '1' : '2';
-                                    redirectToLaporan(status);
                                 }
                             }
                         }
@@ -100,7 +108,7 @@
                 if (canvas && typeof Chart !== 'undefined') {
                     const ctx = canvas.getContext('2d');
                     
-                    const colors = ['#FF6384', '#36A2EB', '#FFCE56', '#4BC0C0', '#9966FF'];
+                    const colors = ['#FF6384', '#36A2EB', '#FFCE56', '#4BC0C0', '#9966FF', '#FF9F40', '#FF6384', '#C9CBCF'];
                     
                     const chartData = {
                         labels: [
@@ -137,30 +145,34 @@
                     });
                     
                     console.log('✅ Facility chart created:', chart);
+                    
+                    // Store chart colors for boxes
+                    window.facilityColors = colors;
+                    
+                    // Apply colors to facility boxes
+                    const facilityBoxes = document.querySelectorAll('[data-status^="fasilitas_"]');
+                    facilityBoxes.forEach(function(box, index) {
+                        if (index < colors.length) {
+                            // Remove existing background classes
+                            box.classList.remove('bg-light');
+                            // Apply custom background color
+                            box.style.backgroundColor = colors[index];
+                            box.style.color = '#fff';
+                            // Ensure text is readable
+                            const inner = box.querySelector('.inner');
+                            if (inner) {
+                                inner.style.color = '#fff';
+                            }
+                        }
+                    });
                 }
             }, 700);
         @endif
         
-        // Event listeners for clickable boxes
+        // Event listeners for charts only
         setTimeout(function() {
-            const clickableBoxes = document.querySelectorAll('.clickable-box');
-            clickableBoxes.forEach(function(box) {
-                box.addEventListener('click', function(e) {
-                    e.preventDefault();
-                    const status = this.getAttribute('data-status');
-                    if (status === 'all') {
-                        redirectToLaporan(null);
-                    } else if (status === 'open') {
-                        redirectToLaporan('1');
-                    } else if (status === 'close') {
-                        redirectToLaporan('2');
-                    } else if (status.startsWith('fasilitas_')) {
-                        const fasilitasId = status.replace('fasilitas_', '');
-                        redirectToLaporanFasilitas(fasilitasId);
-                    }
-                });
-            });
-        }, 100);
+            console.log('Charts are clickable, boxes are display only');
+        }, 1000);
     });
   </script>
 
@@ -206,19 +218,12 @@
       position: relative;
       height: 450px;
       width: 100%;
-      cursor: pointer;
     }
 
     .chart-container canvas,
     .chart-container-fasilitas canvas {
       width: 100% !important;
       height: 100% !important;
-    }
-
-    .chart-container:hover,
-    .chart-container-fasilitas:hover {
-      opacity: 0.8;
-      transition: opacity 0.3s ease;
     }
 
     .clickable-box {
@@ -249,6 +254,28 @@
       font-size: 12px;
       line-height: 1.2;
       word-wrap: break-word;
+    }
+
+    /* Style for facility boxes with custom colors */
+    .facility-box-custom {
+      border-radius: 5px;
+    }
+
+    /* Style untuk informasi periode filter */
+    .alert {
+      border-radius: 8px;
+      border: none;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    }
+
+    .alert-info {
+      background: linear-gradient(135deg, #d1ecf1 0%, #bee5eb 100%);
+      color: #0c5460;
+    }
+
+    .alert-primary {
+      background: linear-gradient(135deg, #cce7ff 0%, #b3d9ff 100%);
+      color: #004085;
     }
   </style>
 @endsection
@@ -303,58 +330,78 @@
       </div>
     </div>
 
-    @if(isset($tanggal_mulai) && isset($tanggal_selesai))
-      @if(isset($fasilitas) && count($fasilitas) > 0)
-        @php
-          $total_open = $fasilitas->sum('laporan_open');
-          $total_close = $fasilitas->sum('laporan_close');
-          $total_laporan = $total_open + $total_close;
-        @endphp
+    <!-- Informasi Status Filter -->
+    @if(isset($show_all_data) && $show_all_data)
+      <div class="row">
+        <div class="col-12">
+          <div class="alert alert-info alert-dismissible mb-3">
+            <i class="fas fa-info-circle mr-2"></i>
+            <strong>Semua Data Laporan</strong> - Gunakan filter tanggal untuk melihat periode tertentu
+          </div>
+        </div>
+      </div>
+    @elseif(isset($tanggal_mulai) && isset($tanggal_selesai))
+      <div class="row">
+        <div class="col-12">
+          <div class="alert alert-primary mb-3">
+            <i class="fas fa-calendar-alt mr-2"></i>
+            <strong>Periode Laporan:</strong> {{ \Carbon\Carbon::parse($tanggal_mulai)->format('d F Y') }} sampai {{ \Carbon\Carbon::parse($tanggal_selesai)->format('d F Y') }}
+          </div>
+        </div>
+      </div>
+    @endif
 
-        <!-- MENU LAPORAN -->
-        <div class="row">
-          <div class="col-md-12">
-            <div class="card card-primary mb-4">
-              <div class="card-header">
-                <h3 class="card-title">MENU LAPORAN</h3>
-              </div>
-              <div class="card-body">
-                <div class="row">
-                  <div class="col-md-8">
-                    <div class="chart-container">
-                      <canvas id="chartLaporan"></canvas>
+    <!-- Dashboard Content -->
+    @if(isset($fasilitas) && count($fasilitas) > 0)
+      @php
+        $total_open = $fasilitas->sum('laporan_open');
+        $total_close = $fasilitas->sum('laporan_close');
+        $total_laporan = $total_open + $total_close;
+      @endphp
+
+      <!-- MENU LAPORAN -->
+      <div class="row">
+        <div class="col-md-12">
+          <div class="card card-primary mb-4">
+            <div class="card-header">
+              <h3 class="card-title">MENU LAPORAN</h3>
+            </div>
+            <div class="card-body">
+              <div class="row">
+                <div class="col-md-8">
+                  <div class="chart-container">
+                    <canvas id="chartLaporan"></canvas>
+                  </div>
+                </div>
+
+                <div class="col-md-4">
+                  <div class="small-box bg-info" data-status="all">
+                    <div class="inner">
+                      <h3>{{ $total_laporan }}</h3>
+                      <p>TOTAL LAPORAN</p>
+                    </div>
+                    <div class="icon">
+                      <i class="fas fa-clipboard-list"></i>
                     </div>
                   </div>
 
-                  <div class="col-md-4">
-                    <div class="small-box bg-info clickable-box" data-status="all">
-                      <div class="inner">
-                        <h3>{{ $total_laporan }}</h3>
-                        <p>TOTAL LAPORAN</p>
-                      </div>
-                      <div class="icon">
-                        <i class="fas fa-clipboard-list"></i>
-                      </div>
+                  <div class="small-box bg-danger" data-status="open">
+                    <div class="inner">
+                      <h3>{{ $total_open }}</h3>
+                      <p>OPEN</p>
                     </div>
-
-                    <div class="small-box bg-danger clickable-box" data-status="open">
-                      <div class="inner">
-                        <h3>{{ $total_open }}</h3>
-                        <p>OPEN</p>
-                      </div>
-                      <div class="icon">
-                        <i class="fas fa-exclamation-triangle"></i>
-                      </div>
+                    <div class="icon">
+                      <i class="fas fa-exclamation-triangle"></i>
                     </div>
+                  </div>
 
-                    <div class="small-box bg-success clickable-box" data-status="close">
-                      <div class="inner">
-                        <h3>{{ $total_close }}</h3>
-                        <p>CLOSE</p>
-                      </div>
-                      <div class="icon">
-                        <i class="fas fa-check-circle"></i>
-                      </div>
+                  <div class="small-box bg-success" data-status="close">
+                    <div class="inner">
+                      <h3>{{ $total_close }}</h3>
+                      <p>CLOSE</p>
+                    </div>
+                    <div class="icon">
+                      <i class="fas fa-check-circle"></i>
                     </div>
                   </div>
                 </div>
@@ -362,58 +409,54 @@
             </div>
           </div>
         </div>
+      </div>
 
-        {{-- Chart Laporan Per Fasilitas --}}
-        @if(isset($laporanPerFasilitas) && count($laporanPerFasilitas) > 0)
-        <div class="row">
-          <div class="col-md-12">
-            <div class="card card-info mb-4">
-              <div class="card-header">
-                <h3 class="card-title">LAPORAN PER FASILITAS</h3>
-              </div>
-              <div class="card-body">
-                <div class="row">
-                  <div class="col-md-8">
-                    <div class="chart-container-fasilitas">
-                      <canvas id="chartLaporanFasilitas"></canvas>
+      {{-- Chart Laporan Per Fasilitas --}}
+      @if(isset($laporanPerFasilitas) && count($laporanPerFasilitas) > 0)
+      <div class="row">
+        <div class="col-md-12">
+          <div class="card card-info mb-4">
+            <div class="card-header">
+              <h3 class="card-title">LAPORAN PER FASILITAS</h3>
+            </div>
+            <div class="card-body">
+              <div class="row">
+                <div class="col-md-8">
+                  <div class="chart-container-fasilitas">
+                    <canvas id="chartLaporanFasilitas"></canvas>
+                  </div>
+                </div>
+                <div class="col-md-4">
+                  @foreach($laporanPerFasilitas as $laporan)
+                  <div class="small-box bg-light facility-box-custom" data-status="fasilitas_{{ $laporan->id }}">
+                    <div class="inner">
+                      <h3>{{ $laporan->total_laporan }}</h3>
+                      <p class="facility-text">{{ $laporan->kode }} - {{ $laporan->judul ?? $laporan->nama ?? 'Fasilitas' }}</p>
                     </div>
                   </div>
-                  <div class="col-md-4">
-                    @foreach($laporanPerFasilitas as $laporan)
-                    <div class="small-box bg-light clickable-box" data-status="fasilitas_{{ $laporan->id }}">
-                      <div class="inner">
-                        <h3>{{ $laporan->total_laporan }}</h3>
-                        <p class="facility-text">{{ $laporan->judul ?? $laporan->nama ?? 'Fasilitas' }} - {{ $laporan->kode }}</p>
-                      </div>
-                      <div class="icon">
-                        <i class="fas fa-chart-pie"></i>
-                      </div>
-                    </div>
-                    @endforeach
-                  </div>
+                  @endforeach
                 </div>
               </div>
             </div>
           </div>
         </div>
-        @endif
-
-      @else
-        <div class="row">
-          <div class="col-12">
-            <div class="card text-center p-4">
-              <i class="fas fa-exclamation-triangle fa-3x text-warning mb-3"></i>
-              <h4>Tidak Ada Data Laporan</h4>
-              <p class="text-muted">Tidak ada data laporan untuk periode yang dipilih.</p>
-            </div>
-          </div>
-        </div>
+      </div>
       @endif
+
     @else
       <div class="row">
         <div class="col-12">
-          <div class="alert alert-info">
-            <i class="fas fa-info-circle"></i> Silakan pilih rentang tanggal dan klik tombol Filter untuk menampilkan dashboard laporan.
+          <div class="card text-center p-4">
+            <i class="fas fa-exclamation-triangle fa-3x text-warning mb-3"></i>
+            <h4>Tidak Ada Data Laporan</h4>
+            @if(isset($tanggal_mulai) && isset($tanggal_selesai))
+              <p class="text-muted">
+                Tidak ada data laporan untuk periode {{ \Carbon\Carbon::parse($tanggal_mulai)->format('d F Y') }} sampai {{ \Carbon\Carbon::parse($tanggal_selesai)->format('d F Y') }}.
+              </p>
+              <p class="text-muted">Silakan coba dengan rentang tanggal yang berbeda.</p>
+            @else
+              <p class="text-muted">Belum ada data laporan di sistem.</p>
+            @endif
           </div>
         </div>
       </div>

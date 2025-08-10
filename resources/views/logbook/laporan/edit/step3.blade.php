@@ -50,6 +50,118 @@
             </div>
         </div>
 
+{{-- CARD DATA GANGGUAN - Tampil untuk status OPEN --}}
+@if($laporan->status == 'open' || $laporan->status == config('constants.status_laporan.open'))
+    <div class="row mb-3">
+        <div class="col-lg-12">
+            <div class="card">
+                <div class="card-header">
+                    <h3 class="card-title">DATA GANGGUAN</h3>
+                </div>
+                <div class="card-body">
+                    @php
+                        $waktuGangguan = $laporan->waktu_open ? \Carbon\Carbon::parse($laporan->waktu_open)->format('d/m/Y H:i') : '-';
+                        $jenisLaporanText = $laporan->jenis == 1 ? 'Gangguan Peralatan' : 'Gangguan Non-Peralatan';
+                    @endphp
+
+                    {{-- Info Dasar Gangguan --}}
+                    @foreach([
+                        'NO LAPORAN'      => $laporan->no_laporan,
+                        'JENIS LAPORAN'   => $jenisLaporanText,
+                        'WAKTU GANGGUAN'  => $waktuGangguan,
+                    ] as $label => $value)
+                        <div class="form-group row align-items-center">
+                            <label class="col-sm-3 col-form-label">{{ $label }}</label>
+                            <div class="col-sm-9">
+                                <input type="text" class="form-control" value="{{ $value }}" readonly>
+                            </div>
+                        </div>
+                    @endforeach
+
+                    @if($laporan->jenis == 1)
+                        {{-- Untuk Gangguan Peralatan --}}
+                        <div class="form-group row">
+                            <label class="col-sm-3 col-form-label">DETAIL PERALATAN GANGGUAN</label>
+                            <div class="col-sm-9">
+                                <div class="table-responsive">
+                                    <table class="table table-bordered table-sm">
+                                        <thead class="bg-light">
+                                            <tr>
+                                                <th width="5%"><center>No</center></th>
+                                                <th width="40%"><center>Nama Peralatan</center></th>
+                                                <th width="15%"><center>Kondisi </center></th>
+                                                <th width="40%"><center>Deskripsi </center></th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            {{-- Data gangguan peralatan sudah diambil dari controller --}}
+                                            @if($gangguanPeralatanData->count() > 0)
+                                                @foreach($gangguanPeralatanData as $index => $gangguan)
+                                                    <tr>
+                                                        <td><center>{{ $index + 1 }}</center></td>
+                                                        <td>{{ $gangguan->peralatan->nama ?? 'Peralatan Tidak Diketahui' }}</td>
+                                                        <td><center>
+                                                            <span class="badge {{ $gangguan->kondisi ? 'badge-success' : 'badge-danger' }}">
+                                                                {{ $gangguan->kondisi ? 'Beroperasi' : 'Gangguan' }}
+                                                            </span>
+                                                        </center></td>
+                                                        <td>{{ $gangguan->deskripsi ?? '-' }}</td>
+                                                    </tr>
+                                                @endforeach
+                                            @else
+                                                <tr>
+                                                    <td colspan="4" class="text-center text-muted">
+                                                        <i>Tidak ada data gangguan peralatan</i>
+                                                    </td>
+                                                </tr>
+                                            @endif
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    @else
+                        {{-- Untuk Gangguan Non-Peralatan --}}
+                        {{-- Data gangguan non-peralatan sudah diambil dari controller --}}
+                        <div class="form-group row align-items-center">
+                            <label class="col-sm-3 col-form-label">DESKRIPSI GANGGUAN</label>
+                            <div class="col-sm-9">
+                                <textarea class="form-control" rows="3" readonly>{{ $gangguanNonPeralatanData->deskripsi ?? 'Tidak ada deskripsi gangguan' }}</textarea>
+                            </div>
+                        </div>
+                    @endif
+
+                    {{-- Status Kondisi Terbaru --}}
+                    @php
+                        $kondisiTerakhirGlobal = 'Tidak Diketahui';
+                        $badgeClass = 'badge-secondary';
+                        
+                        if($laporan->jenis == 1) {
+                            // Untuk gangguan peralatan, cek kondisi terbaru dari tindak lanjut
+                            $semuaBeroperasi = true;
+                            foreach($peralatanGangguanIds as $peralatanId) {
+                                $kondisi = $kondisiTerbaru[$peralatanId] ?? 0;
+                                if($kondisi == 0) {
+                                    $semuaBeroperasi = false;
+                                    break;
+                                }
+                            }
+                            $kondisiTerakhirGlobal = $semuaBeroperasi ? 'Semua Peralatan Beroperasi' : 'Ada Peralatan Masih Gangguan';
+                            $badgeClass = $semuaBeroperasi ? 'badge-success' : 'badge-danger';
+                        } else {
+                            // Untuk gangguan non-peralatan
+                            $kondisiNonPeralatan = $kondisiTerbaru['non_peralatan'] ?? 0;
+                            $kondisiTerakhirGlobal = $kondisiNonPeralatan ? 'Beroperasi' : 'Gangguan';
+                            $badgeClass = $kondisiNonPeralatan ? 'badge-success' : 'badge-danger';
+                        }
+                    @endphp
+                    
+                </div>
+            </div>
+        </div>
+    </div>
+@endif
+
 
         {{-- Kondisi untuk Status DRAFT: Form Input Tindak Lanjut --}}
 @if($laporan->status == 'draft' || $laporan->status == config('constants.status_laporan.draft'))
@@ -314,7 +426,7 @@
                 </div>
             @endforeach
             
-            {{-- TAMBAHAN: Tampilkan peralatan yang belum ada tindak lanjutnya --}}
+            {{-- Tampilkan peralatan yang belum ada tindak lanjutnya --}}
             @foreach($peralatanGangguanIds as $peralatanId)
                 @php
                     $tindakLanjutList = $tindakLanjutByPeralatan->get($peralatanId);

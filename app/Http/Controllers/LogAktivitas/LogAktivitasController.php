@@ -6,7 +6,7 @@ namespace App\Http\Controllers\LogAktivitas;
  * LogAktivitasController.php
  * Controller ini digunakan untuk menampilkan daftar log aktivitas user
  *
- * Akses: hanya SUPER ADMIN
+ * Akses: SUPER ADMIN dan ADMIN
  *
  * @author Faldy
  */
@@ -24,9 +24,10 @@ class LogAktivitasController extends Controller
      *
      * Akses:
      * - Super Admin
+     * - Admin
      * 
      * Method: GET
-     * URL: /log-aktivitas
+     * URL: /log_aktivitas/daftar
      *
      * @return \Illuminate\Http\Response
      */
@@ -47,9 +48,16 @@ class LogAktivitasController extends Controller
             return redirect('/logout');
         }
 
-        // cek role user, hanya bisa diakses oleh super admin
-        if (session()->get('role_id') != config('constants.role.super_admin')) {
-            return redirect('/');
+        // ✅ PERBAIKAN: cek role user, bisa diakses oleh super admin DAN admin
+        $userRoleId = session()->get('role_id');
+        $allowedRoles = [
+            config('constants.role.super_admin'),
+            config('constants.role.admin')
+        ];
+        
+        if (!in_array($userRoleId, $allowedRoles)) {
+            // Bisa juga menggunakan abort(403) untuk forbidden access
+            return redirect('/')->with('error', 'Anda tidak memiliki akses ke halaman ini.');
         }
         // ===================== AKHIR PROSES VERIFIKASI =======================
 
@@ -64,7 +72,7 @@ class LogAktivitasController extends Controller
         $judul     = "Log Aktivitas";
         $module    = "Log Aktivitas";
         $menu      = "Log Aktivitas";
-        $menu_url  = "/log-aktivitas";
+        $menu_url  = "/log_aktivitas/daftar";  // ✅ Sesuaikan dengan route yang benar
         $submenu   = "Daftar";
 
         // tampilkan view

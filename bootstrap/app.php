@@ -13,8 +13,10 @@ return Application::configure(basePath: dirname(__DIR__))
     ->withMiddleware(function (Middleware $middleware) {
         // Registrasi middleware log aktivitas otomatis
         $middleware->append(\App\Http\Middleware\LogAktivitasMiddleware::class);
+         $middleware->alias([
+            'role' => \App\Http\Middleware\RoleMiddleware::class,
+        ]);
     })
     ->withExceptions(function (Exceptions $exceptions) {
-        // Tambahkan penanganan pengecualian di sini jika diperlukan
     })
     ->create();

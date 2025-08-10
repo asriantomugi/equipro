@@ -34,10 +34,10 @@
                                 </div><!-- /.col -->
                                 
                                 <div class="col-md-6">
-                                    <!-- small box -->
+                                    <!-- small box - UPDATED: Gunakan data yang sama dengan pie chart -->
                                     <div class="small-box bg-success clickable-box" data-fasilitas-id="{{ $satu->id }}" data-status="serviceable">
                                         <div class="inner">
-                                            <h3>{{ $satu->getJlhLayananServ() }}</h3>
+                                            <h3>{{ $satu->chart_serviceable ?? $satu->getJlhLayananServ() }}</h3>
                                             <p>SERVICEABLE</p>
                                         </div>
                                         <div class="icon">
@@ -46,10 +46,10 @@
                                         <a href="{{ url('/dashboard/dashboarddaftar?fasilitas=' . $satu->id . '&status=serviceable') }}" class="small-box-footer">More info <i class="fas fa-arrow-circle-right"></i></a>
                                     </div><!-- /.small-box -->
 
-                                    <!-- small box -->
+                                    <!-- small box - UPDATED: Gunakan data yang sama dengan pie chart -->
                                     <div class="small-box bg-danger clickable-box" data-fasilitas-id="{{ $satu->id }}" data-status="unserviceable">
                                         <div class="inner">
-                                            <h3>{{ $satu->getJlhLayananUnserv() }}</h3>
+                                            <h3>{{ $satu->chart_unserviceable ?? $satu->getJlhLayananUnserv() }}</h3>
                                             <p>UNSERVICEABLE</p>
                                         </div>
                                         <div class="icon">
@@ -157,8 +157,9 @@ window.addEventListener('load', function() {
         @foreach($fasilitas as $index => $satu)
             @php 
                 $chartNum = $index + 1;
-                $serviceable = $satu->getJlhLayananServ();
-                $unserviceable = $satu->getJlhLayananUnserv();
+                // UPDATED: Gunakan data yang konsisten dari controller
+                $serviceable = $satu->chart_serviceable ?? $satu->getJlhLayananServ();
+                $unserviceable = $satu->chart_unserviceable ?? $satu->getJlhLayananUnserv();
             @endphp
             
             // Chart untuk {{ $satu->nama }}
@@ -172,7 +173,7 @@ window.addEventListener('load', function() {
                 if (canvas) {
                     var ctx = canvas.getContext('2d');
                     
-                    // Data untuk chart
+                    // Data untuk chart - UPDATED: Menggunakan data yang konsisten
                     var chartData = {
                         labels: ['Serviceable', 'Unserviceable'],
                         datasets: [{
@@ -282,4 +283,3 @@ document.addEventListener('DOMContentLoaded', function() {
 });
 </script>
 @endsection
-

@@ -140,7 +140,7 @@
                         <td><center>{{ strtoupper($satu->LokasiTk2->nama ?? '-') }}</center></td>
                         <td><center>{{ strtoupper($satu->LokasiTk3->nama ?? '-') }}</center></td>
 
-                        @if(isset($satu->kondisi) && $satu->kondisi == config('constants.kondisi_layanan.serviceable'))
+                        @if(isset($satu->kondisi) && $satu->kondisi == config('constants.kondisi_layanan.Serviceable'))
                         <td><center><span class="badge bg-success">SERVICEABLE</span></center></td>
                         @else
                         <td><center><span class="badge bg-danger">UNSERVICEABLE</span></center></td>
@@ -149,25 +149,25 @@
                         <!-- INDIKATOR PERFORMA (AVAILABILITY) -->
                         <td><center>
                           @if($availability >= 99)
-                            <span class="badge bg-success">{{ number_format($availability, 2) }}%</span>
+                            <span class="badge bg-success">{{ number_format($availability, 2, '.', '') }}%</span>
                           @elseif($availability >= 95)
-                            <span class="badge bg-warning">{{ number_format($availability, 2) }}%</span>
+                            <span class="badge bg-warning">{{ number_format($availability, 2, '.', '') }}%</span>
                           @else
-                            <span class="badge bg-danger">{{ number_format($availability, 2) }}%</span>
+                            <span class="badge bg-danger">{{ number_format($availability, 2, '.', '') }}%</span>
                           @endif
                           <small class="d-block text-muted">
-                            {{ number_format($total_waktu_serviceable / 60, 1) }}h serviceable
+                            {{ number_format($total_waktu_serviceable / 60, 1, '.', '') }}h serviceable
                           </small>
                         </center></td>
 
                       <td><center>
                           @if($total_perbaikan > 0)
                           @if($mttr <= 240) {{-- 4 jam --}}
-                          <span class="badge bg-success">{{ number_format($mttr, 0) }}</span>
+                          <span class="badge bg-success">{{ number_format($mttr, 0, '.', '') }}</span>
                           @elseif($mttr <= 480) {{-- 8 jam --}}
-                          <span class="badge bg-warning">{{ number_format($mttr, 0) }}</span>
+                          <span class="badge bg-warning">{{ number_format($mttr, 0, '.', '') }}</span>
                           @else
-                          <span class="badge bg-danger">{{ number_format($mttr, 0) }}</span>
+                          <span class="badge bg-danger">{{ number_format($mttr, 0, '.', '') }}</span>
                           @endif
                           <small class="d-block text-muted">{{ $total_perbaikan }} perbaikan</small>
                           @else
@@ -179,15 +179,15 @@
                           <td><center>
                           @if($total_unserviceable > 0)
                           @if($mtbf >= 43200) {{-- 30 hari = 43200 menit --}}
-                          <span class="badge bg-success">{{ number_format($mtbf, 0) }}</span>
+                          <span class="badge bg-success">{{ number_format($mtbf, 0, '.', '') }}</span>
                           @elseif($mtbf >= 10080) {{-- 7 hari = 10080 menit --}}
-                          <span class="badge bg-warning">{{ number_format($mtbf, 0) }}</span>
+                          <span class="badge bg-warning">{{ number_format($mtbf, 0, '.', '') }}</span>
                           @else
-                          <span class="badge bg-danger">{{ number_format($mtbf, 0) }}</span>
+                          <span class="badge bg-danger">{{ number_format($mtbf, 0, '.', '') }}</span>
                           @endif
                           <small class="d-block text-muted">{{ $total_unserviceable }} unserviceable</small>
                           @elseif($total_waktu_serviceable > 0)
-                          <span class="badge bg-success">{{ number_format($mtbf, 0) }}</span>
+                          <span class="badge bg-success">{{ number_format($mtbf, 0, '.', '') }}</span>
                           <small class="d-block text-muted">Tidak ada kegagalan</small>
                           @else
                           <span class="badge bg-secondary">N/A</span>
@@ -225,18 +225,7 @@
                 <i class="fas fa-arrow-left"></i> Kembali
               </a>
               
-              @if(isset($daftar) && count($daftar) > 0)
-                <div class="float-right">
-                  <small class="text-muted">
-                    <strong>Keterangan:</strong> 
-                    Indikator Performa = Total Waktu Serviceable / {{ isset($tanggal_mulai) && isset($tanggal_selesai) ? 'Periode Dipilih' : '43200 menit (30 hari)' }} × 100% |
-                    MTTR = Total Waktu Perbaikan / Total Perbaikan |
-                    MTBF = Total Waktu Serviceable / Total Unserviceable
-                  </small>
-                </div>
-              @endif
-            </div>
-          </div>
+         
           <!-- /.card -->
 
         </div>
