@@ -1,3 +1,4 @@
+
 @extends('logbook.main')
 
 @section('head')
@@ -6,258 +7,311 @@
 
 @section('content')
 <section class="content">
-  <div class="container-fluid">
-    {{-- Step Navigation --}}
-    <div class="row mb-2">
-      <div class="col-lg-12">
-        <div class="card"><div class="card-body py-2">
-          <ul class="step d-flex flex-nowrap">
-            <li class="step-item completed"><a href="{{ route('tambah.step1') }}">Pilih Layanan</a></li>
-            <li class="step-item completed"><a href="{{ route('tambah.step2.back',['laporan_id'=>$laporan->id]) }}">Input Gangguan</a></li>
-            <li class="step-item active"><a href="#">Tindaklanjut</a></li>
-            <li class="step-item"><a href="#">Review</a></li>
-          </ul>
-        </div></div>
-      </div>
+    <div class="container-fluid">
+
+        {{-- Step Navigation --}}
+        <div class="row mb-2">
+            <div class="col-lg-12">
+                <div class="card">
+                    <div class="card-body py-2">
+                        <ul class="step d-flex flex-nowrap">
+                            <li class="step-item completed"><a href="{{ route('tambah.step1') }}">Pilih Layanan</a></li>
+                            <li class="step-item completed"><a href="{{ route('tambah.step2.back', ['laporan_id' => $laporan->id]) }}">Input Gangguan</a></li>
+                            <li class="step-item active"><a href="#">Tindak Lanjut</a></li>
+                            <li class="step-item"><a href="#">Review</a></li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        {{-- Form --}}
+        <div class="row">
+            <div class="col-lg-12">
+                <div class="card">
+                    <div class="card-header"><h3 class="card-title">FORM TINDAK LANJUT</h3></div>
+                    <div class="card-body">
+
+                    @if ($errors->any())
+                        <div class="alert alert-danger">
+                            <ul class="mb-0">
+                                @foreach ($errors->all() as $error)
+                                    <li>{{ $error }}</li>
+                                @endforeach
+                            </ul>
+                        </div>
+                    @endif
+
+                        <form action="{{ route('tambah.step3.back', ['laporan_id' => $laporan->id]) }}" method="POST" id="formStep3">
+                            @csrf
+                            <input type="hidden" name="laporan_id" value="{{ $laporan->id }}">
+                            <input type="hidden" name="layanan_id" value="{{ $laporan->layanan_id }}">
+                            <input type="hidden" name="jenis_laporan" value="{{ $laporan->jenis == 1 ? 1 : 0 }}">
+                            
+                            {{-- Hidden field untuk kondisi layanan yang akan diset otomatis --}}
+                            <input type="hidden" name="kondisi_setelah" id="kondisi_setelah_hidden" value="">
+
+                            {{-- =============== PERALATAN (jika gangguan_peralatan) =============== --}}
+                            @if ($laporan->jenis == 1)
+                                @php $shown = 0; @endphp
+                                @foreach ($layanan->daftarPeralatanLayanan as $index => $dpl)
+                                    @continue(!in_array($dpl->peralatan->id, $peralatanGangguanIds)) {{-- skip beroperasi --}}
+                                    @php $shown++; @endphp
+                                    @if ($shown > 1)<hr>@endif
+
+                                    <div class="mb-3">
+                                        <strong>Peralatan {{ $shown }}:
+                                            <span class="badge bg-primary">{{ $dpl->peralatan->nama }}</span>
+                                        </strong>
+                                    </div>
+
+                                    
+
+                                    {{-- Jenis --}}
+<div class="form-group row">
+    <label class="col-sm-3 col-form-label">Jenis <span class="text-danger">*</span></label>
+    <div class="col-sm-9">
+        <select name="tindaklanjut[{{ $dpl->peralatan->id }}][jenis]"
+                class="form-control tindak-jenis"
+                data-nama="{{ $dpl->peralatan->nama }}">
+            <option value="">- Pilih -</option>
+            @foreach ($jenisTindakLanjut as $label => $value)
+                <option value="{{ $value ? 1 : 0 }}" 
+                    {{ isset($tindaklanjutPeralatan[$dpl->peralatan->id]) && $tindaklanjutPeralatan[$dpl->peralatan->id][0]->jenis_tindaklanjut == ($value ? 1 : 0) ? 'selected' : '' }}>
+                    {{ ucfirst($label) }}
+                </option>
+            @endforeach
+        </select>
+        <div class="invalid-feedback dynamic"></div>
     </div>
+</div>
 
-    {{-- Form --}}
-    <div class="row">
-      <div class="col-lg-12">
-        <div class="card">
-          <div class="card-header"><h3 class="card-title">FORM TINDAK LANJUT</h3></div>
-          <div class="card-body">
+                                    {{-- Waktu --}}
+                                    <div class="form-group row">
+                                        <label class="col-sm-3 col-form-label">Waktu <span class="text-danger">*</span></label>
+                                        <div class="col-sm-9">
+                                            <input type="datetime-local"
+                                                   name="tindaklanjut[{{ $dpl->peralatan->id }}][waktu]"
+                                                   class="form-control tindak-waktu"
+                                                   data-nama="{{ $dpl->peralatan->nama }}"
+                                                   value="{{ isset($tindaklanjutPeralatan[$dpl->peralatan->id]) ? $tindaklanjutPeralatan[$dpl->peralatan->id][0]->waktu : '' }}">
+                                            <div class="invalid-feedback dynamic"></div>
+                                        </div>
+                                    </div>
 
-          @if ($errors->any())
-            <div class="alert alert-danger"><ul class="mb-0">
-              @foreach ($errors->all() as $error)<li>{{ $error }}</li>@endforeach
-            </ul></div>
-          @endif
+                                    {{-- Deskripsi --}}
+                                    <div class="form-group row">
+                                        <label class="col-sm-3 col-form-label">Deskripsi</label>
+                                        <div class="col-sm-9">
+                                            <textarea name="tindaklanjut[{{ $dpl->peralatan->id }}][deskripsi]"
+                                                      class="form-control"
+                                                      rows="3">{{ isset($tindaklanjutPeralatan[$dpl->peralatan->id]) ? $tindaklanjutPeralatan[$dpl->peralatan->id][0]->deskripsi : '' }}</textarea>
+                                        </div>
+                                    </div>
 
-            <form action="{{ route('tambah.simpanStep3Back') }}" method="POST" id="formStep3">
-              @csrf
-              <input type="hidden" name="laporan_id"  value="{{ $laporan->id }}">
-              <input type="hidden" name="layanan_id"  value="{{ $laporan->layanan_id }}">
-              <input type="hidden" name="jenis_laporan" value="{{ $laporan->jenis == 1 ? 1 : 0 }}">
+                                    {{-- Kondisi --}}
+                                    {{-- Kondisi --}}
+<div class="form-group row">
+    <label class="col-sm-3 col-form-label">Kondisi <span class="text-danger">*</span></label>
+    <div class="col-sm-9">
+        <select name="tindaklanjut[{{ $dpl->peralatan->id }}][kondisi]"
+                class="form-control tindak-kondisi"
+                data-nama="{{ $dpl->peralatan->nama }}">
+            <option value="">- Pilih -</option>
+            @foreach ($kondisiTindaklanjut as $label => $value)
+                <option value="{{ $value ? 1 : 0 }}" 
+                    {{ isset($tindaklanjutPeralatan[$dpl->peralatan->id]) && $tindaklanjutPeralatan[$dpl->peralatan->id][0]->kondisi == ($value ? 1 : 0) ? 'selected' : '' }}>
+                    {{ ucfirst($label) }}
+                </option>
+            @endforeach
+        </select>
+        <div class="invalid-feedback dynamic"></div>
+    </div>
+</div>
+                                @endforeach
+                            @else
+                                {{-- =============== NON‑PERALATAN =============== --}}
+                                
+                                
 
-              {{-- ================= GANGGUAN PERALATAN ================= --}}
-              @if ($laporan->jenis == 1)
-                @php $shown = 0; @endphp
-                @foreach ($layanan->daftarPeralatanLayanan as $index => $dpl)
-                  @continue(!in_array($dpl->peralatan->id,$peralatanGangguanIds))
-                  @php $shown++; @endphp
-                  @if ($shown > 1)<hr>@endif
-
-                  @php $tl = $tindaklanjutPeralatan[$dpl->peralatan->id][0] ?? null; @endphp
-                  <div class="mb-3">
-                    <strong>Peralatan {{ $shown }}:
-                      <span class="badge bg-primary">{{ $dpl->peralatan->nama }}</span>
-                    </strong>
-                  </div>
-
-                  {{-- Jenis --}}
-                  <div class="form-group row">
-                    <label class="col-sm-3 col-form-label">Jenis <span class="text-danger">*</span></label>
-                    <div class="col-sm-9">
-                      <select name="tindaklanjut[{{ $dpl->peralatan->id }}][jenis]"
-                              class="form-control tindak-jenis"
-                              data-nama="{{ $dpl->peralatan->nama }}">
-                        <option value="">- Pilih -</option>
-                        @foreach ($jenisTindakLanjut as $label=>$value)
-                          <option value="{{ $value?1:0 }}"
-                              {{ $tl && $tl->jenis_tindaklanjut==($value?1:0)?'selected':'' }}>
-                              {{ ucfirst($label) }}
-                          </option>
-                        @endforeach
-                      </select>
-                    </div>
-                  </div>
-
-                  {{-- Waktu --}}
-                  <div class="form-group row">
-                    <label class="col-sm-3 col-form-label">Waktu <span class="text-danger">*</span></label>
-                    <div class="col-sm-9">
-                      <input type="datetime-local"
-                             name="tindaklanjut[{{ $dpl->peralatan->id }}][waktu]"
-                             class="form-control tindak-waktu"
-                             data-nama="{{ $dpl->peralatan->nama }}"
-                             value="{{ $tl ? \Carbon\Carbon::parse($tl->waktu)->format('Y-m-d\TH:i') : '' }}">
-                    </div>
-                  </div>
-
-                  {{-- Deskripsi --}}
-                  <div class="form-group row">
-                    <label class="col-sm-3 col-form-label">Deskripsi</label>
-                    <div class="col-sm-9">
-                      <textarea name="tindaklanjut[{{ $dpl->peralatan->id }}][deskripsi]"
-                                class="form-control">{{ $tl->deskripsi ?? '' }}</textarea>
-                    </div>
-                  </div>
-
-                  {{-- Kondisi --}}
-                  <div class="form-group row">
-                    <label class="col-sm-3 col-form-label">Kondisi <span class="text-danger">*</span></label>
-                    <div class="col-sm-9">
-                      <select name="tindaklanjut[{{ $dpl->peralatan->id }}][kondisi]"
-                              class="form-control tindak-kondisi"
-                              data-nama="{{ $dpl->peralatan->nama }}">
-                        <option value="">- Pilih -</option>
-                        @foreach ($kondisiTindaklanjut as $label=>$value)
-                          <option value="{{ $value?1:0 }}"
-                              {{ $tl && $tl->kondisi==($value?1:0)?'selected':'' }}>
-                              {{ ucfirst($label) }}
-                          </option>
-                        @endforeach
-                      </select>
-                    </div>
-                  </div>
-                @endforeach
-
-              {{-- ================= NON‑PERALATAN ================= --}}
-              @else
-                <div class="form-group row">
+                                <div class="form-group row">
                                     <label class="col-sm-3 col-form-label">Waktu <span class="text-danger">*</span></label>
                                     <div class="col-sm-9">
-                                        <input type="datetime-local" name="waktu" class="form-control" value="{{ $tindaklanjutNonPeralatan ? \Carbon\Carbon::parse($tindaklanjutNonPeralatan->waktu)->format('Y-m-d\TH:i') : '' }}">
+                                        <input type="datetime-local" 
+                                               name="waktu" 
+                                               class="form-control"
+                                               value="{{ $tindaklanjutNonPeralatan ? $tindaklanjutNonPeralatan->waktu : '' }}">
+                                        <div class="invalid-feedback dynamic"></div>
                                     </div>
                                 </div>
 
                                 <div class="form-group row">
                                     <label class="col-sm-3 col-form-label">Deskripsi</label>
                                     <div class="col-sm-9">
-                                        <textarea name="deskripsi" class="form-control">{{ $tindaklanjutNonPeralatan->deskripsi ?? '' }}</textarea>
+                                        <textarea name="deskripsi" 
+                                                  class="form-control"
+                                                  rows="3">{{ $tindaklanjutNonPeralatan ? $tindaklanjutNonPeralatan->deskripsi : '' }}</textarea>
                                     </div>
                                 </div>
 
                                 <div class="form-group row">
-                                    <label class="col-sm-3 col-form-label">Kondisi <span class="text-danger">*</span></label>
-                                    <div class="col-sm-9">
-                                        <select name="kondisi" class="form-control">
-                                            <option value="">- Pilih -</option>
-                                            @foreach ($kondisiTindaklanjut as $label => $value)
-                                                <option value="{{ $value ? 1 : 0 }}" {{ $tindaklanjutNonPeralatan && $tindaklanjutNonPeralatan->kondisi == ($value ? 1 : 0) ? 'selected' : '' }}>{{ ucfirst($label) }}</option>
-                                            @endforeach
-                                        </select>
-                                    </div>
-                                </div>
-              @endif
-
-              <hr>
-
-              {{-- Kondisi Layanan --}}
-              <div class="form-group row mt-4 d-none" id="group-kondisi-layanan">
-                <label class="col-sm-3 col-form-label">Update Kondisi Layanan <span class="text-danger">*</span></label>
-                <div class="col-sm-9">
-                  <select name="kondisi_setelah" class="form-control">
-                    <option value="">- Pilih -</option>
-                    @foreach ($kondisiSetelah as $label=>$value)
-                      <option value="{{ $value?1:0 }}"
-                        {{ (int)old('kondisi_setelah',$laporan->kondisi_setelah)==($value?1:0)?'selected':'' }}>
-                        {{ $label }}
-                      </option>
-                    @endforeach
-                  </select>
-                </div>
-              </div>
-
-              <div class="card-footer">
-                <a href="{{ route('tambah.step2.back',['laporan_id'=>$laporan->id]) }}"
-                   class="btn btn-success btn-sm">
-                   <i class="fas fa-angle-left"></i>&nbsp;Kembali
-                </a>
-                <button type="submit" class="btn btn-success btn-sm float-right" id="btn-submit">
-                   Lanjut&nbsp;<i class="fas fa-angle-right"></i>
-                </button>
-              </div>
-            </form>
-          </div>
-        </div>
-      </div>
+    <label class="col-sm-3 col-form-label">Kondisi <span class="text-danger">*</span></label>
+    <div class="col-sm-9">
+        <select name="kondisi" class="form-control non-peralatan-kondisi">
+            <option value="">- Pilih -</option>
+            @foreach ($kondisiTindaklanjut as $label => $value)
+                <option value="{{ $value ? 1 : 0 }}" 
+                    {{ $tindaklanjutNonPeralatan && $tindaklanjutNonPeralatan->kondisi == ($value ? 1 : 0) ? 'selected' : '' }}>
+                    {{ ucfirst($label) }}
+                </option>
+            @endforeach
+        </select>
+        <div class="invalid-feedback dynamic"></div>
     </div>
-  </div>
+</div>
+                            @endif
+
+                            <div class="card-footer">
+                                <a href="{{ route('tambah.step2.back', ['laporan_id' => $laporan->id]) }}"
+                                   class="btn btn-success btn-sm">
+                                   <i class="fas fa-angle-left"></i>&nbsp;Kembali
+                                </a>
+                                <button type="submit" class="btn btn-success btn-sm float-right" id="btn-submit">
+                                    Lanjut&nbsp;<i class="fas fa-angle-right"></i>
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
 </section>
 @endsection
 
+@push('styles')
+<style>
+/* hilangkan pseudo‑asterisk bawaan browser / bootstrap */
+input[type="datetime-local"]::after,
+input.form-control:required::after,
+input[type="datetime-local"]:required::after {
+    content: none !important;
+    display: none !important;
+    color: transparent !important;
+}
+
+.alert-info {
+    font-size: 0.9em;
+}
+</style>
+@endpush
+
 @push('scripts')
 <script>
-function markInvalid(el,msg){
-  el.classList.remove('is-valid'); el.classList.add('is-invalid');
-  if(!el.parentNode.querySelector('.invalid-feedback.dynamic')){
-     const d=document.createElement('div');
-     d.className='invalid-feedback dynamic'; d.innerHTML=msg;
-     el.parentNode.appendChild(d);
-  }
-}
-function markValid(el){
-  el.classList.remove('is-invalid'); el.classList.add('is-valid');
-  const fb=el.parentNode.querySelector('.invalid-feedback.dynamic'); if(fb) fb.remove();
-}
-
-/* tampilkan dropdown kondisi_layanan bila semua kondisi = 1 */
-function toggleKondisiLayanan(){
-  const grp=document.getElementById('group-kondisi-layanan');
-  const btn=document.getElementById('btn-submit');
-  const selects=[...document.querySelectorAll('.tindak-kondisi')].filter(s=>s.value!=='');
-  const allOperasi=selects.length>0 && selects.every(s=>s.value==='1');
-  if(allOperasi){ grp.classList.remove('d-none'); }
-  else{
-    grp.classList.add('d-none');
-    grp.querySelector('select').value='';
-  }
-  btn.disabled = !(allOperasi && grp.querySelector('select').value!=='');
+function markInvalid(el, msg) {
+    el.classList.remove('is-valid'); 
+    el.classList.add('is-invalid');
+    
+    // Hapus error message yang ada
+    const existingError = el.closest('.form-group').querySelector('.invalid-feedback.dynamic');
+    if (existingError) existingError.remove();
+    
+    // Tambah error message baru
+    const div = document.createElement('div');
+    div.className = 'invalid-feedback dynamic d-block'; 
+    div.innerHTML = msg;
+    
+    el.parentNode.appendChild(div);
 }
 
-document.addEventListener('DOMContentLoaded',()=>{
-  const form=document.getElementById('formStep3');
-  const btn=document.getElementById('btn-submit');
+function markValid(el) {
+    el.classList.remove('is-invalid'); 
+    el.classList.add('is-valid');
+    
+    // Hapus error message
+    const fb = el.closest('.form-group').querySelector('.invalid-feedback.dynamic');
+    if (fb) fb.remove();
+}
 
-  document.querySelectorAll('.tindak-kondisi').forEach(sel=>{
-    sel.addEventListener('change',toggleKondisiLayanan);
-  });
-  document.getElementById('group-kondisi-layanan')
-          .querySelector('select')
-          .addEventListener('change',toggleKondisiLayanan);
-  toggleKondisiLayanan();
+document.addEventListener('DOMContentLoaded', function () {
+    const form = document.getElementById('formStep3');
+    const submitBtn = document.getElementById('btn-submit');
+    const jenisLaporan = {{ $laporan->jenis }};
 
-  form.addEventListener('submit',e=>{
-    let valid=true;
-    form.querySelectorAll('.is-invalid').forEach(el=>el.classList.remove('is-invalid'));
-    form.querySelectorAll('.invalid-feedback.dynamic').forEach(el=>el.remove());
+    console.log('Form loaded, jenis laporan:', jenisLaporan);
 
-    @if ($laporan->jenis == 1)
-      document.querySelectorAll('.tindak-jenis').forEach(el=>{
-          if(el.value===''){ markInvalid(el,'Jenis wajib'); valid=false;} else markValid(el);
-      });
-      document.querySelectorAll('.tindak-waktu').forEach(el=>{
-          if(el.value===''){ markInvalid(el,'Waktu wajib'); valid=false;} else markValid(el);
-      });
-      document.querySelectorAll('.tindak-kondisi').forEach(el=>{
-          if(el.value===''){ markInvalid(el,'Kondisi wajib'); valid=false;} else markValid(el);
-      });
-    @else
-      const waktu = form.querySelector('[name="waktu"]');
+    /* ========== VALIDASI SUBMIT ========== */
+    form.addEventListener('submit', e => {
+        let valid = true;
+        
+        // Reset semua error state
+        form.querySelectorAll('.is-invalid').forEach(el => el.classList.remove('is-invalid'));
+        form.querySelectorAll('.invalid-feedback.dynamic').forEach(el => el.remove());
+
+        if (jenisLaporan == 1) {
+            // Validasi untuk gangguan peralatan
+            document.querySelectorAll('.tindak-jenis').forEach(el => {
+                if(el.value === '') { 
+                    markInvalid(el, 'Jenis tindak lanjut wajib dipilih'); 
+                    valid = false; 
+                } else {
+                    markValid(el);
+                }
+            });
+            
+            document.querySelectorAll('.tindak-waktu').forEach(el => {
+                if(el.value === '' || el.value.trim() === '') { 
+                    markInvalid(el, 'Waktu wajib diisi'); 
+                    valid = false; 
+                } else {
+                    markValid(el);
+                }
+            });
+            
+            document.querySelectorAll('.tindak-kondisi').forEach(el => {
+                if(el.value === '') { 
+                    markInvalid(el, 'Kondisi wajib dipilih'); 
+                    valid = false; 
+                } else {
+                    markValid(el);
+                }
+            });
+        } else {
+            // Validasi untuk gangguan non-peralatan
+            const waktu = form.querySelector('[name="waktu"]');
             const kondisi = form.querySelector('[name="kondisi"]');
 
-            if (!waktu.value) {
+            if (!waktu.value || waktu.value.trim() === '') {
                 markInvalid(waktu, 'Waktu wajib diisi');
                 valid = false;
-            } else markValid(waktu);
+            } else {
+                markValid(waktu);
+            }
 
             if (!kondisi.value) {
                 markInvalid(kondisi, 'Kondisi wajib dipilih');
                 valid = false;
-            } else markValid(kondisi);
-    @endif
+            } else {
+                markValid(kondisi);
+            }
+        }
 
-    const grp=document.getElementById('group-kondisi-layanan');
-    const ks=grp.querySelector('select');
-    if(!grp.classList.contains('d-none')){
-        if(ks.value===''){ markInvalid(ks,'Kondisi layanan wajib'); valid=false; }
-        else markValid(ks);
-    }
+        if (!valid) {
+            e.preventDefault();
+            console.log('Form validation failed');
+            return false;
+        }
+        
+        console.log('Form validation passed, submitting...');
+    });
 
-    if(!valid || btn.disabled){ e.preventDefault(); }
-  });
+    // Tambahan logging untuk debug select changes
+    document.querySelectorAll('.tindak-jenis, .tindak-kondisi').forEach(select => {
+        select.addEventListener('change', function() {
+            console.log('Select changed:', this.name, 'value:', this.value);
+        });
+    });
 });
 </script>
 @endpush
+

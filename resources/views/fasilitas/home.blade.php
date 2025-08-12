@@ -40,7 +40,7 @@
     ];
   @endphp
                   <div class="col-md-6">
-                    <canvas id="chart{{ $index }}" style="min-height: 250px; height: 250px; max-height: 90%; max-width: 100%;"></canvas>
+                    <canvas id="chart{{ $index }}" style="main-height: 250px; height: 250px; max-height: 90%; max-width: 100%;"></canvas>
                   </div><!-- /.col -->
                   
                   <div class="col-md-6">
@@ -106,7 +106,7 @@
 @endforeach
 
           <!-- =====================  End of Dashboard ====================== -->
-
+           
 
         </div><!-- /.row -->
         

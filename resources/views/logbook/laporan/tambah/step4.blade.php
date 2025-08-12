@@ -31,26 +31,26 @@
         <input type="hidden" name="jenis_tindaklanjut" value="{{ $jenis_tindaklanjut }}">
 
         <div class="card-body">
-          @if ($laporan->jenis == 1 && $jenis_tindaklanjut == config('constants.jenis_tindaklanjut.penggantian'))
-
-            @php $shown = 0; @endphp
+          @if ($laporan->jenis == 1 && $jenis_tindaklanjut === 0) {{-- 0 = penggantian --}}
 
             @foreach ($peralatanLama as $idx => $peralatan)
+             @if ($loop->iteration > 1) <hr> @endif
   @php
     $statusText  = $peralatan->status == 1 ? 'Aktif' : 'Tidak Aktif';
-    $kondisiText = $peralatan->kondisi == 1 ? 'Normal' : 'Rusak';
   @endphp
 
-  @if ($idx > 0) <hr> @endif
+  
 
   <div class="row">
     {{-- PERALATAN LAMA --}}
     <div class="col-md-6 mb-3">
       <div class="form-group row mb-2">
         <div class="col-sm-12">
-          <h5 class="mb-2">
-            <span class="badge badge-primary">Peralatan : {{ $peralatan->nama }}</span>
-          </h5>
+          <div class="mb-3">
+            <strong>Peralatan {{ $loop->iteration }}:
+                <span class="badge bg-primary">{{ $peralatan->nama }}</span>
+             </strong>
+          </div>
         </div>
       </div>
 
@@ -70,12 +70,7 @@
           <input type="text" class="form-control" value="{{ $statusText }}" readonly>
         </div>
       </div>
-      <div class="form-group row">
-        <label class="col-sm-4 col-form-label">Kondisi</label>
-        <div class="col-sm-8">
-          <input type="text" class="form-control" value="{{ $kondisiText }}" readonly>
-        </div>
-      </div>
+      
     </div>
 
     {{-- PERALATAN BARU --}}
@@ -97,7 +92,7 @@
       <input type="hidden" name="penggantian[{{ $idx }}][peralatan_baru_id]" id="pg_peralatan_baru_id_{{ $idx }}">
 
       {{-- Tampilan detail peralatan baru (readonly display) --}}
-      @foreach (['kode','nama','merk','tipe','model','serial_number','status','kondisi'] as $f)
+      @foreach (['kode','nama','merk','tipe','model','serial_number','status'] as $f)
         <div class="form-group row mb-2">
           <label class="col-sm-2"></label>
           <div class="col-sm-8">

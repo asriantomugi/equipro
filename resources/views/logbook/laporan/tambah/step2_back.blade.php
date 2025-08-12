@@ -97,26 +97,23 @@
 </section>
 @endsection
 
-{{-- STYLE --}}
-@push('styles')
-<style>
-#card-input-gangguan, #card-input-gangguan .card, #card-input-gangguan .card-body { overflow: visible; }
-input[type="datetime-local"]::after,
-input.form-control:required::after,
-input[type="datetime-local"]:required::after { content:none!important;display:none!important;color:transparent!important; }
-</style>
-@endpush
-
 {{-- =====================  SCRIPT  ===================== --}}
 @push('scripts')
 <script>
 /* ---------- DATA DARI BACK‑END ---------- */
 const kondisiGangguan   = @json(config('constants.kondisi_gangguan_peralatan'));
 const peralatan         = @json($layanan->daftarPeralatanLayanan);
-const jenisLaporanAwal  = @json(old('jenis_laporan', $selectedJenisLaporan ?? $laporan->jenis_laporan ?? ''));
-const waktuGangguanAwal = "{{ $waktuGangguan ? \Carbon\Carbon::parse($waktuGangguan)->format('Y-m-d\\TH:i') : old('waktu_gangguan') }}";
+const jenisLaporanAwal  = @json(old('jenis_laporan', $selectedJenisLaporan ?? ''));
+const waktuGangguanAwal = @json($waktuGangguan ?? ''); // Data dari controller
 const gangguanPeralatan = @json($gangguanPeralatan ?? []);
 const gangguanNon       = @json($gangguanNonPeralatan ?? null);
+
+// Debug untuk melihat data yang diterima
+console.log('Debug data received:');
+console.log('- waktuGangguanAwal:', waktuGangguanAwal);
+console.log('- jenisLaporanAwal:', jenisLaporanAwal);
+console.log('- gangguanPeralatan:', gangguanPeralatan);
+console.log('- gangguanNon:', gangguanNon);
 
 /* ---------- UTIL ---------- */
 function markInvalid(el, msg){
@@ -135,20 +132,38 @@ function buildGangguanForm(jenis){
   const card=document.getElementById('card-input-gangguan');
   const cont=document.getElementById('form-gangguan-container');
   card.classList.remove('d-none');
+  
+  // Format waktu gangguan dengan lebih hati-hati
+  let waktuValue = '';
+  if (waktuGangguanAwal) {
+    waktuValue = waktuGangguanAwal;
+    
+    // Jika masih dalam format database (Y-m-d H:i:s), convert ke datetime-local format
+    if (waktuValue.includes(' ') && !waktuValue.includes('T')) {
+      waktuValue = waktuValue.replace(' ', 'T').substring(0, 16);
+    }
+    
+    console.log('Waktu value after processing:', waktuValue);
+  }
+  
   let html=`
    <div class="form-group row mb-2">
      <label class="col-sm-3 col-form-label">Waktu Gangguan<span class="text-danger">*</span></label>
      <div class="col-sm-9">
        <input type="datetime-local" name="waktu_gangguan" class="form-control" data-required="true"
-              value="${waktuGangguanAwal}">
+              value="${waktuValue}">
      </div>
    </div>`;
 
   if(jenis==='gangguan_peralatan'){
      peralatan.forEach((p,i)=>{
-         const g = gangguanPeralatan[i] ?? {};
+         // Cari gangguan yang sesuai dengan peralatan ini
+         const g = gangguanPeralatan.find(gp => gp.peralatan_id == p.peralatan?.id) ?? {};
          const nama = p.peralatan?.nama ?? '-';
          const id   = p.peralatan?.id;
+         
+         console.log(`Peralatan ${i+1}:`, {nama, id, gangguan: g});
+         
          html+=`
          <hr>
          <div class="mb-2"><strong>Peralatan ${i+1}: <span class="badge bg-primary">${nama}</span></strong></div>
@@ -159,7 +174,7 @@ function buildGangguanForm(jenis){
              <select name="gangguan[${i}][kondisi]" class="form-control" data-required="true">
                <option value="">- Pilih -</option>
                ${Object.entries(kondisiGangguan).map(([k,v])=>{
-                   const sel = (g.kondisi==v)?'selected':'';
+                   const sel = (g.kondisi == v) ? 'selected' : '';
                    return `<option value="${v}" ${sel}>${k.replace('_',' ').toUpperCase()}</option>`;
                }).join('')}
              </select>
@@ -168,16 +183,16 @@ function buildGangguanForm(jenis){
          <div class="form-group row mb-2">
            <label class="col-sm-3 col-form-label">Deskripsi Gangguan</label>
            <div class="col-sm-9">
-             <textarea name="gangguan[${i}][deskripsi]" class="form-control" rows="3">${g.deskripsi??''}</textarea>
+             <textarea name="gangguan[${i}][deskripsi]" class="form-control" rows="3">${g.deskripsi ?? ''}</textarea>
            </div>
          </div>`;
      });
-  }else if(jenis){
+  }else if(jenis === 'gangguan_non_peralatan'){
      html+=`
        <div class="form-group row mb-2">
          <label class="col-sm-3 col-form-label">Deskripsi Gangguan</label>
          <div class="col-sm-9">
-           <textarea name="deskripsi_gangguan" class="form-control" rows="3">${gangguanNon?.deskripsi??''}</textarea>
+           <textarea name="deskripsi_gangguan" class="form-control" rows="3">${gangguanNon?.deskripsi ?? ''}</textarea>
          </div>
        </div>`;
   }else{
@@ -191,7 +206,12 @@ document.addEventListener('DOMContentLoaded', ()=>{
   const form   = document.getElementById('step2-form');
   const select = document.getElementById('jenis_laporan');
 
-  if(jenisLaporanAwal) buildGangguanForm(jenisLaporanAwal);
+  // Build form jika ada jenis laporan awal
+  if(jenisLaporanAwal) {
+    console.log('Building form with jenis:', jenisLaporanAwal);
+    buildGangguanForm(jenisLaporanAwal);
+  }
+  
   select.addEventListener('change', e => buildGangguanForm(e.target.value));
 
   form.addEventListener('submit', e => {
@@ -209,7 +229,7 @@ document.addEventListener('DOMContentLoaded', ()=>{
       markInvalid(select,'Jenis laporan wajib dipilih');
       hasError = true;
     } else {
-      select.classList.add('is-valid');        // ✅ tanda hijau
+      select.classList.add('is-valid');
     }
 
     /* validasi semua field data-required */
@@ -220,7 +240,7 @@ document.addEventListener('DOMContentLoaded', ()=>{
         markInvalid(el, `${label} wajib diisi`);
         hasError = true;
       } else {
-        el.classList.add('is-valid');          // ✅ tanda hijau
+        el.classList.add('is-valid');
       }
     });
 

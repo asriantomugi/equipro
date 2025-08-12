@@ -1,5 +1,6 @@
 <!-- jQuery -->
 <script src="{{asset('/plugins/jquery/jquery.min.js')}}"></script>
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <!-- jQuery UI 1.11.4 -->
 <script src="{{asset('/plugins/jquery-ui/jquery-ui.min.js')}}"></script>
 <!-- Resolve conflict in jQuery UI tooltip with Bootstrap tooltip -->
@@ -56,6 +57,9 @@
 <script src="{{asset('/plugins/datatables-buttons/js/buttons.html5.min.js')}}"></script>
 <script src="{{asset('/plugins/datatables-buttons/js/buttons.print.min.js')}}"></script>
 <script src="{{asset('/plugins/datatables-buttons/js/buttons.colVis.min.js')}}"></script>
+<!-- Flatpickr JS -->
+<script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+
 
 <!-- Datatable -->
 <script>

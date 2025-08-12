@@ -95,7 +95,7 @@
                       class="btn btn-default">Batal
                     </a>
                     <button type="submit" class="btn btn-success btn-sm float-right">
-                        Lanjut&nbsp;&nbsp;<i class="fas fa-angle-right"></i>
+                        Lanjut &nbsp;&nbsp;<i class="fas fa-angle-right"></i>
                     </button>
                 </div>
             </div>
@@ -129,11 +129,8 @@ input[type="datetime-local"]:required::after {
     background-color: #f8f9fa;
     border-color: #dee2e6;
 }
-
-
 </style>
 @endpush
-
 
 @push('scripts')
 <script>
@@ -142,12 +139,14 @@ const kondisiGangguan   = @json(config('constants.kondisi_gangguan_peralatan'));
 const peralatan         = @json($layanan->daftarPeralatanLayanan ?? []);
 const jenisLaporan      = @json($selectedJenisLaporan);
 
-// Data existing untuk edit
+// PERBAIKAN: Gunakan data waktu yang sudah diformat oleh controller
 const existingData = {
-    waktu_gangguan: @json($waktuGangguan ?? ''),
+    waktu_gangguan: @json($waktuGangguan ?? ''), // Ini sudah dalam format Y-m-d\TH:i dari controller
     deskripsi_gangguan: @json($gangguanNonPeralatan->deskripsi ?? ''),
     gangguan_peralatan: @json($gangguanPeralatan ?? [])
 };
+
+console.log('Debug existing data:', existingData); // Untuk debugging
 
 /* ---------- UTIL ---------- */
 function markInvalid(el,msg){
@@ -161,18 +160,42 @@ function markInvalid(el,msg){
   fe.innerText=msg;
 }
 
+// PERBAIKAN: Tidak perlu function formatDateTimeLocal lagi karena controller sudah memformat
+// Tapi tetap buat untuk fallback jika ada kasus edge
 function formatDateTimeLocal(dateString) {
     if (!dateString) return '';
-    const date = new Date(dateString);
-    if (isNaN(date.getTime())) return '';
     
-    const year = date.getFullYear();
-    const month = String(date.getMonth() + 1).padStart(2, '0');
-    const day = String(date.getDate()).padStart(2, '0');
-    const hours = String(date.getHours()).padStart(2, '0');
-    const minutes = String(date.getMinutes()).padStart(2, '0');
+    // Jika sudah dalam format datetime-local (Y-m-d\TH:i)
+    if (dateString.match(/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}$/)) {
+        return dateString; // Sudah dalam format yang benar
+    }
     
-    return `${year}-${month}-${day}T${hours}:${minutes}`;
+    // Jika sudah dalam format datetime-local tapi dengan detik (Y-m-d\TH:i:s)
+    if (dateString.includes('T') && dateString.length > 16) {
+        return dateString.substring(0, 16); // Ambil hanya Y-m-d\TH:i
+    }
+    
+    // Jika dalam format database (Y-m-d H:i:s)
+    if (dateString.includes(' ')) {
+        return dateString.replace(' ', 'T').substring(0, 16);
+    }
+    
+    // Fallback: coba parse sebagai Date
+    try {
+        const date = new Date(dateString);
+        if (isNaN(date.getTime())) return '';
+        
+        const year = date.getFullYear();
+        const month = String(date.getMonth() + 1).padStart(2, '0');
+        const day = String(date.getDate()).padStart(2, '0');
+        const hours = String(date.getHours()).padStart(2, '0');
+        const minutes = String(date.getMinutes()).padStart(2, '0');
+        
+        return `${year}-${month}-${day}T${hours}:${minutes}`;
+    } catch (e) {
+        console.error('Error formatting date:', e);
+        return '';
+    }
 }
 
 /* ---------- BUILD FORM DINAMIS ---------- */
@@ -180,11 +203,21 @@ function buildGangguanForm(jenis){
   const card=document.getElementById('card-input-gangguan');
   const cont=document.getElementById('form-gangguan-container');
   
+  // PERBAIKAN: Langsung gunakan waktu dari controller, hanya format ulang jika diperlukan
+  let formattedWaktu = existingData.waktu_gangguan;
+  
+  // Validasi tambahan untuk memastikan format benar
+  if (formattedWaktu && !formattedWaktu.match(/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}$/)) {
+      formattedWaktu = formatDateTimeLocal(formattedWaktu);
+  }
+  
+  console.log('Waktu yang akan ditampilkan:', formattedWaktu); // Debug
+  
   let html=`<div class="form-group row mb-2">
      <label class="col-sm-3 col-form-label">Waktu Gangguan<span class="text-danger">*</span></label>
      <div class="col-sm-9">
        <input type="datetime-local" name="waktu_gangguan" class="form-control" 
-              value="${formatDateTimeLocal(existingData.waktu_gangguan)}" 
+              value="${formattedWaktu || ''}" 
               data-required="true">
      </div>
    </div>`;
@@ -207,7 +240,14 @@ function buildGangguanForm(jenis){
            const kondisiValue = existingGangguan?.kondisi !== undefined ? String(existingGangguan.kondisi) : '';
            const deskripsiValue = existingGangguan?.deskripsi ?? '';
            
-                       html+=`
+           console.log(`Peralatan ${i+1} (${nama}):`, {
+               peralatanId,
+               existingGangguan,
+               kondisiValue,
+               deskripsiValue
+           }); // Debug
+           
+           html+=`
             <hr>
             <div class="mb-2">
                 <strong>Peralatan ${i+1}: <span class="badge bg-primary">${nama}</span></strong>
@@ -281,14 +321,7 @@ document.addEventListener('DOMContentLoaded',()=>{
        }
     });
 
-    if(!hasErr) {
-        // Tampilkan loading atau disable button untuk mencegah double submit
-        const submitBtn = form.querySelector('button[type="submit"]');
-        submitBtn.disabled = true;
-        submitBtn.innerHTML = 'Menyimpan... <i class="fas fa-spinner fa-spin"></i>';
-        
-        form.submit();
-    }
+     if(!hasErr) form.submit();
   });
 });
 </script>

@@ -4,25 +4,48 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\Auth;
 use Carbon\Carbon;
 
 class Laporan extends Model
 {
     use HasFactory;
 
-    protected $table = 'laporan'; // nama tabel
-    protected $primaryKey = 'id'; // primary key
+    protected $table = 'laporan';
+    protected $primaryKey = 'id';
 
-    /**
-     * The attributes that are guarded.
-     *
-     * @var array<int, string>
-     */
     protected $guarded = [
         'id'
     ];
 
+    protected $casts = [
+        'waktu_open' => 'datetime',
+        'waktu_close' => 'datetime',
+        'created_at' => 'datetime',
+        'updated_at' => 'datetime',
+    ];
+
     /**
+     * The "booted" method of the model.
+     */
+    protected static function booted()
+    {
+        // Auto fill created_by saat create
+        static::creating(function ($model) {
+            if (Auth::check()) {
+                $model->created_by = Auth::id();
+            }
+        });
+
+        // Auto fill updated_by saat update
+        static::updating(function ($model) {
+            if (Auth::check()) {
+                $model->updated_by = Auth::id();
+            }
+        });
+    }
+
+     /**
      * Function untuk memanggil layanan dari laporan.
      */
     public function layanan()
@@ -31,7 +54,7 @@ class Laporan extends Model
     }
 
     /**
-     * Relasi ke gangguan peralatan (yang hilang)
+     * Relasi ke gangguan peralatan
      */
     public function gangguanPeralatan()
     {
@@ -78,21 +101,7 @@ class Laporan extends Model
         return $this->hasOne(TlPenggantianPeralatan::class, 'laporan_id');
     }
 
-    public function getStatusLabelAttribute()
-    {
-        $status = $this->status;
-
-        if ($status == config('constants.status_laporan.draft')) {
-            return '<span class="badge bg-warning">DRAFT</span>';
-        } elseif ($status == config('constants.status_laporan.open')) {
-            return '<span class="badge bg-success">OPEN</span>';
-        } elseif ($status == config('constants.status_laporan.closed')) {
-            return '<span class="badge bg-secondary">CLOSED</span>';
-        } else {
-            return '<span class="badge bg-dark">UNKNOWN</span>';
-        }
-    }
-
+        
     /**
      * Function untuk memanggil user created_by.
      */
@@ -109,19 +118,51 @@ class Laporan extends Model
         return $this->hasOne(User::class, 'id', 'updated_by');
     }
 
+
     /**
-     * Function untuk memanggil created_at dengan format tertentu.
+     * Function untuk mendapatkan waktu open dalam format yang diinginkan
      */
-    public function getCreatedAtAttribute($value)
+    public function getWaktuOpenFormattedAttribute()
     {
-        return Carbon::parse($value)->format('d-m-Y H:i:s');
+        return $this->waktu_open ? Carbon::parse($this->waktu_open)->format('d/m/Y') : null;
     }
 
     /**
-     * Function untuk memanggil updated_at dengan format tertentu.
+     * Function untuk mendapatkan waktu close dalam format yang diinginkan
      */
-    public function getUpdatedAtAttribute($value)
+    public function getWaktuCloseFormattedAttribute()
     {
-        return Carbon::parse($value)->format('d-m-Y H:i:s');
+        return $this->waktu_close ? Carbon::parse($this->waktu_close)->format('d/m/Y') : null;
+    }
+
+    /**
+     * Function untuk mendapatkan created_at dalam format yang diinginkan untuk tampilan
+     */
+    public function getCreatedAtFormattedAttribute()
+    {
+        return $this->created_at ? $this->created_at->format('d-m-Y H:i:s') : null;
+    }
+
+    /**
+     * Function untuk mendapatkan updated_at dalam format yang diinginkan untuk tampilan
+     */
+    public function getUpdatedAtFormattedAttribute()
+    {
+        return $this->updated_at ? $this->updated_at->format('d-m-Y H:i:s') : null;
+    }
+
+    // Di model Laporan.php
+    public function getStatusLabelAttribute()
+    {
+        switch ($this->status) {
+            case config('constants.status_laporan.draft'):
+                return '<span class="badge badge-warning">DRAFT</span>';
+            case config('constants.status_laporan.open'):
+                return '<span class="badge badge-success">OPEN</span>';
+            case config('constants.status_laporan.closed'):
+                return '<span class="badge badge-secondary">CLOSED</span>';
+            default:
+                return '<span class="badge badge-light">UNKNOWN</span>';
+        }
     }
 }

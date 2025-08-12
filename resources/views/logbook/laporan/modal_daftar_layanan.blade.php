@@ -12,19 +12,29 @@
     </tr>
   </thead>
   <tbody>
-    @foreach($layanan as $item)
+    @php $no = 1; @endphp
+    @forelse($layanan as $item)
     <tr>
-      <td>{{ $loop->iteration }}</td>
-      <td>{{ strtoupper($item->kode) }}</td>
-      <td>{{ strtoupper($item->nama) }}</td>
-      <td>{{ strtoupper($item->fasilitas->nama ?? '-') }}</td>
-      <td>{{ strtoupper($item->LokasiTk1->nama ?? '-') }}</td>
-      <td>{{ strtoupper($item->LokasiTk2->nama ?? '-') }}</td>
-      <td>{{ strtoupper($item->LokasiTk3->nama ?? '-') }}</td>
+      <td>{{ $no++ }}</td>
+      <td>{{ $item->kode ?? '-' }}</td>
+      <td>{{ $item->nama }}</td>
+      <td>{{ $item->fasilitas->nama ?? '-' }}</td>
+      <td>{{ $item->LokasiTk1->nama ?? '-' }}</td>
+      <td>{{ $item->LokasiTk2->nama ?? '-' }}</td>
+      <td>{{ $item->LokasiTk3->nama ?? '-' }}</td>
       <td>
-        <a href="{{ route('tambah.step2', ['layanan_id' => $item->id]) }}" class="btn btn-primary btn-sm">Pilih</a>
+        <a href="{{ url('/logbook/laporan/tambah/step2?layanan_id=' . $item->id) }}" 
+           class="btn btn-sm btn-primary">
+          <i class="fas fa-plus"></i> Pilih
+        </a>
       </td>
     </tr>
-    @endforeach
+    @empty
+    <tr>
+      <td colspan="8" class="text-center">
+        <em>Tidak ada layanan tersedia. Semua layanan sedang dalam proses laporan.</em>
+      </td>
+    </tr>
+    @endforelse
   </tbody>
 </table>

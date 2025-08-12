@@ -8,34 +8,20 @@
       <div class="container-fluid">
         <!-- Small boxes (Stat box) -->
 
-        <div class="row">
-          <div class="col-lg-12">
-             <div class="card">
-              <div class="card-body">
-                <br>
-                <div class="stepper-wrapper">
-                  <div class="stepper-item active">
-                    <div class="step-counter">1</div>
-                    <div class="step-name">Data Layanan</div>
-                  </div>
-                  <div class="stepper-item">
-                    <div class="step-counter">2</div>
-                    <div class="step-name">Daftar Peralatan</div>
-                  </div>
-                  <div class="stepper-item">
-                    <div class="step-counter">3</div>
-                    <div class="step-name">Review</div>
-                  </div>
+        {{-- Step Navigation --}}
+        <div class="row mb-2">
+            <div class="col-lg-12">
+                <div class="card">
+                    <div class="card-body py-2">
+                        <ul class="step d-flex flex-nowrap">
+                            <li class="step-item active"><a href="#">Data Layanan</a></li>
+                            <li class="step-item "><a href="#">Daftar Peralatan</a></li>
+                            <li class="step-item"><a href="#">Review</a></li>
+                            
+                    </div>
                 </div>
-                <!-- stepper-wrapper -->
-              </div>
-              <!-- card-body -->
             </div>
-            <!-- card -->
-          </div>
-          <!-- col-lg-12 -->
-        </div>  
-        <!-- row -->
+        </div>
 
         <div class="row">
           <div class="col-lg-12 col-6">

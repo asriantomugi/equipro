@@ -53,6 +53,14 @@
           </a>
         </li>
 
+        <!-- MENU LAYANAN -->
+        <li class="nav-item">
+          <a href="{{url('/fasilitas/layanan/export/daftar')}}" class="nav-link @if($menu == 'Export') active @endif">
+            <i class="nav-icon fas fa-file-export"></i>
+            <p>Export</p>
+          </a>
+        </li>
+
         <!-- agar menu terakhir tidak tertutup -->
         <li class="nav-item">
           <a class="nav-link"></a>
