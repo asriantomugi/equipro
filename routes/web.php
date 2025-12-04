@@ -29,11 +29,6 @@ Route::get('/', function () {
     return view('welcome');
 });*/
 
-// Mengakses index
-Route::get('/', [HomeController::class, 'index']);
-
-// Menampilkan halaman module
-Route::get('/module', [HomeController::class, 'module']);
 
 // Menampilkan halaman login
 Route::get('/login', [OtentikasiController::class, 'show']);
@@ -44,44 +39,59 @@ Route::post('/login/process', [OtentikasiController::class, 'process']);
 // Memproses logout
 Route::get('/logout', [OtentikasiController::class, 'logout']);
 
+// Group route untuk Controller utama yang bisa diakses oleh semua user
+Route::middleware(['role:super_admin, admin, teknisi'])->group(function () {
+    // Mengakses halaman index (menampilkan module)
+    Route::get('/', [HomeController::class, 'index'])
+    ->name('index');
+});
+
 /** 
  * ------------------------------------------------------------------------------------
- *                             MODULE MASTER DATA
- *                          (HANYA SUPER ADMIN & ADMIN)
+ *                                  MODULE MASTER DATA
+ *                              (HANYA SUPER ADMIN & ADMIN)
  * ------------------------------------------------------------------------------------
  */ 
 
-// Menampilkan halaman utama module Master Data
-Route::get('/master-data/home', [MasterDataModuleController::class, 'home'])->middleware(['role:super_admin,admin']);
+// Group route untuk module master data
+Route::prefix('/master-data')->name('master_data.')->middleware(['role:super_admin, admin'])->group(function () {
 
-/* ============================== MENU USER ==================================== */
-// Menampilkan daftar user
-Route::get('/master-data/user/daftar', [UserController::class, 'daftar'])->middleware(['role:super_admin,admin']);
+    // Menampilkan halaman utama module Master Data
+    Route::get('/home', [MasterDataModuleController::class, 'home'])->name('home');
 
-// Menampilkan form tambah user
-Route::get('/master-data/user/tambah', [UserController::class, 'formTambah'])->middleware(['role:super_admin,admin']);
+    /* ==================================== MENU USER ==================================== */
+    // Menampilkan daftar user
+    Route::get('/user/daftar', [UserController::class, 'daftar'])->name('user.daftar');
 
-// Melakukan proses tambah user
-Route::post('/master-data/user/tambah', [UserController::class, 'tambah'])->middleware(['role:super_admin,admin']);
+    // Menampilkan form tambah user
+    Route::get('/user/tambah', [UserController::class, 'formTambah'])->name('user.tambah.form');
 
-// Menampilkan form edit user
-Route::get('/master-data/user/edit/{id}', [UserController::class, 'formEdit'])->middleware(['role:super_admin,admin']);
+    // Melakukan proses tambah user
+    Route::post('/user/tambah', [UserController::class, 'tambah'])->name('user.tambah');
 
-// Melakukan proses edit user
-Route::post('/master-data/user/edit', [UserController::class, 'edit'])->middleware(['role:super_admin,admin']);
+    // Menampilkan form edit user
+    Route::get('/user/edit/{id}', [UserController::class, 'formEdit'])->name('user.edit.form');
 
-// Menampilkan form reset password user
-Route::get('/master-data/user/password/reset/{id}', [UserController::class, 'formResetPassword'])->middleware(['role:super_admin,admin']);
+    // Melakukan proses edit user
+    Route::post('/user/edit', [UserController::class, 'edit'])->name('user.edit');
 
-// Melakukan proses reset password user
-Route::post('/master-data/user/password/reset', [UserController::class, 'resetPassword'])->middleware(['role:super_admin,admin']);
+    // Menampilkan form reset password user
+    Route::get('/user/password/reset/{id}', [UserController::class, 'formResetPassword'])->name('user.password.form');
 
-// Menampilkan JSON data user
-Route::post('/master-data/user/detail', [UserController::class, 'detail'])->middleware(['role:super_admin,admin']);
+    // Melakukan proses reset password user
+    Route::post('/user/password/reset', [UserController::class, 'resetPassword'])->name('user.password');
 
-/* =========================== END OF MENU USER ================================ */
+    // Menampilkan JSON data user
+    Route::post('/user/detail', [UserController::class, 'detail'])->name('user.detail');
 
-/* ============================== MENU PERUSAHAAN ==================================== */
+    /* ================================= END OF MENU USER ================================ */
+});
+
+
+
+
+
+/* ================================= MENU PERUSAHAAN ================================= */
 // Menampilkan daftar perusahaan
 Route::get('/master-data/perusahaan/daftar', [PerusahaanController::class, 'daftar'])->middleware(['role:super_admin,admin']);
 
@@ -102,7 +112,7 @@ Route::post('/master-data/perusahaan/detail', [PerusahaanController::class, 'det
 
 /* =========================== END OF MENU PERUSAHAAN ================================ */
 
-/* ============================== MENU FASILITAS ==================================== */
+/* =============================== MENU FASILITAS ==================================== */
 // Menampilkan daftar fasilitas
 Route::get('/master-data/fasilitas/daftar', [FasilitasController::class, 'daftar'])->middleware(['role:super_admin,admin']);
 
@@ -123,7 +133,7 @@ Route::post('/master-data/fasilitas/detail', [FasilitasController::class, 'detai
 
 /* =========================== END OF MENU FASILITAS ================================ */
 
-/* ============================== MENU JENIS ALAT ==================================== */
+/* ============================== MENU JENIS ALAT =================================== */
 // Menampilkan daftar jenis alat
 Route::get('/master-data/jenis-alat/daftar', [JenisAlatController::class, 'daftar'])->middleware(['role:super_admin,admin']);
 
@@ -144,7 +154,7 @@ Route::post('/master-data/jenis-alat/detail', [JenisAlatController::class, 'deta
 
 /* =========================== END OF MENU JENIS ALAT ================================ */
 
-/* ============================== MENU LOKASI TINGKAT I ==================================== */
+/* ============================ MENU LOKASI TINGKAT I ================================ */
 // Menampilkan daftar lokasi tingkat I
 Route::get('/master-data/lokasi-tk-1/daftar', [LokasiTk1Controller::class, 'daftar'])->middleware(['role:super_admin,admin']);
 
@@ -163,9 +173,9 @@ Route::post('/master-data/lokasi-tk-1/edit', [LokasiTk1Controller::class, 'edit'
 // Menampilkan JSON data lokasi tingkat I
 Route::post('/master-data/lokasi-tk-1/detail', [LokasiTk1Controller::class, 'detail'])->middleware(['role:super_admin,admin']);
 
-/* =========================== END OF MENU LOKASI TINGKAT I ================================ */
+/* ========================= END OF MENU LOKASI TINGKAT I ============================= */
 
-/* ============================== MENU LOKASI TINGKAT II ==================================== */
+/* ============================= MENU LOKASI TINGKAT II =============================== */
 // Menampilkan daftar lokasi tingkat II
 Route::get('/master-data/lokasi-tk-2/daftar', [LokasiTk2Controller::class, 'daftar'])->middleware(['role:super_admin,admin']);
 
@@ -187,9 +197,9 @@ Route::post('/master-data/lokasi-tk-2/detail', [LokasiTk2Controller::class, 'det
 // Menampilkan JSON data lokasi tingkat II berdasarkan lokasi tingkat I
 Route::post('/json/lokasi-tk-2/daftar', [LokasiTk2Controller::class, 'daftarJson'])->middleware(['role:super_admin,admin']);
 
-/* =========================== END OF MENU LOKASI TINGKAT II ================================ */
+/* =========================== END OF MENU LOKASI TINGKAT II ========================= */
 
-/* ============================== MENU LOKASI TINGKAT III ==================================== */
+/* ============================== MENU LOKASI TINGKAT III ============================ */
 // Menampilkan daftar lokasi tingkat III
 Route::get('/master-data/lokasi-tk-3/daftar', [LokasiTk3Controller::class, 'daftar'])->middleware(['role:super_admin,admin']);
 
@@ -211,7 +221,10 @@ Route::post('/master-data/lokasi-tk-3/detail', [LokasiTk3Controller::class, 'det
 // Menampilkan JSON data lokasi tingkat III berdasarkan lokasi tingkat II
 Route::post('/json/lokasi-tk-3/daftar', [LokasiTk3Controller::class, 'daftarJson'])->middleware(['role:super_admin,admin']);
 
-/* =========================== END OF MENU LOKASI TINGKAT III ================================ */
+// Menampilkan JSON data lokasi tingkat III berdasarkan lokasi tingkat II
+Route::post('/json/lokasi-tk-3/daftar', [LokasiTk3Controller::class, 'daftarJson'])->middleware(['role:super_admin,admin']);
+
+/* ======================== END OF MENU LOKASI TINGKAT III ============================ */
 
 /** 
  * ------------------------------------------------------------------------------------
@@ -248,7 +261,7 @@ Route::post('/fasilitas/peralatan/edit', [PeralatanController::class, 'edit'])->
 // Menampilkan JSON data peralatan
 Route::post('/fasilitas/peralatan/detail', [PeralatanController::class, 'detail'])->middleware(['role:super_admin,admin']);
 
-/* =========================== END OF MENU PERALATAN ================================ */
+/* =========================== END OF MENU PERALATAN ============================== */
 
 /* ============================== MENU LAYANAN ==================================== */
 // Menampilkan daftar layanan
@@ -319,7 +332,7 @@ Route::post('/fasilitas/layanan/peralatan/detail', [LayananController::class, 'd
 
 /* =========================== END OF MENU LAYANAN ================================ */
 
-/* ============================== MENU EXPORT LAYANAN ==================================== */
+/* =========================== MENU EXPORT LAYANAN ================================ */
 // Menampilkan halaman daftar export layanan
 Route::get('/fasilitas/layanan/export/daftar', [ExportLayananController::class, 'daftar'])->name('fasilitas.layanan.export.daftar')->middleware(['role:super_admin,admin']);
 
@@ -335,7 +348,7 @@ Route::get('/fasilitas/layanan/export/lokasi-tk2', [ExportLayananController::cla
 // AJAX: Mendapatkan Lokasi Tk 3 berdasarkan Tk 2
 Route::get('/fasilitas/layanan/export/lokasi-tk3', [ExportLayananController::class, 'getLokasiTk3ByTk2'])->name('fasilitas.layanan.lokasi-tk3')->middleware(['role:super_admin,admin']);
 
-/* ============================== END OF MENU EXPORT LAYANAN ==================================== */
+/* ======================== END OF MENU EXPORT LAYANAN ============================= */
 
 /** 
  * ------------------------------------------------------------------------------------
@@ -371,9 +384,10 @@ Route::group(['prefix' => 'logbook', 'middleware' => ['auth']], function () {
     Route::get('/fasilitas', [LogbookModuleController::class, 'fasilitas'])
         ->name('logbook.fasilitas')
         ->middleware(['role:super_admin,admin,teknisi']);
-
-    
+  
 });
+
+
 /* ============================== MENU LAPORAN ==================================== */
 
 // Menampilkan daftar laporan

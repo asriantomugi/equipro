@@ -21,7 +21,7 @@
 
         <!-- MENU MODULE -->
         <li class="nav-item">
-          <a href="{{url('/module')}}" class="nav-link @if($menu == 'Module') active @endif">
+          <a href="{{route('index')}}" class="nav-link @if($menu == 'Module') active @endif">
             <i class="nav-icon fas fa-th"></i>
             <p>Module</p>
           </a>
@@ -32,7 +32,7 @@
 
         <!-- MENU HOME -->
         <li class="nav-item">
-          <a href="{{url('/master-data/home')}}" class="nav-link @if($menu == 'Home') active @endif">
+          <a href="{{route('master_data.home')}}" class="nav-link @if($menu == 'Home') active @endif">
             <i class="nav-icon fas fa-home"></i>
             <p>Home</p>
           </a>

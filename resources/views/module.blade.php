@@ -89,5 +89,21 @@
     </section>
     <!-- /.content -->
 
-    
+@endsection
+
+@section('tail')
+
+<!-- javascript untuk pop up notifikasi -->
+<script type="text/javascript">
+  @if (session()->has('notif'))
+    @if (session()->get('notif') == 'tidak_diizinkan')
+      $(document).Toasts('create', {
+          class: 'bg-danger',
+          title: 'Gagal!',
+          body: 'Akses tidak diizinkan'
+        })
+    @endif
+  @endif
+</script>
+
 @endsection

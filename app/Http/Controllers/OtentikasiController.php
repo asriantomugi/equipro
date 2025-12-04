@@ -80,7 +80,7 @@ class OtentikasiController extends Controller
             // generate session
             $request->session()->regenerate();
 
-        	// alihkan ke url "/"
+        	// alihkan ke halaman index (menampilkan module)
         	return redirect('/');
         }
 
@@ -104,7 +104,7 @@ class OtentikasiController extends Controller
 	 
 	    $request->session()->regenerateToken();
 	 
-	 	// mengalihkan ke url "/"
-	    return redirect('/');
+	 	// mengalihkan ke halaman login
+	    return redirect('/login');
 	}
 }

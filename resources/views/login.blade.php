@@ -74,7 +74,7 @@
       style="width:290px; height:120px;">
     </a>
     <br>
-    <h5>EQUIPRO<br><small> Electronics & Technology Services</small></h5>
+    <h5>EQUIPRO<br><small> Electronic Services</small></h5>
   </div>
   <br>
   <!-- /.login-logo -->
@@ -123,6 +123,10 @@
           <button type="submit" class="btn btn-primary btn-block">Log In</button>
         </div>
       </form>
+	  
+      <p class="mb-1">
+        <a href="forgot-password.html">Lupa password?</a>
+      </p>
       
     </div>
 	

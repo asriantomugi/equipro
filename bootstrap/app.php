@@ -11,10 +11,12 @@ return Application::configure(basePath: dirname(__DIR__))
         health: '/up',
     )
     ->withMiddleware(function (Middleware $middleware) {
-        // Registrasi middleware log aktivitas otomatis
-        $middleware->append(\App\Http\Middleware\LogAktivitasMiddleware::class);
-         $middleware->alias([
-            'role' => \App\Http\Middleware\RoleMiddleware::class,
+        // Middleware global
+        $middleware->append(\App\Http\Middleware\LogAktivitasMiddleware::class); // Middleware penambahan log aktivitas
+
+        // Alias middleware (yang dipakai di route)
+        $middleware->alias([
+            'role' => \App\Http\Middleware\RoleMiddleware::class, // Middleware pengecekan otentikasi dan role user
         ]);
     })
     ->withExceptions(function (Exceptions $exceptions) {

@@ -17,42 +17,6 @@ use Illuminate\Support\Facades\Auth;
 
 class HomeController extends Controller
 {
-	/**
-     * Function untuk mengarahkan user ke halaman daftar module atau halaman login.
-	 * 
-     * Akses:
-     * - All User
-     * 
-	 * Method: GET
-     * URL: /
-     * 
-     * @param  Request  $request
-     * @return 
-     */
-	public function index(Request $request){
-		// cek session user
-        if (!Auth::check()) {
-            // jika tidak ada session user
-            return redirect('/login');
-        }
-
-        // cek apakah status user = aktif
-        $status = User::find(session()->get('id'))->status;
-        if($status != TRUE){
-            return redirect('/logout');
-        }
-
-		// cek role user, apabila admin AP1, arahkan ke home admin
-        if(session()->get('role_id') == config('constants.role.super_admin') 
-            || session()->get('role_id') == config('constants.role.admin')
-			|| session()->get('role_id') == config('constants.role.teknisi')){
-            return redirect('/module');
-        }
-
-		// jika tidak memenuhi persyaratan, paksa logout
-		return redirect('/logout');
-	}
-	
 	
     /**
      * Function untuk mengarahkan user ke halaman daftar module
@@ -63,35 +27,13 @@ class HomeController extends Controller
 	 * - Teknisi
      * 
 	 * Method: GET
-     * URL: /module
+     * URL: /
      * 
      * @param  Request  $request
      * @return 
      */
-    public function module(Request $request)
-    {
-        // ========================= PROSES VERIFIKASI ========================
-        // cek session user
-        if (!Auth::check()) {
-            // jika tidak ada session user
-            return redirect('/login');
-        }
-
-        // cek apakah status user = aktif
-        $status = User::find(session()->get('id'))->status;
-        if($status != TRUE){
-            return redirect('/logout');
-        }
-
-        // cek role user
-        if(session()->get('role_id') != config('constants.role.super_admin') 
-            && session()->get('role_id') != config('constants.role.admin')
-			&& session()->get('role_id') != config('constants.role.teknisi')){
-            // jika bukan
-            return redirect('/');
-        }
-        // ===================== AKHIR PROSES VERIFIKASI =======================
-		
+    public function index(Request $request)
+    {	
 		// buat variabel untuk dikirim ke halaman view
         $judul = "Module";
 		$module = "Module";
