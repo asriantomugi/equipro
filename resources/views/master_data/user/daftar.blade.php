@@ -61,13 +61,13 @@
 -->
                         <center>
     @if($satu->role_id != config('constants.role.super_admin'))
-                          <a class="btn btn-info btn-sm" 
-                             href="{{url('/master-data/user/edit/'.$satu->id)}}" 
+                          <a class="btn btn-info btn-sm"
+                             href="{{ route('master_data.user.edit.form', $satu->id) }}" 
                              role="button"
                              title="Edit Data"><i class="fas fa-pencil-alt"></i></a>
 							 
 						              <a class="btn btn-danger btn-sm" 
-                             href="{{url('/master-data/user/password/reset/'.$satu->id)}}" 
+                             href="{{ route('master_data.user.password.form', $satu->id) }}"  
                              role="button"
                              title="Reset Password"><i class="fas fa-lock"></i></a>
     @endif
@@ -177,7 +177,7 @@
     //Ajax Load data from ajax
     
     $.ajax({
-        url : "{{url('/master-data/user/detail')}}",
+        url : "{{ route('master_data.user.detail') }}",
         type: "POST",
         data : {id: id},
         success: function(data){

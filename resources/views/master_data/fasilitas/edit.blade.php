@@ -36,7 +36,7 @@
 
 <!-- form start -->
 <form class="form-horizontal needs-validation" 
-      action="{{url('/master-data/fasilitas/edit')}}"
+      action="{{ route('master_data.fasilitas.edit') }}"
       method="post" 
       novalidate>
 @csrf
@@ -91,7 +91,7 @@
 
               <div class="card-footer">
                 <a class="btn btn-default btn-sm" 
-                   href="{{url('/master-data/fasilitas/daftar')}}" 
+                   href="{{ route('master_data.fasilitas.daftar') }}" 
                    role="button">Batal</a>
                 <button type="submit" class="btn btn-primary btn-sm float-right">Simpan</button>
               </div>

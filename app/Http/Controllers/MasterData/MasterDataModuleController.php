@@ -37,28 +37,7 @@ class MasterDataModuleController extends Controller
      * @return void
      */
     public function home(Request $request)
-    {
-        // ========================= PROSES VERIFIKASI ========================
-        // cek session user
-        if (!Auth::check()) {
-            // jika tidak ada session user
-            return redirect('/login');
-        }
-
-        // cek apakah status user = aktif
-        $status = User::find(session()->get('id'))->status;
-        if($status != TRUE){
-            return redirect('/logout');
-        }
-
-        // cek role user, hanya bisa diakses oleh admin AP1
-        if(session()->get('role_id') != config('constants.role.super_admin') 
-            && session()->get('role_id') != config('constants.role.admin')){
-            // jika bukan
-            return redirect('/');
-        }
-        // ===================== AKHIR PROSES VERIFIKASI =======================
-		
+    {		
         // ===================== PROSES PENGAMBILAN DATA USER =======================
         
         // Ambil jumlah user Super Admin

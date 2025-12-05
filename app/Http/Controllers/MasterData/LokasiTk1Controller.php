@@ -34,24 +34,6 @@ class LokasiTk1Controller extends Controller
      */
     public function daftar()
     {
-        // ========================= PROSES VERIFIKASI ========================
-        // cek session user
-        if (!Auth::check()) {
-            // jika tidak ada session user
-            return redirect('/login');
-        }    
-        // cek apakah status user = aktif
-        $status = User::find(session()->get('id'))->status;
-        if($status != TRUE){
-            return redirect('/logout');
-        }
-        // cek role user, hanya bisa diakses oleh super admin dan admin
-        if(session()->get('role_id') != config('constants.role.super_admin')
-         && session()->get('role_id') != config('constants.role.admin')){
-            return redirect('/');
-        }
-        // ===================== AKHIR PROSES VERIFIKASI =======================
-
         // ambil daftar lokasi tingkat I
         $daftar = LokasiTk1::all();
        
@@ -59,7 +41,7 @@ class LokasiTk1Controller extends Controller
         $judul = "Lokasi Tingkat I";
         $module = "Master Data";
         $menu = "Lokasi Tingkat I";
-        $menu_url = "/master-data/lokasi-tk-1/daftar";
+        $menu_url = route('master_data.lokasi_tk_1.daftar');
         $submenu = "Daftar";
         
         // menampilkan halaman view
@@ -87,29 +69,11 @@ class LokasiTk1Controller extends Controller
      */
     public function formTambah()
     {
-        // ========================= PROSES VERIFIKASI ========================
-        // cek session user
-        if (!Auth::check()) {
-            // jika tidak ada session user
-            return redirect('/login');
-        }    
-        // cek apakah status user = aktif
-        $status = User::find(session()->get('id'))->status;
-        if($status != TRUE){
-            return redirect('/logout');
-        }
-        // cek role user, hanya bisa diakses oleh super admin dan admin
-        if(session()->get('role_id') != config('constants.role.super_admin')
-         && session()->get('role_id') != config('constants.role.admin')){
-            return redirect('/');
-        }
-        // ===================== AKHIR PROSES VERIFIKASI =======================
-
         // variabel untuk dikirim ke halaman view
         $judul = "Lokasi Tingkat I";
         $module = "Master Data";
         $menu = "Lokasi Tingkat I";
-        $menu_url = "/master-data/lokasi-tk-1/daftar";
+        $menu_url = route('master_data.lokasi_tk_1.daftar');
         $submenu = "Tambah";
         
         // menampilkan halaman view
@@ -137,24 +101,6 @@ class LokasiTk1Controller extends Controller
      */
     public function tambah(Request $request)
     {
-        // ========================= PROSES VERIFIKASI ========================
-        // cek session user
-        if (!Auth::check()) {
-            // jika tidak ada session user
-            return redirect('/login');
-        }    
-        // cek apakah status user = aktif
-        $status = User::find(session()->get('id'))->status;
-        if($status != TRUE){
-            return redirect('/logout');
-        }
-        // cek role user, hanya bisa diakses oleh super admin dan admin
-        if(session()->get('role_id') != config('constants.role.super_admin')
-         && session()->get('role_id') != config('constants.role.admin')){
-            return redirect('/');
-        }
-        // ===================== AKHIR PROSES VERIFIKASI =======================
-
         // melakukan validasi input dari form
         // jika tidak sesuai parameter, maka akan muncul error
         $validasi  = $request->validate([
@@ -178,11 +124,17 @@ class LokasiTk1Controller extends Controller
         catch(QueryException $ex){
             //dd($ex->getMessage());
             // kembali ke halaman daftar dan tampilkan pesan error
-            return redirect('/master-data/lokasi-tk-1/daftar')->with('notif', 'tambah_gagal');
+            // return redirect('/master-data/lokasi-tk-1/daftar')->with('notif', 'tambah_gagal');
+            return redirect()
+                ->route('master_data.lokasi_tk_1.daftar')
+                ->with('notif', 'tambah_gagal');
         }
 
         // jika proses insert berhasil
-        return redirect('/master-data/lokasi-tk-1/daftar')->with('notif', 'tambah_sukses');
+        // return redirect('/master-data/lokasi-tk-1/daftar')->with('notif', 'tambah_sukses');
+        return redirect()
+                ->route('master_data.lokasi_tk_1.daftar')
+                ->with('notif', 'tambah_sukses');
     }
 
     /**
@@ -235,24 +187,6 @@ class LokasiTk1Controller extends Controller
      */
     public function formEdit($id)
     {
-        // ========================= PROSES VERIFIKASI ========================
-        // cek session user
-        if (!Auth::check()) {
-            // jika tidak ada session user
-            return redirect('/login');
-        }    
-        // cek apakah status user = aktif
-        $status = User::find(session()->get('id'))->status;
-        if($status != TRUE){
-            return redirect('/logout');
-        }
-        // cek role user, hanya bisa diakses oleh super admin dan admin
-        if(session()->get('role_id') != config('constants.role.super_admin')
-         && session()->get('role_id') != config('constants.role.admin')){
-            return redirect('/');
-        }
-        // ===================== AKHIR PROSES VERIFIKASI =======================
-
         // ambil data lokasi tingkat I
         $lokasi_tk_1 = LokasiTk1::where('id', $id)
             ->first();
@@ -260,14 +194,17 @@ class LokasiTk1Controller extends Controller
         // jika lokasi tingkat I dengan id tersebut tidak ada
         if($lokasi_tk_1 == null){
             // kembali ke halaman daftar dan kirim notif
-            return redirect('/master-data/lokasi-tk-1/daftar')->with('notif', 'item_null');
+            // return redirect('/master-data/lokasi-tk-1/daftar')->with('notif', 'item_null');
+            return redirect()
+                ->route('master_data.lokasi_tk_1.daftar')
+                ->with('notif', 'item_null');
         }
 
         // variabel untuk dikirim ke halaman view
         $judul = "Lokasi Tingkat I";
         $module = "Master Data";
         $menu = "Lokasi Tingkat I";
-        $menu_url = "/master-data/lokasi-tk-1/daftar";
+        $menu_url = route('master_data.lokasi_tk_1.daftar');
         $submenu = "Edit Data";
         
         // menampilkan halaman view
@@ -296,24 +233,6 @@ class LokasiTk1Controller extends Controller
      */
     public function edit(Request $request)
     {
-        // ========================= PROSES VERIFIKASI ========================
-        // cek session user
-        if (!Auth::check()) {
-            // jika tidak ada session user
-            return redirect('/login');
-        }    
-        // cek apakah status user = aktif
-        $status = User::find(session()->get('id'))->status;
-        if($status != TRUE){
-            return redirect('/logout');
-        }
-        // cek role user, hanya bisa diakses oleh super admin dan admin
-        if(session()->get('role_id') != config('constants.role.super_admin')
-         && session()->get('role_id') != config('constants.role.admin')){
-            return redirect('/');
-        }
-        // ===================== AKHIR PROSES VERIFIKASI =======================
-
         // ===================== CEK DUPLIKASI KODE ============================
         // ambil data lokasi sebelumnya berdasarkan id
         $lokasi = LokasiTk1::where('id', $request->id)
@@ -345,10 +264,16 @@ class LokasiTk1Controller extends Controller
         // jika proses update gagal
         catch(QueryException $ex){
             // kembali ke halaman daftar dan tampilkan pesan error
-            return redirect('/master-data/lokasi-tk-1/daftar')->with('notif', 'edit_gagal');
+            // return redirect('/master-data/lokasi-tk-1/daftar')->with('notif', 'edit_gagal');
+            return redirect()
+                ->route('master_data.lokasi_tk_1.daftar')
+                ->with('notif', 'edit_gagal');
         }
 
         // jika proses insert berhasil
-        return redirect('/master-data/lokasi-tk-1/daftar')->with('notif', 'edit_sukses');
+        // return redirect('/master-data/lokasi-tk-1/daftar')->with('notif', 'edit_sukses');
+        return redirect()
+                ->route('master_data.lokasi_tk_1.daftar')
+                ->with('notif', 'edit_sukses');
     }
 }

@@ -34,23 +34,6 @@ class JenisAlatController extends Controller
      */
     public function daftar()
     {
-        // ========================= PROSES VERIFIKASI ========================
-        // cek session user
-        if (!Auth::check()) {
-            // jika tidak ada session user
-            return redirect('/login');
-        }    
-        // cek apakah status user = aktif
-        $status = User::find(session()->get('id'))->status;
-        if($status != TRUE){
-            return redirect('/logout');
-        }
-        // cek role user, hanya bisa diakses oleh super admin dan admin
-        if(session()->get('role_id') != config('constants.role.super_admin')
-         && session()->get('role_id') != config('constants.role.admin')){
-            return redirect('/');
-        }
-        // ===================== AKHIR PROSES VERIFIKASI =======================
 
         // ambil daftar jenis alat
         $daftar = JenisAlat::all();
@@ -59,7 +42,7 @@ class JenisAlatController extends Controller
         $judul = "Jenis Alat";
         $module = "Master Data";
         $menu = "Jenis Alat";
-        $menu_url = "/master-data/jenis-alat/daftar";
+        $menu_url = route('master_data.jenis_alat.daftar');
         $submenu = "Daftar";
         
         // menampilkan halaman view
@@ -86,29 +69,11 @@ class JenisAlatController extends Controller
      */
     public function formTambah()
     {
-        // ========================= PROSES VERIFIKASI ========================
-        // cek session user
-        if (!Auth::check()) {
-            // jika tidak ada session user
-            return redirect('/login');
-        }    
-        // cek apakah status user = aktif
-        $status = User::find(session()->get('id'))->status;
-        if($status != TRUE){
-            return redirect('/logout');
-        }
-        // cek role user, hanya bisa diakses oleh super admin dan admin
-        if(session()->get('role_id') != config('constants.role.super_admin')
-         && session()->get('role_id') != config('constants.role.admin')){
-            return redirect('/');
-        }
-        // ===================== AKHIR PROSES VERIFIKASI =======================
-
         // variabel untuk dikirim ke halaman view
         $judul = "Jenis Alat";
         $module = "Master Data";
         $menu = "Jenis Alat";
-        $menu_url = "/master-data/jenis-alat/daftar";
+        $menu_url = route('master_data.jenis_alat.daftar');
         $submenu = "Tambah";
         
         // menampilkan halaman view
@@ -136,30 +101,12 @@ class JenisAlatController extends Controller
      */
     public function tambah(Request $request)
     {
-        // ========================= PROSES VERIFIKASI ========================
-        // cek session user
-        if (!Auth::check()) {
-            // jika tidak ada session user
-            return redirect('/login');
-        }    
-        // cek apakah status user = aktif
-        $status = User::find(session()->get('id'))->status;
-        if($status != TRUE){
-            return redirect('/logout');
-        }
-        // cek role user, hanya bisa diakses oleh super admin dan admin
-        if(session()->get('role_id') != config('constants.role.super_admin')
-         && session()->get('role_id') != config('constants.role.admin')){
-            return redirect('/');
-        }
-        // ===================== AKHIR PROSES VERIFIKASI =======================
-
         // melakukan validasi input dari form
         // jika tidak sesuai parameter, maka akan muncul error
         $validasi  = $request->validate([
             // parameter validasi
-            'kode' => 'unique:fasilitas,kode',
-            'nama' => 'unique:fasilitas,nama',
+            'kode' => 'unique:jenis_alat,kode',
+            'nama' => 'unique:jenis_alat,nama',
         ],[
             // pesan error
             'kode.unique' => 'Kode yang dimasukkan sudah terdaftar',
@@ -179,11 +126,17 @@ class JenisAlatController extends Controller
         catch(QueryException $ex){
             //dd($ex->getMessage());
             // kembali ke halaman daftar dan tampilkan pesan error
-            return redirect('/master-data/jenis-alat/daftar')->with('notif', 'tambah_gagal');
+            // return redirect('/master-data/jenis-alat/daftar')->with('notif', 'tambah_gagal');
+            return redirect()
+                ->route('master_data.jenis_alat.daftar')
+                ->with('notif', 'tambah_gagal');
         }
 
         // jika proses insert berhasil
-        return redirect('/master-data/jenis-alat/daftar')->with('notif', 'tambah_sukses');
+        // return redirect('/master-data/jenis-alat/daftar')->with('notif', 'tambah_sukses');
+        return redirect()
+                ->route('master_data.jenis_alat.daftar')
+                ->with('notif', 'tambah_sukses');
     }
 
     /**
@@ -236,24 +189,6 @@ class JenisAlatController extends Controller
      */
     public function formEdit($id)
     {
-        // ========================= PROSES VERIFIKASI ========================
-        // cek session user
-        if (!Auth::check()) {
-            // jika tidak ada session user
-            return redirect('/login');
-        }    
-        // cek apakah status user = aktif
-        $status = User::find(session()->get('id'))->status;
-        if($status != TRUE){
-            return redirect('/logout');
-        }
-        // cek role user, hanya bisa diakses oleh super admin dan admin
-        if(session()->get('role_id') != config('constants.role.super_admin')
-         && session()->get('role_id') != config('constants.role.admin')){
-            return redirect('/');
-        }
-        // ===================== AKHIR PROSES VERIFIKASI =======================
-
         // ambil data jenis alat
         $jenis_alat = JenisAlat::where('id', $id)
             ->first();
@@ -261,14 +196,17 @@ class JenisAlatController extends Controller
         // jika jenis alat dengan id tersebut tidak ada
         if($jenis_alat == null){
             // kembali ke halaman daftar dan kirim notif
-            return redirect('/master-data/jenis-alat/daftar')->with('notif', 'item_null');
+            // return redirect('/master-data/jenis-alat/daftar')->with('notif', 'item_null');
+            return redirect()
+                ->route('master_data.jenis_alat.daftar')
+                ->with('notif', 'item_null');
         }
 
         // variabel untuk dikirim ke halaman view
         $judul = "Jenis Alat";
         $module = "Master Data";
         $menu = "Jenis Alat";
-        $menu_url = "/master-data/jenis-alat/daftar";
+        $menu_url = route('master_data.jenis_alat.daftar');
         $submenu = "Edit Data";
         
         // menampilkan halaman view
@@ -297,24 +235,6 @@ class JenisAlatController extends Controller
      */
     public function edit(Request $request)
     {
-        // ========================= PROSES VERIFIKASI ========================
-        // cek session user
-        if (!Auth::check()) {
-            // jika tidak ada session user
-            return redirect('/login');
-        }    
-        // cek apakah status user = aktif
-        $status = User::find(session()->get('id'))->status;
-        if($status != TRUE){
-            return redirect('/logout');
-        }
-        // cek role user, hanya bisa diakses oleh super admin dan admin
-        if(session()->get('role_id') != config('constants.role.super_admin')
-         && session()->get('role_id') != config('constants.role.admin')){
-            return redirect('/');
-        }
-        // ===================== AKHIR PROSES VERIFIKASI =======================
-
         // ===================== CEK DUPLIKASI KODE ============================
         // ambil data jenis alat sebelumnya berdasarkan id
         $jenis_alat = JenisAlat::where('id', $request->id)
@@ -346,10 +266,16 @@ class JenisAlatController extends Controller
         // jika proses update gagal
         catch(QueryException $ex){
             // kembali ke halaman daftar dan tampilkan pesan error
-            return redirect('/master-data/jenis-alat/daftar')->with('notif', 'edit_gagal');
+            // return redirect('/master-data/jenis-alat/daftar')->with('notif', 'edit_gagal');
+            return redirect()
+                ->route('master_data.jenis_alat.daftar')
+                ->with('notif', 'edit_gagal');
         }
 
         // jika proses insert berhasil
-        return redirect('/master-data/jenis-alat/daftar')->with('notif', 'edit_sukses');
+        // return redirect('/master-data/jenis-alat/daftar')->with('notif', 'edit_sukses');
+        return redirect()
+                ->route('master_data.jenis_alat.daftar')
+                ->with('notif', 'edit_sukses');
     }
 }

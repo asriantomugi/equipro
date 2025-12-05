@@ -34,24 +34,6 @@ class FasilitasController extends Controller
      */
     public function daftar()
     {
-        // ========================= PROSES VERIFIKASI ========================
-        // cek session user
-        if (!Auth::check()) {
-            // jika tidak ada session user
-            return redirect('/login');
-        }    
-        // cek apakah status user = aktif
-        $status = User::find(session()->get('id'))->status;
-        if($status != TRUE){
-            return redirect('/logout');
-        }
-        // cek role user, hanya bisa diakses oleh super admin dan admin
-        if(session()->get('role_id') != config('constants.role.super_admin')
-         && session()->get('role_id') != config('constants.role.admin')){
-            return redirect('/');
-        }
-        // ===================== AKHIR PROSES VERIFIKASI =======================
-
         // ambil daftar fasilitas
         $daftar = Fasilitas::all();
        
@@ -59,7 +41,7 @@ class FasilitasController extends Controller
 		$judul = "Fasilitas";
 		$module = "Master Data";
         $menu = "Fasilitas";
-        $menu_url = "/master-data/fasilitas/daftar";
+        $menu_url = route('master_data.fasilitas.daftar');
         $submenu = "Daftar";
         
         // menampilkan halaman view
@@ -86,29 +68,11 @@ class FasilitasController extends Controller
      */
     public function formTambah()
     {
-        // ========================= PROSES VERIFIKASI ========================
-        // cek session user
-        if (!Auth::check()) {
-            // jika tidak ada session user
-            return redirect('/login');
-        }    
-        // cek apakah status user = aktif
-        $status = User::find(session()->get('id'))->status;
-        if($status != TRUE){
-            return redirect('/logout');
-        }
-        // cek role user, hanya bisa diakses oleh super admin dan admin
-        if(session()->get('role_id') != config('constants.role.super_admin')
-         && session()->get('role_id') != config('constants.role.admin')){
-            return redirect('/');
-        }
-        // ===================== AKHIR PROSES VERIFIKASI =======================
-
         // variabel untuk dikirim ke halaman view
         $judul = "Fasilitas";
 		$module = "Master Data";
         $menu = "Fasilitas";
-        $menu_url = "/master-data/fasilitas/daftar";
+        $menu_url = route('master_data.fasilitas.daftar');
         $submenu = "Tambah";
         
         // menampilkan halaman view
@@ -136,24 +100,6 @@ class FasilitasController extends Controller
      */
     public function tambah(Request $request)
     {
-        // ========================= PROSES VERIFIKASI ========================
-        // cek session user
-        if (!Auth::check()) {
-            // jika tidak ada session user
-            return redirect('/login');
-        }    
-        // cek apakah status user = aktif
-        $status = User::find(session()->get('id'))->status;
-        if($status != TRUE){
-            return redirect('/logout');
-        }
-        // cek role user, hanya bisa diakses oleh super admin dan admin
-        if(session()->get('role_id') != config('constants.role.super_admin')
-         && session()->get('role_id') != config('constants.role.admin')){
-            return redirect('/');
-        }
-        // ===================== AKHIR PROSES VERIFIKASI =======================
-
         // melakukan validasi input dari form
         // jika tidak sesuai parameter, maka akan muncul error
         $validasi  = $request->validate([
@@ -179,11 +125,17 @@ class FasilitasController extends Controller
         catch(QueryException $ex){
             //dd($ex->getMessage());
             // kembali ke halaman daftar dan tampilkan pesan error
-            return redirect('/master-data/fasilitas/daftar')->with('notif', 'tambah_gagal');
+            // return redirect('/master-data/fasilitas/daftar')->with('notif', 'tambah_gagal');
+            return redirect()
+                ->route('master_data.fasilitas.daftar')
+                ->with('notif', 'tambah_gagal');
         }
 
         // jika proses insert berhasil
-        return redirect('/master-data/fasilitas/daftar')->with('notif', 'tambah_sukses');
+        // return redirect('/master-data/fasilitas/daftar')->with('notif', 'tambah_sukses');
+        return redirect()
+                ->route('master_data.fasilitas.daftar')
+                ->with('notif', 'tambah_sukses');
     }
 
     /**
@@ -236,24 +188,6 @@ class FasilitasController extends Controller
      */
     public function formEdit($id)
     {
-        // ========================= PROSES VERIFIKASI ========================
-        // cek session user
-        if (!Auth::check()) {
-            // jika tidak ada session user
-            return redirect('/login');
-        }    
-        // cek apakah status user = aktif
-        $status = User::find(session()->get('id'))->status;
-        if($status != TRUE){
-            return redirect('/logout');
-        }
-        // cek role user, hanya bisa diakses oleh super admin dan admin
-        if(session()->get('role_id') != config('constants.role.super_admin')
-         && session()->get('role_id') != config('constants.role.admin')){
-            return redirect('/');
-        }
-        // ===================== AKHIR PROSES VERIFIKASI =======================
-
         // ambil data fasilitas
         $fasilitas = Fasilitas::where('id', $id)
             ->first();
@@ -261,14 +195,17 @@ class FasilitasController extends Controller
         // jika fasilitas dengan id tersebut tidak ada
         if($fasilitas == null){
             // kembali ke halaman daftar dan kirim notif
-            return redirect('/master-data/fasilitas/daftar')->with('notif', 'item_null');
+            // return redirect('/master-data/fasilitas/daftar')->with('notif', 'item_null');
+            return redirect()
+                ->route('master_data.fasilitas.daftar')
+                ->with('notif', 'item_null');
         }
 
         // variabel untuk dikirim ke halaman view
         $judul = "Fasilitas";
 		$module = "Master Data";
         $menu = "Fasilitas";
-        $menu_url = "/master-data/fasilitas/daftar";
+        $menu_url = route('master_data.fasilitas.daftar');
         $submenu = "Edit Data";
         
         // menampilkan halaman view
@@ -297,24 +234,6 @@ class FasilitasController extends Controller
      */
     public function edit(Request $request)
     {
-        // ========================= PROSES VERIFIKASI ========================
-        // cek session user
-        if (!Auth::check()) {
-            // jika tidak ada session user
-            return redirect('/login');
-        }    
-        // cek apakah status user = aktif
-        $status = User::find(session()->get('id'))->status;
-        if($status != TRUE){
-            return redirect('/logout');
-        }
-        // cek role user, hanya bisa diakses oleh super admin dan admin
-        if(session()->get('role_id') != config('constants.role.super_admin')
-         && session()->get('role_id') != config('constants.role.admin')){
-            return redirect('/');
-        }
-        // ===================== AKHIR PROSES VERIFIKASI =======================
-
         // ===================== CEK DUPLIKASI KODE ============================
         // ambil data fasilitas sebelumnya berdasarkan id
         $fasilitas = Fasilitas::where('id', $request->id)
@@ -346,10 +265,16 @@ class FasilitasController extends Controller
         // jika proses update gagal
         catch(QueryException $ex){
             // kembali ke halaman daftar dan tampilkan pesan error
-            return redirect('/master-data/fasilitas/daftar')->with('notif', 'edit_gagal');
+            // return redirect('/master-data/fasilitas/daftar')->with('notif', 'edit_gagal');
+            return redirect()
+                ->route('master_data.fasilitas.daftar')
+                ->with('notif', 'edit_gagal');
         }
 
         // jika proses insert berhasil
-        return redirect('/master-data/fasilitas/daftar')->with('notif', 'edit_sukses');
+        // return redirect('/master-data/fasilitas/daftar')->with('notif', 'edit_sukses');
+        return redirect()
+                ->route('master_data.fasilitas.daftar')
+                ->with('notif', 'edit_sukses');
     }
 }

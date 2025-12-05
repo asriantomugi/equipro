@@ -20,7 +20,7 @@
                 <h3 class="card-title">DAFTAR FASILITAS</h3>
 
                 <a class="btn btn-success btn-sm float-right" 
-                   href="{{url('/master-data/fasilitas/tambah')}}" 
+                   href="{{ route('master_data.fasilitas.tambah.form') }}" 
                    role="button"><i class="fas fa-plus"></i>&nbsp;&nbsp;&nbsp;Tambah</a>
 
               </div>
@@ -59,7 +59,7 @@
 -->
                         <center>
                           <a class="btn btn-info btn-sm" 
-                             href="{{url('/master-data/fasilitas/edit/'.$satu->id)}}" 
+                             href="{{ route('master_data.fasilitas.edit.form', $satu->id) }}"
                              role="button"
                              title="Edit Data"><i class="fas fa-pencil-alt"></i></a>
                           <button class="btn btn-secondary btn-sm" 
@@ -166,7 +166,7 @@
     //Ajax Load data from ajax
     
     $.ajax({
-        url : "{{url('/master-data/fasilitas/detail')}}",
+        url : "{{ route('master_data.fasilitas.detail') }}",
         type: "POST",
         data : {id: id},
         success: function(data){

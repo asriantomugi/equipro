@@ -36,7 +36,7 @@
 
 <!-- form start -->
 <form class="form-horizontal needs-validation" 
-      action="{{url('/master-data/user/tambah')}}"
+      action="{{ route('master_data.user.tambah') }}"
       method="post" 
       novalidate>
 @csrf
@@ -49,7 +49,7 @@
                     <input type="text" 
                            name="nama" 
                            class="form-control"
-                           value=""
+                           value="{{ old('nama') }}"
                            required>
                     <div class="invalid-feedback">Nama wajib diisi</div>
                   </div>
@@ -61,7 +61,7 @@
                     <input type="email" 
                            name="email" 
                            class="form-control"
-                           value=""
+                           value="{{ old('email') }}"
                            required>
                     <div class="invalid-feedback">Email wajib diisi</div>
                   </div>
@@ -73,7 +73,7 @@
                     <select class="form-control" name="role" required>
                       <option value="">- Pilih -</option>
   @foreach($roles as $role)
-                      <option value="{{ $role->id }}">{{ strtoupper($role->nama) }}</option>
+                      <option value="{{ $role->id }}" {{ old('role') == $role->id ? 'selected' : '' }}>{{ strtoupper($role->nama) }}</option>
   @endforeach
                     </select>
                   </div>
@@ -86,7 +86,7 @@
                     <select class="form-control" name="perusahaan" required>
                       <option value="">- Pilih -</option>
   @foreach($perusahaan as $satu)
-                      <option value="{{ $satu->id }}">{{ strtoupper($satu->nama) }}</option>
+                      <option value="{{ $satu->id }}" {{ old('perusahaan') == $satu->id ? 'selected' : '' }}>{{ strtoupper($satu->nama) }}</option>
   @endforeach
                     </select>
                   </div>
@@ -99,7 +99,7 @@
                     <input type="text" 
                            name="jabatan" 
                            class="form-control"
-                           value="">
+                           value="{{ old('jabatan') }}">
                   </div>
                 </div>
 
@@ -109,7 +109,7 @@
                     <textarea class="form-control" 
                               rows="3"
                               name="alamat" 
-                              placeholder=""></textarea>
+                              placeholder="">{{ old('alamat') }}</textarea>
                   </div>
                 </div>
 
@@ -119,7 +119,7 @@
                     <input type="text" 
                            name="telepon" 
                            class="form-control"
-                           value="">
+                           value="{{ old('telepon') }}">
                   </div>
                 </div>
 
@@ -166,7 +166,7 @@
 
               <div class="card-footer">
                 <a class="btn btn-default btn-sm" 
-                   href="{{url('/master-data/user/daftar')}}" 
+                   href="{{ route('master_data.user.daftar') }}" 
                    role="button">Batal</a>
                 <button type="submit" class="btn btn-primary btn-sm float-right">Simpan</button>
               </div>

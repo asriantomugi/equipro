@@ -36,7 +36,7 @@
 
 <!-- form start -->
 <form class="form-horizontal needs-validation" 
-      action="{{url('/master-data/lokasi-tk-3/tambah')}}"
+      action="{{ route('master_data.lokasi_tk_3.tambah') }}"
       method="post" 
       novalidate>
 @csrf
@@ -52,7 +52,7 @@
                           required>
                     <option value="">- Pilih -</option>
   @foreach($lokasi_tk_1 as $satu)
-                    <option value="{{$satu->id}}">{{strtoupper($satu->nama)}}</option>
+                    <option value="{{ $satu->id }}">{{ $satu->kode }} - {{ $satu->nama }}</option>
   @endforeach
                   </select>
                   <div class="invalid-feedback">Lokasi Tingkat I wajib dipilih.</div>
@@ -78,7 +78,7 @@
                     <input type="text" 
                            name="kode" 
                            class="form-control"
-                           value=""
+                           value="{{ old('kode') }}"
                            required>
                     <div class="invalid-feedback">Kode wajib diisi</div>
                   </div>
@@ -90,7 +90,7 @@
                     <input type="text" 
                            name="nama" 
                            class="form-control"
-                           value=""
+                           value="{{ old('nama') }}"
                            required>
                     <div class="invalid-feedback">Nama wajib diisi</div>
                   </div>
@@ -101,7 +101,7 @@
 
               <div class="card-footer">
                 <a class="btn btn-default btn-sm" 
-                   href="{{url('/master-data/lokasi-tk-3/daftar')}}" 
+                   href="{{ route('master_data.lokasi_tk_3.daftar') }}" 
                    role="button">Batal</a>
                 <button type="submit" class="btn btn-primary btn-sm float-right">Simpan</button>
               </div>

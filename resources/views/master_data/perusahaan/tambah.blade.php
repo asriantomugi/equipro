@@ -36,7 +36,7 @@
 
 <!-- form start -->
 <form class="form-horizontal needs-validation" 
-      action="{{url('/master-data/perusahaan/tambah')}}"
+      action="{{ route('master_data.perusahaan.tambah') }}"
       method="post" 
       novalidate>
 @csrf
@@ -49,7 +49,7 @@
                     <input type="text" 
                            name="nama" 
                            class="form-control"
-                           value=""
+                           value="{{ old('nama') }}"
                            required>
                     <div class="invalid-feedback">Nama wajib diisi</div>
                   </div>
@@ -61,7 +61,7 @@
                     <input type="email" 
                            name="email" 
                            class="form-control"
-                           value=""
+                           value="{{ old('email') }}"
                            required>
                     <div class="invalid-feedback">Email wajib diisi</div>
                   </div>
@@ -73,7 +73,7 @@
                     <textarea class="form-control" 
                               rows="3"
                               name="alamat" 
-                              placeholder=""></textarea>
+                              placeholder="">{{ old('alamat') }}</textarea>
                   </div>
                 </div>
 
@@ -83,7 +83,7 @@
                     <input type="text" 
                            name="telepon" 
                            class="form-control"
-                           value="">
+                           value="{{ old('telepon') }}">
                   </div>
                 </div>
 
@@ -92,7 +92,7 @@
 
               <div class="card-footer">
                 <a class="btn btn-default btn-sm" 
-                   href="{{url('/master-data/perusahaan/daftar')}}" 
+                   href="{{ route('master_data.perusahaan.daftar') }}" 
                    role="button">Batal</a>
                 <button type="submit" class="btn btn-primary btn-sm float-right">Simpan</button>
               </div>

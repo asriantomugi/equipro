@@ -36,7 +36,7 @@
 
 <!-- form start -->
 <form class="form-horizontal needs-validation" 
-      action="{{url('/master-data/lokasi-tk-2/edit')}}"
+      action="{{ route('master_data.lokasi_tk_2.edit') }}"
       method="post" 
       novalidate>
 @csrf
@@ -102,7 +102,7 @@
 
               <div class="card-footer">
                 <a class="btn btn-default btn-sm" 
-                   href="{{url('/master-data/lokasi-tk-2/daftar')}}" 
+                   href="{{ route('master_data.lokasi_tk_2.daftar') }}" 
                    role="button">Batal</a>
                 <button type="submit" class="btn btn-primary btn-sm float-right">Simpan</button>
               </div>

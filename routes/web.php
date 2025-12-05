@@ -39,12 +39,40 @@ Route::post('/login/process', [OtentikasiController::class, 'process']);
 // Memproses logout
 Route::get('/logout', [OtentikasiController::class, 'logout']);
 
-// Group route untuk Controller utama yang bisa diakses oleh semua user
-Route::middleware(['role:super_admin, admin, teknisi'])->group(function () {
+/**
+ * ------------------------------------------------------------------------------------
+ *       Group route untuk Controller yang bisa diakses oleh semua user
+ * ------------------------------------------------------------------------------------
+ */
+Route::middleware(['role:super_admin,admin,teknisi'])->group(function () {
+
     // Mengakses halaman index (menampilkan module)
-    Route::get('/', [HomeController::class, 'index'])
-    ->name('index');
+    /**
+     * Menampilkan halaman index (module)
+     * Method: GET
+     * Name: index
+     * URL: /
+     */
+    Route::get('/', [HomeController::class, 'index'])->name('index');
+
+    /**
+     * Menampilkan JSON data lokasi tingkat II berdasarkan lokasi tingkat I
+     * Method: POST
+     * Name: json.lokasi_tk_2.daftar
+     * URL: /json/lokasi-tk-2/daftar
+     */
+    Route::post('/json/lokasi-tk-2/daftar', [LokasiTk2Controller::class, 'daftarJson'])->name('json.lokasi_tk_2.daftar');
+
+    /**
+     * Menampilkan JSON data lokasi tingkat III berdasarkan lokasi tingkat II
+     * Method: POST
+     * Name: json.lokasi_tk_3.daftar
+     * URL: /json/lokasi-tk-3/daftar
+     */
+    Route::post('/json/lokasi-tk-3/daftar', [LokasiTk3Controller::class, 'daftarJson'])->name('json.lokasi_tk_3.daftar');
+    
 });
+
 
 /** 
  * ------------------------------------------------------------------------------------
@@ -53,178 +81,415 @@ Route::middleware(['role:super_admin, admin, teknisi'])->group(function () {
  * ------------------------------------------------------------------------------------
  */ 
 
-// Group route untuk module master data
-Route::prefix('/master-data')->name('master_data.')->middleware(['role:super_admin, admin'])->group(function () {
+/**
+ * Group route untuk module master data
+ * URL: /master-data/... 
+ */ 
+Route::prefix('/master-data')->name('master_data.')
+    ->middleware(['role:super_admin, admin']) // Akses oleh Super Admin dan Admin
+    ->group(function () {
 
-    // Menampilkan halaman utama module Master Data
+    /**
+     * Menampilkan halaman utama module Master Data
+     * Method: GET
+     * Name: master_data.home
+     * URL: /master-data/home 
+     */ 
     Route::get('/home', [MasterDataModuleController::class, 'home'])->name('home');
 
     /* ==================================== MENU USER ==================================== */
-    // Menampilkan daftar user
+    /**
+     * Menampilkan daftar user
+     * Method: GET
+     * Name: master_data.user.daftar
+     * URL: /master-data/user/daftar 
+     */
     Route::get('/user/daftar', [UserController::class, 'daftar'])->name('user.daftar');
 
-    // Menampilkan form tambah user
+    /**
+     * Menampilkan form tambah user
+     * Method: GET
+     * Name: master_data.user.tambah.form
+     * URL: /master-data/user/tambah 
+     */
     Route::get('/user/tambah', [UserController::class, 'formTambah'])->name('user.tambah.form');
 
     // Melakukan proses tambah user
+    /**
+     * Menampilkan daftar user
+     * Method: POST
+     * Name: master_data.user.tambah
+     * URL: /master-data/user/tambah 
+     */
     Route::post('/user/tambah', [UserController::class, 'tambah'])->name('user.tambah');
 
-    // Menampilkan form edit user
+    /**
+     * Menampilkan form edit user
+     * Method: GET
+     * Name: master_data.user.edit.form
+     * URL: /master-data/user/edit/{id} 
+     */
     Route::get('/user/edit/{id}', [UserController::class, 'formEdit'])->name('user.edit.form');
 
-    // Melakukan proses edit user
+    /**
+     * Melakukan proses edit user
+     * Method: POST
+     * Name: master_data.user.edit
+     * URL: /master-data/user/edit 
+     */
     Route::post('/user/edit', [UserController::class, 'edit'])->name('user.edit');
 
-    // Menampilkan form reset password user
+    /**
+     * Menampilkan form reset password user
+     * Method: GET
+     * Name: master_data.user.password.form
+     * URL: /master-data/user/password/reset/{id} 
+     */
     Route::get('/user/password/reset/{id}', [UserController::class, 'formResetPassword'])->name('user.password.form');
 
-    // Melakukan proses reset password user
+    /**
+     * Melakukan proses reset password user
+     * Method: POST
+     * Name: master_data.user.password
+     * URL: /master-data/user/password/reset 
+     */
     Route::post('/user/password/reset', [UserController::class, 'resetPassword'])->name('user.password');
 
-    // Menampilkan JSON data user
+    /**
+     * Menampilkan JSON data user
+     * Method: POST
+     * Name: master_data.user.detail
+     * URL: /master-data/user/detail
+     */
     Route::post('/user/detail', [UserController::class, 'detail'])->name('user.detail');
 
     /* ================================= END OF MENU USER ================================ */
+
+    /* ================================= MENU PERUSAHAAN ================================= */
+    /**
+     * Menampilkan daftar perusahaan
+     * Method: GET
+     * Name: master_data.perusahaan.daftar
+     * URL: /master-data/perusahaan/daftar
+     */
+    Route::get('/perusahaan/daftar', [PerusahaanController::class, 'daftar'])->name('perusahaan.daftar');
+
+    /**
+     * Menampilkan form tambah perusahaan
+     * Method: GET
+     * Name: master_data.perusahaan.tambah.form
+     * URL: /master-data/perusahaan/tambah
+     */
+    Route::get('/perusahaan/tambah', [PerusahaanController::class, 'formTambah'])->name('perusahaan.tambah.form');
+
+    /**
+     * Melakukan proses tambah perusahaan
+     * Method: POST
+     * Name: master_data.perusahaan.tambah
+     * URL: /master-data/perusahaan/tambah
+     */
+    Route::post('/perusahaan/tambah', [PerusahaanController::class, 'tambah'])->name('perusahaan.tambah');
+
+    /**
+     * Menampilkan form edit perusahaan
+     * Method: GET
+     * Name: master_data.perusahaan.edit.form
+     * URL: /master-data/perusahaan/edit/{id}
+     */
+    Route::get('/perusahaan/edit/{id}', [PerusahaanController::class, 'formEdit'])->name('perusahaan.edit.form');
+
+    /**
+     * Melakukan proses edit perusahaan
+     * Method: POST
+     * Name: master_data.perusahaan.edit
+     * URL: /master-data/perusahaan/edit
+     */
+    Route::post('/perusahaan/edit', [PerusahaanController::class, 'edit'])->name('perusahaan.edit');
+
+    /**
+     * Menampilkan JSON data perusahaan
+     * Method: POST
+     * Name: master_data.perusahaan.detail
+     * URL: /master-data/perusahaan/detail
+     */
+    Route::post('/perusahaan/detail', [PerusahaanController::class, 'detail'])->name('perusahaan.detail');
+
+    /* =========================== END OF MENU PERUSAHAAN ================================ */
+
+    /* =============================== MENU FASILITAS ==================================== */
+    /**
+     * Menampilkan daftar fasilitas
+     * Method: GET
+     * Name: master_data.fasilitas.daftar
+     * URL: /master-data/fasilitas/daftar
+     */
+    Route::get('/fasilitas/daftar', [FasilitasController::class, 'daftar'])->name('fasilitas.daftar');
+
+    /**
+     * Menampilkan form tambah fasilitas
+     * Method: GET
+     * Name: master_data.fasilitas.tambah.form
+     * URL: /master-data/fasilitas/tambah
+     */
+    Route::get('/fasilitas/tambah', [FasilitasController::class, 'formTambah'])->name('fasilitas.tambah.form');
+
+    /**
+     * Melakukan proses tambah fasilitas
+     * Method: POST
+     * Name: master_data.fasilitas.tambah
+     * URL: /master-data/fasilitas/tambah
+     */
+    Route::post('/fasilitas/tambah', [FasilitasController::class, 'tambah'])->name('fasilitas.tambah');
+
+    /**
+     * Menampilkan form edit fasilitas
+     * Method: GET
+     * Name: master_data.fasilitas.edit.form
+     * URL: /master-data/fasilitas/edit/{id}
+     */
+    Route::get('/fasilitas/edit/{id}', [FasilitasController::class, 'formEdit'])->name('fasilitas.edit.form');
+
+    /**
+     * Melakukan proses edit fasilitas
+     * Method: POST
+     * Name: master_data.fasilitas.edit
+     * URL: /master-data/fasilitas/edit
+     */
+    Route::post('/fasilitas/edit', [FasilitasController::class, 'edit'])->name('fasilitas.edit');
+
+    /**
+     * Menampilkan JSON data fasilitas
+     * Method: POST
+     * Name: master_data.fasilitas.detail
+     * URL: /master-data/fasilitas/detail
+     */
+    Route::post('/fasilitas/detail', [FasilitasController::class, 'detail'])->name('fasilitas.detail');
+
+    /* =========================== END OF MENU FASILITAS ================================ */
+
+    /* ============================== MENU JENIS ALAT =================================== */
+    /**
+     * Menampilkan daftar jenis alat
+     * Method: GET
+     * Name: master_data.jenis_alat.daftar
+     * URL: /master-data/jenis-alat/daftar
+     */
+    Route::get('/jenis-alat/daftar', [JenisAlatController::class, 'daftar'])->name('jenis_alat.daftar');
+
+    /**
+     * Menampilkan form tambah jenis alat
+     * Method: GET
+     * Name: master_data.jenis_alat.tambah.form
+     * URL: /master-data/jenis-alat/tambah
+     */
+    Route::get('/jenis-alat/tambah', [JenisAlatController::class, 'formTambah'])->name('jenis_alat.tambah.form');
+
+    /**
+     * Melakukan proses tambah jenis alat
+     * Method: POST
+     * Name: master_data.jenis_alat.tambah
+     * URL: /master-data/jenis-alat/tambah
+     */
+    Route::post('/jenis-alat/tambah', [JenisAlatController::class, 'tambah'])->name('jenis_alat.tambah');
+
+    /**
+     * Menampilkan form edit jenis alat
+     * Method: GET
+     * Name: master_data.jenis_alat.edit.form
+     * URL: /master-data/jenis-alat/edit/{id}
+     */
+    Route::get('/jenis-alat/edit/{id}', [JenisAlatController::class, 'formEdit'])->name('jenis_alat.edit.form');
+
+    /**
+     * Melakukan proses edit jenis alat
+     * Method: POST
+     * Name: master_data.jenis_alat.edit
+     * URL: /master-data/jenis-alat/edit
+     */
+    Route::post('/jenis-alat/edit', [JenisAlatController::class, 'edit'])->name('jenis_alat.edit');
+
+    /**
+     * Menampilkan JSON data jenis alat
+     * Method: POST
+     * Name: master_data.jenis_alat.detail
+     * URL: /master-data/jenis-alat/detail
+     */
+    Route::post('/jenis-alat/detail', [JenisAlatController::class, 'detail'])->name('jenis_alat.detail');
+
+    /* =========================== END OF MENU JENIS ALAT ================================ */
+
+    /* ============================ MENU LOKASI TINGKAT I ================================ */
+    /**
+     * Menampilkan daftar lokasi tingkat I
+     * Method: GET
+     * Name: master_data.lokasi_tk_1.daftar
+     * URL: /master-data/lokasi-tk-1/daftar
+     */
+    Route::get('/lokasi-tk-1/daftar', [LokasiTk1Controller::class, 'daftar'])->name('lokasi_tk_1.daftar');
+
+    /**
+     * Menampilkan form tambah lokasi tingkat I
+     * Method: GET
+     * Name: master_data.lokasi_tk_1.tambah.form
+     * URL: /master-data/lokasi-tk-1/tambah
+     */
+    Route::get('/lokasi-tk-1/tambah', [LokasiTk1Controller::class, 'formTambah'])->name('lokasi_tk_1.tambah.form');
+
+    /**
+     * Melakukan proses tambah lokasi tingkat I
+     * Method: POST
+     * Name: master_data.lokasi_tk_1.tambah
+     * URL: /master-data/lokasi-tk-1/tambah
+     */
+    Route::post('/lokasi-tk-1/tambah', [LokasiTk1Controller::class, 'tambah'])->name('lokasi_tk_1.tambah');
+
+    /**
+     * Menampilkan form edit lokasi tingkat I
+     * Method: GET
+     * Name: master_data.lokasi_tk_1.edit.form
+     * URL: /master-data/lokasi-tk-1/edit/{id}
+     */
+    Route::get('/lokasi-tk-1/edit/{id}', [LokasiTk1Controller::class, 'formEdit'])->name('lokasi_tk_1.edit.form');
+
+    /**
+     * Melakukan proses edit lokasi tingkat I
+     * Method: POST
+     * Name: master_data.lokasi_tk_1.edit
+     * URL: /master-data/lokasi-tk-1/edit
+     */
+    Route::post('/lokasi-tk-1/edit', [LokasiTk1Controller::class, 'edit'])->name('lokasi_tk_1.edit');
+
+    /**
+     * Menampilkan JSON data lokasi tingkat I
+     * Method: POST
+     * Name: master_data.lokasi_tk_1.detail
+     * URL: /master-data/lokasi-tk-1/detail
+     */
+    Route::post('/lokasi-tk-1/detail', [LokasiTk1Controller::class, 'detail'])->name('lokasi_tk_1.detail');
+
+    /* ========================= END OF MENU LOKASI TINGKAT I ============================= */
+
+    /* ============================= MENU LOKASI TINGKAT II =============================== */
+    /**
+     * Menampilkan daftar lokasi tingkat II
+     * Method: GET
+     * Name: master_data.lokasi_tk_2.daftar
+     * URL: /master-data/lokasi-tk-2/daftar
+     */
+    Route::get('/lokasi-tk-2/daftar', [LokasiTk2Controller::class, 'daftar'])->name('lokasi_tk_2.daftar');
+
+    /**
+     * Menampilkan form tambah lokasi tingkat II
+     * Method: GET
+     * Name: master_data.lokasi_tk_2.tambah.form
+     * URL: /master-data/lokasi-tk-2/tambah
+     */
+    Route::get('/lokasi-tk-2/tambah', [LokasiTk2Controller::class, 'formTambah'])->name('lokasi_tk_2.tambah.form');
+
+    /**
+     * Melakukan proses tambah lokasi tingkat II
+     * Method: POST
+     * Name: master_data.lokasi_tk_2.tambah
+     * URL: /master-data/lokasi-tk-2/tambah
+     */
+    Route::post('/lokasi-tk-2/tambah', [LokasiTk2Controller::class, 'tambah'])->name('lokasi_tk_2.tambah');
+
+    /**
+     * Menampilkan form edit lokasi tingkat II
+     * Method: GET
+     * Name: master_data.lokasi_tk_2.edit.form
+     * URL: /master-data/lokasi-tk-2/edit/{id}
+     */
+    Route::get('/lokasi-tk-2/edit/{id}', [LokasiTk2Controller::class, 'formEdit'])->name('lokasi_tk_2.edit.form');
+
+    /**
+     * Melakukan proses edit lokasi tingkat II
+     * Method: POST
+     * Name: master_data.lokasi_tk_2.edit
+     * URL: /master-data/lokasi-tk-2/edit
+     */
+    Route::post('/lokasi-tk-2/edit', [LokasiTk2Controller::class, 'edit'])->name('lokasi_tk_2.edit');
+
+    /**
+     * Menampilkan JSON data lokasi tingkat II
+     * Method: POST
+     * Name: master_data.lokasi_tk_2.detail
+     * URL: /master-data/lokasi-tk-2/detail
+     */
+    Route::post('/lokasi-tk-2/detail', [LokasiTk2Controller::class, 'detail'])->name('lokasi_tk_2.detail');
+
+    /* =========================== END OF MENU LOKASI TINGKAT II ========================= */
+
+    /* ============================== MENU LOKASI TINGKAT III ============================ */
+    /**
+     * Menampilkan daftar lokasi tingkat III
+     * Method: GET
+     * Name: master_data.lokasi_tk_3.daftar
+     * URL: /master-data/lokasi-tk-3/daftar
+     */
+    Route::get('/lokasi-tk-3/daftar', [LokasiTk3Controller::class, 'daftar'])->name('lokasi_tk_3.daftar');
+
+    /**
+     * Menampilkan form tambah lokasi tingkat III
+     * Method: GET
+     * Name: master_data.lokasi_tk_3.tambah.form
+     * URL: /master-data/lokasi-tk-3/tambah
+     */
+    Route::get('/lokasi-tk-3/tambah', [LokasiTk3Controller::class, 'formTambah'])->name('lokasi_tk_3.tambah.form');
+
+    /**
+     * Melakukan proses tambah lokasi tingkat III
+     * Method: POST
+     * Name: master_data.lokasi_tk_3.tambah
+     * URL: /master-data/lokasi-tk-3/tambah
+     */
+    Route::post('/lokasi-tk-3/tambah', [LokasiTk3Controller::class, 'tambah'])->name('lokasi_tk_3.tambah');
+
+    /**
+     * Menampilkan form edit lokasi tingkat III
+     * Method: GET
+     * Name: master_data.lokasi_tk_3.edit.form
+     * URL: /master-data/lokasi-tk-3/edit/{id}
+     */
+    Route::get('/lokasi-tk-3/edit/{id}', [LokasiTk3Controller::class, 'formEdit'])->name('lokasi_tk_3.edit.form');
+
+    /**
+     * Melakukan proses edit lokasi tingkat III
+     * Method: POST
+     * Name: master_data.lokasi_tk_3.edit
+     * URL: /master-data/lokasi-tk-3/edit
+     */
+    Route::post('/lokasi-tk-3/edit', [LokasiTk3Controller::class, 'edit'])->name('lokasi_tk_3.edit');
+
+    /**
+     * Menampilkan JSON data lokasi tingkat III
+     * Method: POST
+     * Name: master_data.lokasi_tk_3.detail
+     * URL: /master-data/lokasi-tk-3/detail
+     */
+    Route::post('/lokasi-tk-3/detail', [LokasiTk3Controller::class, 'detail'])->name('lokasi_tk_3.detail');
+
+    /* ======================== END OF MENU LOKASI TINGKAT III ============================ */
+
 });
 
 
 
 
 
-/* ================================= MENU PERUSAHAAN ================================= */
-// Menampilkan daftar perusahaan
-Route::get('/master-data/perusahaan/daftar', [PerusahaanController::class, 'daftar'])->middleware(['role:super_admin,admin']);
 
-// Menampilkan form tambah perusahaan
-Route::get('/master-data/perusahaan/tambah', [PerusahaanController::class, 'formTambah'])->middleware(['role:super_admin,admin']);
 
-// Melakukan proses tambah perusahaan
-Route::post('/master-data/perusahaan/tambah', [PerusahaanController::class, 'tambah'])->middleware(['role:super_admin,admin']);
 
-// Menampilkan form edit perusahaan
-Route::get('/master-data/perusahaan/edit/{id}', [PerusahaanController::class, 'formEdit'])->middleware(['role:super_admin,admin']);
 
-// Melakukan proses edit perusahaan
-Route::post('/master-data/perusahaan/edit', [PerusahaanController::class, 'edit'])->middleware(['role:super_admin,admin']);
 
-// Menampilkan JSON data perusahaan
-Route::post('/master-data/perusahaan/detail', [PerusahaanController::class, 'detail'])->middleware(['role:super_admin,admin']);
 
-/* =========================== END OF MENU PERUSAHAAN ================================ */
 
-/* =============================== MENU FASILITAS ==================================== */
-// Menampilkan daftar fasilitas
-Route::get('/master-data/fasilitas/daftar', [FasilitasController::class, 'daftar'])->middleware(['role:super_admin,admin']);
 
-// Menampilkan form tambah fasilitas
-Route::get('/master-data/fasilitas/tambah', [FasilitasController::class, 'formTambah'])->middleware(['role:super_admin,admin']);
 
-// Melakukan proses tambah fasilitas
-Route::post('/master-data/fasilitas/tambah', [FasilitasController::class, 'tambah'])->middleware(['role:super_admin,admin']);
 
-// Menampilkan form edit fasilitas
-Route::get('/master-data/fasilitas/edit/{id}', [FasilitasController::class, 'formEdit'])->middleware(['role:super_admin,admin']);
 
-// Melakukan proses edit fasilitas
-Route::post('/master-data/fasilitas/edit', [FasilitasController::class, 'edit'])->middleware(['role:super_admin,admin']);
 
-// Menampilkan JSON data fasilitas
-Route::post('/master-data/fasilitas/detail', [FasilitasController::class, 'detail'])->middleware(['role:super_admin,admin']);
 
-/* =========================== END OF MENU FASILITAS ================================ */
-
-/* ============================== MENU JENIS ALAT =================================== */
-// Menampilkan daftar jenis alat
-Route::get('/master-data/jenis-alat/daftar', [JenisAlatController::class, 'daftar'])->middleware(['role:super_admin,admin']);
-
-// Menampilkan form tambah jenis alat
-Route::get('/master-data/jenis-alat/tambah', [JenisAlatController::class, 'formTambah'])->middleware(['role:super_admin,admin']);
-
-// Melakukan proses tambah jenis alat
-Route::post('/master-data/jenis-alat/tambah', [JenisAlatController::class, 'tambah'])->middleware(['role:super_admin,admin']);
-
-// Menampilkan form edit jenis alat
-Route::get('/master-data/jenis-alat/edit/{id}', [JenisAlatController::class, 'formEdit'])->middleware(['role:super_admin,admin']);
-
-// Melakukan proses edit jenis alat
-Route::post('/master-data/jenis-alat/edit', [JenisAlatController::class, 'edit'])->middleware(['role:super_admin,admin']);
-
-// Menampilkan JSON data jenis alat
-Route::post('/master-data/jenis-alat/detail', [JenisAlatController::class, 'detail'])->middleware(['role:super_admin,admin']);
-
-/* =========================== END OF MENU JENIS ALAT ================================ */
-
-/* ============================ MENU LOKASI TINGKAT I ================================ */
-// Menampilkan daftar lokasi tingkat I
-Route::get('/master-data/lokasi-tk-1/daftar', [LokasiTk1Controller::class, 'daftar'])->middleware(['role:super_admin,admin']);
-
-// Menampilkan form tambah lokasi tingkat I
-Route::get('/master-data/lokasi-tk-1/tambah', [LokasiTk1Controller::class, 'formTambah'])->middleware(['role:super_admin,admin']);
-
-// Melakukan proses tambah lokasi tingkat I
-Route::post('/master-data/lokasi-tk-1/tambah', [LokasiTk1Controller::class, 'tambah'])->middleware(['role:super_admin,admin']);
-
-// Menampilkan form edit lokasi tingkat I
-Route::get('/master-data/lokasi-tk-1/edit/{id}', [LokasiTk1Controller::class, 'formEdit'])->middleware(['role:super_admin,admin']);
-
-// Melakukan proses edit lokasi tingkat I
-Route::post('/master-data/lokasi-tk-1/edit', [LokasiTk1Controller::class, 'edit'])->middleware(['role:super_admin,admin']);
-
-// Menampilkan JSON data lokasi tingkat I
-Route::post('/master-data/lokasi-tk-1/detail', [LokasiTk1Controller::class, 'detail'])->middleware(['role:super_admin,admin']);
-
-/* ========================= END OF MENU LOKASI TINGKAT I ============================= */
-
-/* ============================= MENU LOKASI TINGKAT II =============================== */
-// Menampilkan daftar lokasi tingkat II
-Route::get('/master-data/lokasi-tk-2/daftar', [LokasiTk2Controller::class, 'daftar'])->middleware(['role:super_admin,admin']);
-
-// Menampilkan form tambah lokasi tingkat II
-Route::get('/master-data/lokasi-tk-2/tambah', [LokasiTk2Controller::class, 'formTambah'])->middleware(['role:super_admin,admin']);
-
-// Melakukan proses tambah lokasi tingkat II
-Route::post('/master-data/lokasi-tk-2/tambah', [LokasiTk2Controller::class, 'tambah'])->middleware(['role:super_admin,admin']);
-
-// Menampilkan form edit lokasi tingkat II
-Route::get('/master-data/lokasi-tk-2/edit/{id}', [LokasiTk2Controller::class, 'formEdit'])->middleware(['role:super_admin,admin']);
-
-// Melakukan proses edit lokasi tingkat II
-Route::post('/master-data/lokasi-tk-2/edit', [LokasiTk2Controller::class, 'edit'])->middleware(['role:super_admin,admin']);
-
-// Menampilkan JSON data lokasi tingkat II
-Route::post('/master-data/lokasi-tk-2/detail', [LokasiTk2Controller::class, 'detail'])->middleware(['role:super_admin,admin']);
-
-// Menampilkan JSON data lokasi tingkat II berdasarkan lokasi tingkat I
-Route::post('/json/lokasi-tk-2/daftar', [LokasiTk2Controller::class, 'daftarJson'])->middleware(['role:super_admin,admin']);
-
-/* =========================== END OF MENU LOKASI TINGKAT II ========================= */
-
-/* ============================== MENU LOKASI TINGKAT III ============================ */
-// Menampilkan daftar lokasi tingkat III
-Route::get('/master-data/lokasi-tk-3/daftar', [LokasiTk3Controller::class, 'daftar'])->middleware(['role:super_admin,admin']);
-
-// Menampilkan form tambah lokasi tingkat III
-Route::get('/master-data/lokasi-tk-3/tambah', [LokasiTk3Controller::class, 'formTambah'])->middleware(['role:super_admin,admin']);
-
-// Melakukan proses tambah lokasi tingkat III
-Route::post('/master-data/lokasi-tk-3/tambah', [LokasiTk3Controller::class, 'tambah'])->middleware(['role:super_admin,admin']);
-
-// Menampilkan form edit lokasi tingkat III
-Route::get('/master-data/lokasi-tk-3/edit/{id}', [LokasiTk3Controller::class, 'formEdit'])->middleware(['role:super_admin,admin']);
-
-// Melakukan proses edit lokasi tingkat III
-Route::post('/master-data/lokasi-tk-3/edit', [LokasiTk3Controller::class, 'edit'])->middleware(['role:super_admin,admin']);
-
-// Menampilkan JSON data lokasi tingkat III
-Route::post('/master-data/lokasi-tk-3/detail', [LokasiTk3Controller::class, 'detail'])->middleware(['role:super_admin,admin']);
-
-// Menampilkan JSON data lokasi tingkat III berdasarkan lokasi tingkat II
-Route::post('/json/lokasi-tk-3/daftar', [LokasiTk3Controller::class, 'daftarJson'])->middleware(['role:super_admin,admin']);
-
-// Menampilkan JSON data lokasi tingkat III berdasarkan lokasi tingkat II
-Route::post('/json/lokasi-tk-3/daftar', [LokasiTk3Controller::class, 'daftarJson'])->middleware(['role:super_admin,admin']);
-
-/* ======================== END OF MENU LOKASI TINGKAT III ============================ */
 
 /** 
  * ------------------------------------------------------------------------------------

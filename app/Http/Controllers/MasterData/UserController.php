@@ -35,24 +35,6 @@ class UserController extends Controller
      */
     public function daftar()
     {
-        // ========================= PROSES VERIFIKASI ========================
-        // cek session user
-        if (!Auth::check()) {
-            // jika tidak ada session user
-            return redirect('/login');
-        }    
-        // cek apakah status user = aktif
-        $status = User::find(session()->get('id'))->status;
-        if($status != TRUE){
-            return redirect('/logout');
-        }
-        // cek role user, hanya bisa diakses oleh super admin dan admin
-        if(session()->get('role_id') != config('constants.role.super_admin')
-         && session()->get('role_id') != config('constants.role.admin')){
-            return redirect('/');
-        }
-        // ===================== AKHIR PROSES VERIFIKASI =======================
-
         // ambil daftar user
         $daftar = User::all();
        
@@ -60,7 +42,7 @@ class UserController extends Controller
         $judul = "User";
 		$module = "Master Data";
         $menu = "User";
-        $menu_url = "/master-data/user/daftar";
+        $menu_url = route('master_data.user.daftar');
         $submenu = "Daftar";
         
         // menampilkan halaman view
@@ -88,26 +70,9 @@ class UserController extends Controller
      */
     public function formTambah()
     {
-        // ========================= PROSES VERIFIKASI ========================
-        // cek session user
-        if (!Auth::check()) {
-            // jika tidak ada session user
-            return redirect('/login');
-        }    
-        // cek apakah status user = aktif
-        $status = User::find(session()->get('id'))->status;
-        if($status != TRUE){
-            return redirect('/logout');
-        }
-        // cek role user, hanya bisa diakses oleh super admin dan admin
-        if(session()->get('role_id') != config('constants.role.super_admin')
-         && session()->get('role_id') != config('constants.role.admin')){
-            return redirect('/');
-        }
-        // ===================== AKHIR PROSES VERIFIKASI =======================
-
         // ambil daftar role untuk form tambah user
-        $roles = Role::where('id', '!=', config('constants.role.super_admin'))
+        $roles = Role::where('id', '!=', config('constants.role.sistem'))
+            ->where('id', '!=', config('constants.role.super_admin'))
             ->get();
 
         // ambil daftar perusahaan yang berstatus aktif
@@ -117,7 +82,7 @@ class UserController extends Controller
         $judul = "User";
 		$module = "Master Data";
         $menu = "User";
-        $menu_url = "/master-data/user/daftar";
+        $menu_url = route('master_data.user.daftar');
         $submenu = "Tambah";
         
         // menampilkan halaman view
@@ -147,24 +112,6 @@ class UserController extends Controller
      */
     public function tambah(Request $request)
     {
-        // ========================= PROSES VERIFIKASI ========================
-        // cek session user
-        if (!Auth::check()) {
-            // jika tidak ada session user
-            return redirect('/login');
-        }    
-        // cek apakah status user = aktif
-        $status = User::find(session()->get('id'))->status;
-        if($status != TRUE){
-            return redirect('/logout');
-        }
-        // cek role user, hanya bisa diakses oleh super admin dan admin
-        if(session()->get('role_id') != config('constants.role.super_admin')
-         && session()->get('role_id') != config('constants.role.admin')){
-            return redirect('/');
-        }
-        // ===================== AKHIR PROSES VERIFIKASI =======================
-
         // melakukan validasi input dari form
         // jika tidak sesuai parameter, maka akan muncul error
         $validasi  = $request->validate([
@@ -192,7 +139,10 @@ class UserController extends Controller
         catch(QueryException $ex){
             //dd($ex->getMessage());
             // kembali ke halaman daftar dan tampilkan pesan error
-            return redirect('/master-data/user/daftar')->with('notif', 'tambah_gagal');
+            // return redirect('/master-data/user/daftar')->with('notif', 'tambah_gagal');
+            return redirect()
+                ->route('master_data.user.daftar')
+                ->with('notif', 'tambah_gagal');
         }
 
         try{
@@ -212,11 +162,17 @@ class UserController extends Controller
             // hapus user di tabel user
             User::where('id', $user->id)->delete();
             // kembali ke halaman daftar dan tampilkan pesan error
-            return redirect('/master-data/user/daftar')->with('notif', 'tambah_gagal');
+            // return redirect('/master-data/user/daftar')->with('notif', 'tambah_gagal');
+            return redirect()
+                ->route('master_data.user.daftar')
+                ->with('notif', 'tambah_gagal');
         }
 
         // jika proses insert berhasil
-        return redirect('/master-data/user/daftar')->with('notif', 'tambah_sukses');
+        // return redirect('/master-data/user/daftar')->with('notif', 'tambah_sukses');
+        return redirect()
+            ->route('master_data.user.daftar')
+            ->with('notif', 'tambah_sukses');
     }
 
     /**
@@ -273,26 +229,9 @@ class UserController extends Controller
      */
     public function formEdit($id)
     {
-        // ========================= PROSES VERIFIKASI ========================
-        // cek session user
-        if (!Auth::check()) {
-            // jika tidak ada session user
-            return redirect('/login');
-        }    
-        // cek apakah status user = aktif
-        $status = User::find(session()->get('id'))->status;
-        if($status != TRUE){
-            return redirect('/logout');
-        }
-        // cek role user, hanya bisa diakses oleh super admin dan admin
-        if(session()->get('role_id') != config('constants.role.super_admin')
-         && session()->get('role_id') != config('constants.role.admin')){
-            return redirect('/');
-        }
-        // ===================== AKHIR PROSES VERIFIKASI =======================
-
         // ambil data user
         $user = User::where('id', $id)
+            ->where('role_id', '!=', config('constants.role.sistem'))
             ->where('role_id', '!=', config('constants.role.super_admin'))
             ->first();
 
@@ -302,8 +241,9 @@ class UserController extends Controller
             return redirect('/master-data/user/daftar')->with('notif', 'user_null');
         }
 
-        // ambil daftar role untuk form tambah user
-        $roles = Role::where('id', '!=', config('constants.role.super_admin'))
+        // ambil daftar role untuk form edit user
+        $roles = Role::where('id', '!=', config('constants.role.sistem'))
+            ->where('id', '!=', config('constants.role.super_admin'))
             ->get();   
 
         // ambil daftar perusahaan yang berstatus aktif
@@ -313,7 +253,7 @@ class UserController extends Controller
         $judul = "User";
 		$module = "Master Data";
         $menu = "User";
-        $menu_url = "/master-data/user/daftar";
+        $menu_url = route('master_data.user.daftar');
         $submenu = "Edit Data";
         
         // menampilkan halaman view
@@ -345,32 +285,20 @@ class UserController extends Controller
     public function edit(Request $request)
     {
         // ========================= PROSES VERIFIKASI ========================
-        // cek session user
-        if (!Auth::check()) {
-            // jika tidak ada session user
-            return redirect('/login');
-        }    
-        // cek apakah status user = aktif
-        $status = User::find(session()->get('id'))->status;
-        if($status != TRUE){
-            return redirect('/logout');
-        }
-        // cek role user, hanya bisa diakses oleh super admin dan admin
-        if(session()->get('role_id') != config('constants.role.super_admin')
-         && session()->get('role_id') != config('constants.role.admin')){
-            return redirect('/');
-        }
-        
-        // pastikan yang diedit bukan data Super Admin
+
+        // pastikan yang diedit bukan data Super Admin dan Sistem
         // ambil data user
         $user = User::where('id', $request->id)
+            ->where('role_id', '!=', config('constants.role.sistem'))
             ->where('role_id', '!=', config('constants.role.super_admin'))
             ->first();
 
         // jika user dengan id tersebut tidak ada
         if($user == null){
             // kembali ke halaman daftar dan kirim notif
-            return redirect('/master-data/user/daftar')->with('notif', 'user_null');
+            return redirect()
+                ->route('master_data.user.daftar')
+                ->with('notif', 'user_null');
         }
         // ===================== AKHIR PROSES VERIFIKASI =======================
 
@@ -397,11 +325,17 @@ class UserController extends Controller
         // jika proses update gagal
         catch(QueryException $ex){
             // kembali ke halaman daftar dan tampilkan pesan error
-            return redirect('/master-data/user/daftar')->with('notif', 'edit_gagal');
+            // return redirect('/master-data/user/daftar')->with('notif', 'edit_gagal');
+            return redirect()
+                ->route('master_data.user.daftar')
+                ->with('notif', 'edit_gagal');
         }
 
         // jika proses insert berhasil
-        return redirect('/master-data/user/daftar')->with('notif', 'edit_sukses');
+        // return redirect('/master-data/user/daftar')->with('notif', 'edit_sukses');
+        return redirect()
+                ->route('master_data.user.daftar')
+                ->with('notif', 'edit_sukses');
     }
 	
 	/**
@@ -419,41 +353,27 @@ class UserController extends Controller
      */
     public function formResetPassword($id)
     {
-		// ========================= PROSES VERIFIKASI ========================
-        // cek session user
-        if (!Auth::check()) {
-            // jika tidak ada session user
-            return redirect('/login');
-        }    
-        // cek apakah status user = aktif
-        $status = User::find(session()->get('id'))->status;
-        if($status != TRUE){
-            return redirect('/logout');
-        }
-        // cek role user, hanya bisa diakses oleh super admin dan admin
-        if(session()->get('role_id') != config('constants.role.super_admin')
-         && session()->get('role_id') != config('constants.role.admin')){
-            return redirect('/');
-        }
-        // ===================== AKHIR PROSES VERIFIKASI =======================
-
-        // pastikan yang di-reset password bukan user Super Admin
+        // pastikan yang di-reset password bukan user Super Admin dan sistem
         // ambil data user
         $user = User::where('id', $id)
+            ->where('role_id', '!=', config('constants.role.sistem'))
 			->where('role_id', '!=', config('constants.role.super_admin'))
             ->first();
 			
 		// jika user dengan id tersebut tidak ada
         if($user == null){
             // kembali ke halaman daftar dan kirim notif
-            return redirect('/master-data/user/daftar')->with('notif', 'user_null');
+            // return redirect('/master-data/user/daftar')->with('notif', 'user_null');
+            return redirect()
+                ->route('master_data.user.daftar')
+                ->with('notif', 'user_null');
         }
 		
 		// variabel untuk dikirim ke halaman view
         $judul = "User";
 		$module = "Master Data";
         $menu = "User";
-        $menu_url = "/master-data/user/daftar";
+        $menu_url = route('master_data.user.daftar');
         $submenu = "Reset Password";
         
         // menampilkan halaman view
@@ -483,33 +403,19 @@ class UserController extends Controller
      */
     public function resetPassword(Request $request)
     {
-		// ========================= PROSES VERIFIKASI ========================
-        // cek session user
-        if (!Auth::check()) {
-            // jika tidak ada session user
-            return redirect('/login');
-        }
-		 // cek apakah status user = aktif
-         $status = User::find(session()->get('id'))->status;
-         if($status != TRUE){
-             return redirect('/logout');
-         }
-		// cek role user, hanya bisa diakses oleh super user dan operation
-        if(session()->get('role_id') != config('constants.role.super_admin')
-         && session()->get('role_id') != config('constants.role.operation')){
-            return redirect('/');
-        }
-        // ===================== AKHIR PROSES VERIFIKASI =======================
-
-        // ambil data user, pastikan bukan user super admin
+        // ambil data user, pastikan bukan user super admin dan sistem
         $user = User::where('id', $request->id)
+            ->where('role_id', '!=', config('constants.role.sistem'))
 			->where('role_id', '!=', config('constants.role.super_admin'))
             ->first();
 			
 		// jika user dengan id tersebut tidak ada
         if($user == null){
             // kembali ke halaman daftar dan kirim notif
-            return redirect('/master-data/user/daftar')->with('notif', 'user_null');
+            // return redirect('/master-data/user/daftar')->with('notif', 'user_null');
+            return redirect()
+                ->route('master_data.user.daftar')
+                ->with('notif', 'user_null');
         }
 		// ===================== AKHIR PROSES VERIFIKASI =======================
 
@@ -537,10 +443,16 @@ class UserController extends Controller
         // jika proses update gagal
         catch(QueryException $ex){
             // kembali ke halaman daftar dan tampilkan pesan error
-            return redirect('/master-data/user/daftar')->with('notif', 'password_gagal');
+            // return redirect('/master-data/user/daftar')->with('notif', 'password_gagal');
+            return redirect()
+                ->route('master_data.user.daftar')
+                ->with('notif', 'password_gagal');
         }
 
         // jika proses insert berhasil
-        return redirect('/master-data/user/daftar')->with('notif', 'password_sukses');
+        // return redirect('/master-data/user/daftar')->with('notif', 'password_sukses');
+        return redirect()
+                ->route('master_data.user.daftar')
+                ->with('notif', 'password_sukses');
     }
 }

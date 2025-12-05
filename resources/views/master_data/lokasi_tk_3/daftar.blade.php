@@ -20,7 +20,7 @@
                 <h3 class="card-title">DAFTAR LOKASI TINGKAT III</h3>
 
                 <a class="btn btn-success btn-sm float-right" 
-                   href="{{url('/master-data/lokasi-tk-3/tambah')}}" 
+                   href="{{ route('master_data.lokasi_tk_3.tambah.form') }}" 
                    role="button"><i class="fas fa-plus"></i>&nbsp;&nbsp;&nbsp;Tambah</a>
 
               </div>
@@ -44,8 +44,8 @@
                       <td></td>
                       <td><center>{{ strtoupper($satu->kode) }}</center></td>
                       <td><center>{{ strtoupper($satu->nama) }}</center></td>
-                      <td><center>{{ strtoupper($satu->getLokasiTk2->nama) }}</center></td>
-                      <td><center>{{ strtoupper($satu->getLokasiTk1->nama) }}</center></td>
+                      <td><center>{{ strtoupper($satu->getLokasiTk2->kode) }} - {{ strtoupper($satu->getLokasiTk2->nama) }}</center></td>
+                      <td><center>{{ strtoupper($satu->getLokasiTk1->kode) }} - {{ strtoupper($satu->getLokasiTk1->nama) }}</center></td>
   @if($satu->status == 1)
                       <td><center><span class="badge bg-success">AKTIF</span></center></td>
   @else
@@ -63,7 +63,7 @@
 -->
                         <center>
                           <a class="btn btn-info btn-sm" 
-                             href="{{url('/master-data/lokasi-tk-3/edit/'.$satu->id)}}" 
+                             href="{{ route('master_data.lokasi_tk_3.edit.form', $satu->id) }}"
                              role="button"
                              title="Edit Data"><i class="fas fa-pencil-alt"></i></a>
                           <button class="btn btn-secondary btn-sm" 
@@ -160,7 +160,7 @@
     //Ajax Load data from ajax
     
     $.ajax({
-        url : "{{url('/master-data/lokasi-tk-3/detail')}}",
+        url : "{{ route('master_data.lokasi_tk_3.detail') }}",
         type: "POST",
         data : {id: id},
         success: function(data){

@@ -36,7 +36,7 @@
 
 <!-- form start -->
 <form class="form-horizontal needs-validation" 
-      action="{{url('/master-data/lokasi-tk-1/tambah')}}"
+      action="{{ route('master_data.lokasi_tk_1.tambah') }}"
       method="post" 
       novalidate>
 @csrf
@@ -49,7 +49,7 @@
                     <input type="text" 
                            name="kode" 
                            class="form-control"
-                           value=""
+                           value="{{ old('kode') }}"
                            required>
                     <div class="invalid-feedback">Kode wajib diisi</div>
                   </div>
@@ -61,7 +61,7 @@
                     <input type="text" 
                            name="nama" 
                            class="form-control"
-                           value=""
+                           value="{{ old('nama') }}"
                            required>
                     <div class="invalid-feedback">Nama wajib diisi</div>
                   </div>
@@ -72,7 +72,7 @@
 
               <div class="card-footer">
                 <a class="btn btn-default btn-sm" 
-                   href="{{url('/master-data/lokasi-tk-1/daftar')}}" 
+                   href="{{ route('master_data.lokasi_tk_1.daftar') }}" 
                    role="button">Batal</a>
                 <button type="submit" class="btn btn-primary btn-sm float-right">Simpan</button>
               </div>

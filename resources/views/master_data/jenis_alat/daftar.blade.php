@@ -20,7 +20,7 @@
                 <h3 class="card-title">DAFTAR JENIS ALAT</h3>
 
                 <a class="btn btn-success btn-sm float-right" 
-                   href="{{url('/master-data/jenis-alat/tambah')}}" 
+                   href="{{ route('master_data.jenis_alat.tambah.form') }}" 
                    role="button"><i class="fas fa-plus"></i>&nbsp;&nbsp;&nbsp;Tambah</a>
 
               </div>
@@ -59,7 +59,7 @@
 -->
                         <center>
                           <a class="btn btn-info btn-sm" 
-                             href="{{url('/master-data/jenis-alat/edit/'.$satu->id)}}" 
+                             href="{{ route('master_data.jenis_alat.edit.form', $satu->id) }}"
                              role="button"
                              title="Edit Data"><i class="fas fa-pencil-alt"></i></a>
                           <button class="btn btn-secondary btn-sm" 
@@ -90,7 +90,7 @@
 
       <!-- isi modal tombol detail -->
       <div class="modal fade" id="modal_detail">
-        <div class="modal-dialog">
+        <div class="modal-dialog modal-lg">
           <div class="modal-content" id="detail">
             
           </div>
@@ -166,7 +166,7 @@
     //Ajax Load data from ajax
     
     $.ajax({
-        url : "{{url('/master-data/jenis-alat/detail')}}",
+        url : "{{ route('master_data.jenis_alat.detail') }}",
         type: "POST",
         data : {id: id},
         success: function(data){

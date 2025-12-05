@@ -32,7 +32,7 @@
 
         <!-- MENU HOME -->
         <li class="nav-item">
-          <a href="{{route('master_data.home')}}" class="nav-link @if($menu == 'Home') active @endif">
+          <a href="{{ route('master_data.home') }}" class="nav-link @if($menu == 'Home') active @endif">
             <i class="nav-icon fas fa-home"></i>
             <p>Home</p>
           </a>
@@ -40,7 +40,7 @@
 
         <!-- MENU USER -->
         <li class="nav-item">
-          <a href="{{url('/master-data/user/daftar')}}" class="nav-link @if($menu == 'User') active @endif">
+          <a href="{{ route('master_data.user.daftar') }}" class="nav-link @if($menu == 'User') active @endif">
             <i class="nav-icon fas fa-user"></i>
             <p>User</p>
           </a>
@@ -48,7 +48,7 @@
 
         <!-- MENU PERUSAHAAN -->
         <li class="nav-item">
-          <a href="{{url('/master-data/perusahaan/daftar')}}" class="nav-link @if($menu == 'Perusahaan') active @endif">
+          <a href="{{ route('master_data.perusahaan.daftar') }}" class="nav-link @if($menu == 'Perusahaan') active @endif">
             <i class="nav-icon fas fa-briefcase"></i>
             <p>Perusahaan</p>
           </a>
@@ -56,7 +56,7 @@
 
         <!-- MENU FASILITAS -->
         <li class="nav-item">
-          <a href="{{url('/master-data/fasilitas/daftar')}}" class="nav-link @if($menu == 'Fasilitas') active @endif">
+          <a href="{{ route('master_data.fasilitas.daftar') }}" class="nav-link @if($menu == 'Fasilitas') active @endif">
             <i class="nav-icon fas fa-plane"></i>
             <p>Fasilitas</p>
           </a>
@@ -64,7 +64,7 @@
 
         <!-- MENU JENIS ALAT -->
         <li class="nav-item">
-          <a href="{{url('/master-data/jenis-alat/daftar')}}" class="nav-link @if($menu == 'Jenis Alat') active @endif">
+          <a href="{{route('master_data.jenis_alat.daftar') }}" class="nav-link @if($menu == 'Jenis Alat') active @endif">
             <i class="nav-icon fas fa-tools"></i>
             <p>Jenis Alat</p>
           </a>
@@ -81,9 +81,9 @@
 
             <li class="nav-item">
 @if(isset($submenu))
-              <a href="{{url('/master-data/lokasi-tk-1/daftar')}}" class="nav-link @if($menu == 'Lokasi Tingkat I') active @endif">
+              <a href="{{ route('master_data.lokasi_tk_1.daftar') }}" class="nav-link @if($menu == 'Lokasi Tingkat I') active @endif">
 @else
-              <a href="{{url('/master-data/lokasi-tk-1/daftar')}}" class="nav-link">
+              <a href="{{ route('master_data.lokasi_tk_1.daftar') }}" class="nav-link">
 @endif
                 <i class="fas fa-caret-right nav-icon"></i>
                 <p>Lokasi Tingkat I</p>
@@ -92,9 +92,9 @@
 
             <li class="nav-item">
 @if(isset($submenu))
-              <a href="{{url('/master-data/lokasi-tk-2/daftar')}}" class="nav-link @if($menu == 'Lokasi Tingkat II') active @endif">
+              <a href="{{ route('master_data.lokasi_tk_2.daftar') }}" class="nav-link @if($menu == 'Lokasi Tingkat II') active @endif">
 @else
-              <a href="{{url('/master-data/lokasi-tk-2/daftar')}}" class="nav-link">
+              <a href="{{ route('master_data.lokasi_tk_2.daftar') }}" class="nav-link">
 @endif
                 <i class="fas fa-caret-right nav-icon"></i>
                 <p>Lokasi Tingkat II</p>
@@ -103,9 +103,9 @@
 
             <li class="nav-item">
 @if(isset($submenu))
-              <a href="{{url('/master-data/lokasi-tk-3/daftar')}}" class="nav-link @if($menu == 'Lokasi Tingkat III') active @endif">
+              <a href="{{ route('master_data.lokasi_tk_3.daftar') }}" class="nav-link @if($menu == 'Lokasi Tingkat III') active @endif">
 @else
-              <a href="{{url('/master-data/lokasi-tk-3/daftar')}}" class="nav-link">
+              <a href="{{ route('master_data.lokasi_tk_3.daftar') }}" class="nav-link">
 @endif
                 <i class="fas fa-caret-right nav-icon"></i>
                 <p>Lokasi Tingkat III</p>

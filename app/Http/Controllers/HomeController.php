@@ -22,9 +22,7 @@ class HomeController extends Controller
      * Function untuk mengarahkan user ke halaman daftar module
 	 * 
      * Akses:
-     * - Super Admin
-	 * - Admin
-	 * - Teknisi
+     * - All User
      * 
 	 * Method: GET
      * URL: /

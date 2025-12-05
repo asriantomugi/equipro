@@ -45,6 +45,7 @@ class RoleMiddleware
             return redirect('/logout');
         }
 
+        //dd(session()->get('role_id'));
         // Cek role user
         $userRole = session()->get('role_id');
         
@@ -67,7 +68,8 @@ class RoleMiddleware
         // Cek apakah user memiliki akses sesuai dengan variable array
         // jika tidak, alihkan ke halaman modul
         if (!in_array($userRole, $allowedRoles)) {
-            return redirect('/')->with('notif', 'tidak_diizinkan'); 
+            // tampilkan halaman forbidden
+            abort(403);
         }
 
         return $next($request);
