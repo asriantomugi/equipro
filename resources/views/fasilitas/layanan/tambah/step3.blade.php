@@ -44,11 +44,6 @@
                 <tr><th>Lokasi Tingkat I</th><td>:</td><td>{{ $layanan->LokasiTk1->kode }} - {{ $layanan->LokasiTk1->nama }}</td></tr>
                 <tr><th>Lokasi Tingkat II</th><td>:</td><td>{{ $layanan->LokasiTk2->kode }} - {{ $layanan->LokasiTk2->nama }}</td></tr>
                 <tr><th>Lokasi Tingkat III</th><td>:</td><td>{{ $layanan->LokasiTk3->kode }} - {{ $layanan->LokasiTk3->nama }}</td></tr>
-  @if($layanan->kondisi == config('constants.kondisi_layanan.serviceable'))
-                <tr><th>Kondisi Layanan</th><td>:</td><td><span class="badge bg-success">SERVICEABLE</span></td></tr>
-  @else
-                <tr><th>Kondisi Layanan</th><td>:</td><td><span class="badge bg-danger">UNSERVICEABLE</span></td></tr>
-  @endif
                 </table>
 
               </div>
@@ -100,8 +95,10 @@
                       <td><center>{{ strtoupper($satu->ip_address) }}</center></td>
   @if($satu->kondisi == config('constants.kondisi_peralatan_layanan.beroperasi'))
                       <td><center><span class="badge bg-success">BEROPERASI</span></center></td>
-  @else
+  @elseif($satu->kondisi == config('constants.kondisi_peralatan_layanan.gangguan'))
                       <td><center><span class="badge bg-danger">GANGGUAN</span></center></td>
+  @else
+                      <td></td>
   @endif
                       <td>
                         <center>
@@ -128,8 +125,8 @@
                 <button type="button" 
                         class="btn btn-primary btn-sm float-right" 
                         onclick="submit('{{ $layanan->id }}')"
-                        title="Submit">
-                        Submit &nbsp;&nbsp;&nbsp;<i class="fas fa-check"></i>
+                        title="Aktivasi Layanan">
+                        Aktivasi &nbsp;&nbsp;&nbsp;<i class="fas fa-check"></i>
                 </button>
 
                 <!--<a class="btn btn-primary btn-sm float-right" 
@@ -185,11 +182,11 @@
   <!-- javascript untuk pop up notifikasi -->
     <script type="text/javascript">
       @if (session()->has('notif'))
-        @if (session()->get('notif') == 'tambah_gagal')
+        @if (session()->get('notif') == 'aktif_gagal')
           $(document).Toasts('create', {
               class: 'bg-danger',
               title: 'Sukses!',
-              body: 'Gagal menambahkan layanan baru',
+              body: 'Gagal mengaktivasi layanan baru',
               autohide: true,
               delay: 3000
             })
@@ -209,7 +206,7 @@
 
       // Ajax Load data from ajax
       $.ajax({
-          url : "{{url('/fasilitas/peralatan/detail')}}",
+          url : "{{ route('fasilitas.peralatan.detail') }}",
           type: "POST",
           data : {id: id},
           success: function(data){
@@ -327,10 +324,10 @@
         //alert(id);
         $('#isi_modal_submit').empty();;
 
-          var html = '<form action="{{route('fasilitas.layanan.tambah.step3')}}" method="post">';
+          var html = '<form action="{{ route('fasilitas.layanan.tambah.step3') }}" method="post">';
               html += '@csrf';
               html += '<div class="modal-body">';
-              html += '<p><center>Ingin menyimpan dan mengaktifkan layanan ini?</center></p>';
+              html += '<p><center>Ingin mengaktifkan layanan ini?</center></p>';
               html += '<input type="text" name="id" value="'+layanan_id+'" hidden>';
               html += '</div>';
               html += '<div class="modal-footer justify-content-between">';

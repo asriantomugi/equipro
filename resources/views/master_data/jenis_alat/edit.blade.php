@@ -51,7 +51,7 @@
                     <input type="text" 
                            name="kode" 
                            class="form-control"
-                           value="{{ strtoupper($jenis_alat->kode) }}"
+                           value="{{ strtoupper(old('kode', $jenis_alat->kode ?? '')) }}"
                            required>
                     <div class="invalid-feedback">Kode wajib diisi</div>
                   </div>
@@ -63,7 +63,7 @@
                     <input type="text" 
                            name="nama" 
                            class="form-control"
-                           value="{{ strtoupper($jenis_alat->nama) }}"
+                           value="{{ strtoupper(old('nama', $jenis_alat->nama ?? '')) }}"
                            required>
                     <div class="invalid-feedback">Nama wajib diisi</div>
                   </div>
@@ -72,15 +72,12 @@
                 <div class="form-group row">
                   <label class="col-sm-3 col-form-label required">Status</label>
                   <div class="col-sm-9">
-                    <select class="form-control" name="status" required>
+                    <select class="form-control" 
+                            name="status" 
+                            required>
                       <option value="">- Pilih -</option>
-  @if($jenis_alat->status == 1)
-                      <option value="1" selected>AKTIF</option>
-                      <option value="0">TIDAK AKTIF</option>
-  @else
-                      <option value="1">AKTIF</option>
-                      <option value="0" selected>TIDAK AKTIF</option>
-  @endif
+                      <option value="1" {{ old('status', $jenis_alat->status ?? '') == '1' ? 'selected' : '' }}>AKTIF</option>
+                      <option value="0" {{ old('status', $jenis_alat->status ?? '') == '0' ? 'selected' : '' }}>TIDAK AKTIF</option>
                     </select>
                   </div>
                   <div class="invalid-feedback">Status wajib diisi</div>

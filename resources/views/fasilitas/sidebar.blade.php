@@ -21,7 +21,7 @@
 
         <!-- MENU MODULE -->
         <li class="nav-item">
-          <a href="{{url('/module')}}" class="nav-link @if($menu == 'Module') active @endif">
+          <a href="{{ route('index') }}" class="nav-link @if($menu == 'Module') active @endif">
             <i class="nav-icon fas fa-th"></i>
             <p>Module</p>
           </a>
@@ -31,7 +31,7 @@
 
         <!-- MENU HOME -->
         <li class="nav-item">
-          <a href="{{url('/fasilitas/home')}}" class="nav-link @if($menu == 'Home') active @endif">
+          <a href="{{ route('fasilitas.home') }}" class="nav-link @if($menu == 'Home') active @endif">
             <i class="nav-icon fas fa-home"></i>
             <p>Home</p>
           </a>
@@ -39,7 +39,7 @@
 
         <!-- MENU PERALATAN -->
         <li class="nav-item">
-          <a href="{{url('/fasilitas/peralatan/daftar')}}" class="nav-link @if($menu == 'Peralatan') active @endif">
+          <a href="{{ route('fasilitas.peralatan.daftar') }}" class="nav-link @if($menu == 'Peralatan') active @endif">
             <i class="nav-icon fas fa-hdd"></i>
             <p>Peralatan</p>
           </a>
@@ -47,13 +47,13 @@
 
         <!-- MENU LAYANAN -->
         <li class="nav-item">
-          <a href="{{url('/fasilitas/layanan/daftar')}}" class="nav-link @if($menu == 'Layanan') active @endif">
+          <a href="{{ route('fasilitas.layanan.daftar') }}" class="nav-link @if($menu == 'Layanan') active @endif">
             <i class="nav-icon fas fa-server"></i>
             <p>Layanan</p>
           </a>
         </li>
 
-        <!-- MENU LAYANAN -->
+        <!-- MENU EXPORT -->
         <li class="nav-item">
           <a href="{{url('/fasilitas/layanan/export/daftar')}}" class="nav-link @if($menu == 'Export') active @endif">
             <i class="nav-icon fas fa-file-export"></i>

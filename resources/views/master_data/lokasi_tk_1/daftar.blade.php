@@ -176,9 +176,9 @@
               row += "<tr><th>Nama</th><td>:</td><td>"+ data.lokasi_tk_1.nama.toUpperCase(); +"</td></tr>";            
               
           if(data.lokasi_tk_1.status == 1){
-              row += "<tr><th>Status</th><td>:</td><td>AKTIF</td></tr>";
+              row += "<tr><th>Status</th><td>:</td><td><span class='badge bg-success'>AKTIF</span></td></tr>";
           }else{
-              row += "<tr><th>Status</th><td>:</td><td>TIDAK AKTIF</td></tr>";
+              row += "<tr><th>Status</th><td>:</td><td><span class='badge bg-danger'>TIDAK AKTIF</span></td></tr>";
           }
 
           if(data.created_by != null){

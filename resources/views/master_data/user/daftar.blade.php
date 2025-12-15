@@ -205,9 +205,9 @@
           }   
               
           if(data.user.status == 1){
-              row += "<tr><th>Status</th><td>:</td><td>AKTIF</td></tr>";
+              row += "<tr><th>Status</th><td>:</td><td><span class='badge bg-success'>AKTIF</span></td></tr>";
           }else{
-              row += "<tr><th>Status</th><td>:</td><td>TIDAK AKTIF</td></tr>";
+              row += "<tr><th>Status</th><td>:</td><td><span class='badge bg-danger'>TIDAK AKTIF</span></td></tr>";
           }
 
           if(data.user.detail.alamat != null){

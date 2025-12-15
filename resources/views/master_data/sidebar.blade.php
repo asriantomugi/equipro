@@ -21,7 +21,7 @@
 
         <!-- MENU MODULE -->
         <li class="nav-item">
-          <a href="{{route('index')}}" class="nav-link @if($menu == 'Module') active @endif">
+          <a href="{{ route('index') }}" class="nav-link @if($menu == 'Module') active @endif">
             <i class="nav-icon fas fa-th"></i>
             <p>Module</p>
           </a>

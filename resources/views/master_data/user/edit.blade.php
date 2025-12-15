@@ -51,7 +51,7 @@
                     <input type="text" 
                            name="nama" 
                            class="form-control"
-                           value="{{ strtoupper($user->name) }}"
+                           value="{{ strtoupper(old('nama', $user->nama ?? '')) }}"
                            required>
                     <div class="invalid-feedback">Nama wajib diisi</div>
                   </div>
@@ -72,14 +72,14 @@
                 <div class="form-group row">
                   <label class="col-sm-4 col-form-label required">Role</label>
                   <div class="col-sm-8">
-                    <select class="form-control" name="role" required>
+                    <select class="form-control" 
+                            name="role" 
+                            required>
                       <option value="">- Pilih -</option>
   @foreach($roles as $role)
-    @if($user->role_id == $role->id)
-                      <option value="{{ $role->id }}" selected>{{ strtoupper($role->nama) }}</option>
-    @else
-                      <option value="{{ $role->id }}">{{ strtoupper($role->nama) }}</option>
-    @endif
+                      <option value="{{ $role->id }}" {{ old('role', $user->role_id ?? '') == $role->id ? 'selected' : '' }}>
+                        {{ strtoupper($role->nama) }}
+                      </option>
   @endforeach
                     </select>
                   </div>
@@ -89,14 +89,14 @@
                 <div class="form-group row">
                   <label class="col-sm-4 col-form-label required">Perusahaan</label>
                   <div class="col-sm-8">
-                    <select class="form-control" name="perusahaan" required>
+                    <select class="form-control" 
+                            name="perusahaan" 
+                            required>
                       <option value="">- Pilih -</option>
   @foreach($perusahaan as $satu)
-    @if($user->detail->perusahaan_id == $satu->id)
-                      <option value="{{ $satu->id }}" selected>{{ strtoupper($satu->nama) }}</option>
-    @else
-                      <option value="{{ $satu->id }}">{{ strtoupper($satu->nama) }}</option>
-    @endif
+                      <option value="{{ $satu->id }}" {{ old('perusahaan', $user->detail->perusahaan_id ?? '') == $satu->id ? 'selected' : '' }}>
+                        {{ strtoupper($satu->nama) }}
+                      </option>
   @endforeach
                     </select>
                   </div>
@@ -109,7 +109,7 @@
                     <input type="text" 
                            name="jabatan" 
                            class="form-control"
-                           value="{{ strtoupper($user->detail->jabatan) }}">
+                           value="{{ strtoupper(old('jabatan', $user->detail->jabatan ?? '')) }}">
                    </div>
                 </div>
 
@@ -119,7 +119,7 @@
                     <textarea class="form-control" 
                               rows="3"
                               name="alamat" 
-                              placeholder="">{{ strtoupper($user->detail->alamat) }}</textarea>
+                              placeholder="">{{ strtoupper(old('alamat', $user->detail->alamat ?? '')) }}</textarea>
                   </div>
                 </div>
 
@@ -129,22 +129,19 @@
                     <input type="text" 
                            name="telepon" 
                            class="form-control"
-                           value="{{ strtoupper($user->detail->telepon) }}">
+                           value="{{ strtoupper(old('telepon', $user->detail->telepon ?? '')) }}">
                    </div>
                 </div>
                 
                 <div class="form-group row">
                   <label class="col-sm-4 col-form-label required">Status</label>
                   <div class="col-sm-8">
-                    <select class="form-control" name="status" required>
+                    <select class="form-control" 
+                            name="status" 
+                            required>
                       <option value="">- Pilih -</option>
-  @if($user->status == 1)
-                      <option value="1" selected>AKTIF</option>
-                      <option value="0">TIDAK AKTIF</option>
-  @else
-                      <option value="1">AKTIF</option>
-                      <option value="0" selected>TIDAK AKTIF</option>
-  @endif
+                      <option value="1" {{ old('status', $user->status ?? '') == '1' ? 'selected' : '' }}>AKTIF</option>
+                      <option value="0" {{ old('status', $user->status ?? '') == '0' ? 'selected' : '' }}>TIDAK AKTIF</option>
                     </select>
                   </div>
                   <div class="invalid-feedback">Status wajib diisi</div>

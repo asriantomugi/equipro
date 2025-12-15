@@ -51,7 +51,7 @@
                     <input type="text" 
                            name="nama" 
                            class="form-control"
-                           value="{{ strtoupper($perusahaan->nama) }}"
+                           value="{{ strtoupper(old('nama', $perusahaan->nama ?? '')) }}"
                            required>
                     <div class="invalid-feedback">Nama wajib diisi</div>
                   </div>
@@ -63,7 +63,7 @@
                     <input type="email" 
                            name="email" 
                            class="form-control"
-                           value="{{ strtolower($perusahaan->email) }}"
+                           value="{{ strtoupper(old('email', $perusahaan->email ?? '')) }}"
                            required>
                     <div class="invalid-feedback">Email wajib diisi</div>
                   </div>
@@ -75,7 +75,7 @@
                     <textarea class="form-control" 
                               rows="3"
                               name="alamat" 
-                              placeholder="">{{ strtoupper($perusahaan->alamat) }}</textarea>
+                              placeholder="">{{ strtoupper(old('alamat', $perusahaan->alamat ?? '')) }}</textarea>
                   </div>
                 </div>
 
@@ -85,22 +85,19 @@
                     <input type="text" 
                            name="telepon" 
                            class="form-control"
-                           value="{{ strtoupper($perusahaan->telepon) }}">
+                           value="{{ strtoupper(old('telepon', $perusahaan->telepon ?? '')) }}">
                   </div>
                 </div>
 
                 <div class="form-group row">
                   <label class="col-sm-3 col-form-label required">Status</label>
                   <div class="col-sm-9">
-                    <select class="form-control" name="status" required>
+                    <select class="form-control" 
+                            name="status" 
+                            required>
                       <option value="">- Pilih -</option>
-  @if($perusahaan->status == 1)
-                      <option value="1" selected>AKTIF</option>
-                      <option value="0">TIDAK AKTIF</option>
-  @else
-                      <option value="1">AKTIF</option>
-                      <option value="0" selected>TIDAK AKTIF</option>
-  @endif
+                      <option value="1" {{ old('status', $perusahaan->status ?? '') == '1' ? 'selected' : '' }}>AKTIF</option>
+                      <option value="0" {{ old('status', $perusahaan->status ?? '') == '0' ? 'selected' : '' }}>TIDAK AKTIF</option>
                     </select>
                   </div>
                   <div class="invalid-feedback">Status wajib diisi</div>

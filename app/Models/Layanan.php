@@ -35,7 +35,7 @@ class Layanan extends Model
     /**
      * Function untuk memanggil nama Lokasi Tingkat I.
      */
-    public function LokasiTk1()
+    public function lokasiTk1()
     {
         return $this->hasOne(LokasiTk1::class, 'id', 'lokasi_tk_1_id');
     }
@@ -43,7 +43,7 @@ class Layanan extends Model
     /**
      * Function untuk memanggil nama Lokasi Tingkat II.
      */
-    public function LokasiTk2()
+    public function lokasiTk2()
     {
         return $this->hasOne(LokasiTk2::class, 'id', 'lokasi_tk_2_id');
     }
@@ -51,7 +51,7 @@ class Layanan extends Model
     /**
      * Function untuk memanggil nama Lokasi Tingkat III.
      */
-    public function LokasiTk3()
+    public function lokasiTk3()
     {
         return $this->hasOne(LokasiTk3::class, 'id', 'lokasi_tk_3_id');
     }

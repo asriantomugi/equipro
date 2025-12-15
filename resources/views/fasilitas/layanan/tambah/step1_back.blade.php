@@ -34,7 +34,7 @@
 
 <!-- form start -->
 <form class="form-horizontal needs-validation" 
-      action="{{url('/fasilitas/layanan/tambah/step1/back')}}"
+      action="{{ route('fasilitas.layanan.tambah.step1.back') }}"
       method="post" 
       novalidate>
 @csrf
@@ -51,11 +51,9 @@
                             required>
                       <option value="">- Pilih -</option>
 @foreach ($fasilitas as $satu)
-  @if($satu->id == $layanan->fasilitas_id)
-                      <option value="{{ $satu->id }}" selected>{{ $satu->kode }} - {{ $satu->nama }}</option>
-  @else
-                      <option value="{{ $satu->id }}">{{ $satu->kode }} - {{ $satu->nama }}</option>
-  @endif
+                      <option value="{{ $satu->id }}" {{ old('fasilitas', $layanan->fasilitas_id ?? '') == $satu->id ? 'selected' : '' }}>
+                        {{ strtoupper($satu->kode) }} - {{ strtoupper($satu->nama) }}
+                      </option>
 @endforeach
                     </select>
                     <div class="invalid-feedback">Fasilitas wajib dipilih.</div>
@@ -95,11 +93,9 @@
                             required>
                       <option value="">- Pilih -</option>
 @foreach($lokasi_tk_1 as $satu)
-  @if($satu->id == $layanan->lokasi_tk_1_id)
-                      <option value="{{ $satu->id }}" selected>{{ $satu->kode }} - {{ $satu->nama }}</option>
-  @else
-                      <option value="{{ $satu->id }}">{{ $satu->kode }} - {{ $satu->nama }}</option>
-  @endif
+                      <option value="{{ $satu->id }}" {{ old('lokasi_tk_1', $layanan->lokasi_tk_1_id ?? '') == $satu->id ? 'selected' : '' }}>
+                        {{ strtoupper($satu->kode) }} - {{ strtoupper($satu->nama) }}
+                      </option>
 @endforeach
                     </select>
                     <div class="invalid-feedback">Lokasi Tingkat I wajib dipilih.</div>
@@ -115,11 +111,9 @@
                             required>
                             <option value="">- Pilih -</option>
 @foreach($lokasi_tk_2 as $satu)
-  @if($satu->id == $layanan->lokasi_tk_2_id)
-                      <option value="{{ $satu->id }}" selected>{{ $satu->kode }} - {{ $satu->nama }}</option>
-  @else
-                      <option value="{{ $satu->id }}">{{ $satu->kode }} - {{ $satu->nama }}</option>
-  @endif
+                      <option value="{{ $satu->id }}" {{ old('lokasi_tk_2', $layanan->lokasi_tk_2_id ?? '') == $satu->id ? 'selected' : '' }}>
+                        {{ strtoupper($satu->kode) }} - {{ strtoupper($satu->nama) }}
+                      </option>
 @endforeach
                     </select>
                     <div class="invalid-feedback">Lokasi Tingkat II wajib dipilih.</div>
@@ -135,33 +129,12 @@
                             required>
                             <option value="">- Pilih -</option>
 @foreach($lokasi_tk_3 as $satu)
-  @if($satu->id == $layanan->lokasi_tk_3_id)
-                      <option value="{{ $satu->id }}" selected>{{ $satu->kode }} - {{ $satu->nama }}</option>
-  @else
-                      <option value="{{ $satu->id }}">{{ $satu->kode }} - {{ $satu->nama }}</option>
-  @endif
+                      <option value="{{ $satu->id }}" {{ old('lokasi_tk_3', $layanan->lokasi_tk_3_id ?? '') == $satu->id ? 'selected' : '' }}>
+                        {{ strtoupper($satu->kode) }} - {{ strtoupper($satu->nama) }}
+                      </option>
 @endforeach
                     </select>
                     <div class="invalid-feedback">Lokasi Tingkat III wajib dipilih.</div>
-                  </div>
-                </div>
-
-                <div class="form-group row">
-                  <label class="col-sm-3 col-form-label required">Kondisi</label>
-                  <div class="col-sm-9">
-                    <select name="kondisi" 
-                            class="form-control" 
-                            required>
-                      <option value="">- Pilih -</option>
-@if($layanan->kondisi === 1)
-                      <option value="1" selected>SERVICEABLE</option>
-                      <option value="0">UNSERVICEABLE</option>
-@else
-                      <option value="1">SERVICEABLE</option>
-                      <option value="0" selected>UNSERVICEABLE</option>
-@endif
-                    </select>
-                    <div class="invalid-feedback">Kondisi wajib dipilih.</div>
                   </div>
                 </div>
 
@@ -172,7 +145,11 @@
                 <a class="btn btn-default btn-sm" 
                    href="{{ route('fasilitas.layanan.daftar') }}" 
                    role="button">Batal</a>
-                <button type="submit" class="btn btn-success btn-sm float-right">Lanjut &nbsp;&nbsp;&nbsp;<i class="fas fa-angle-right"></i></button>
+                <button type="submit" 
+                        class="btn btn-success btn-sm float-right">
+                        Lanjut &nbsp;&nbsp;&nbsp;
+                        <i class="fas fa-angle-right"></i>
+                </button>
               </div>
 
 </form>

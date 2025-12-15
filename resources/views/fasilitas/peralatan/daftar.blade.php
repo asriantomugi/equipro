@@ -20,7 +20,7 @@
                 <h3 class="card-title">DAFTAR PERALATAN</h3>
 
                 <a class="btn btn-success btn-sm float-right" 
-                   href="{{url('/fasilitas/peralatan/tambah')}}" 
+                   href="{{ route('fasilitas.peralatan.tambah.form') }}" 
                    role="button"><i class="fas fa-plus"></i>&nbsp;&nbsp;&nbsp;Tambah</a>
 
               </div>
@@ -52,7 +52,7 @@
                       <td><center>{{ strtoupper($satu->model) }}</center></td>
                       <td><center>{{ strtoupper($satu->serial_number) }}</center></td>
 
-  @if($satu->kondisi == config('constants.kondisi_peralatan.Normal'))
+  @if($satu->kondisi == config('constants.kondisi_peralatan.normal'))
                       <td><center><span class="badge bg-success">NORMAL</span></center></td>
   @else
                       <td><center><span class="badge bg-danger">RUSAK</span></center></td>
@@ -75,7 +75,7 @@
 -->
                         <center>
                           <a class="btn btn-info btn-sm" 
-                             href="{{url('/fasilitas/peralatan/edit/'.$satu->id)}}" 
+                             href="{{ route('fasilitas.peralatan.edit.form', $satu->id) }}"
                              role="button"
                              title="Edit Data"><i class="fas fa-pencil-alt"></i></a>
                           <button class="btn btn-secondary btn-sm" 
@@ -182,7 +182,7 @@
     //Ajax Load data from ajax
     
     $.ajax({
-        url : "{{url('/fasilitas/peralatan/detail')}}",
+        url : "{{ route('fasilitas.peralatan.detail') }}",
         type: "POST",
         data : {id: id},
         success: function(data){
@@ -254,9 +254,9 @@
           }
 
           if(data.peralatan.status == 1){
-              row += "<tr><th>Status</th><td>:</td><td>AKTIF</td></tr>";
+              row += "<tr><th>Status</th><td>:</td><td><span class='badge bg-success'>AKTIF</span></td></tr>";
           }else{
-              row += "<tr><th>Status</th><td>:</td><td>TIDAK AKTIF</td></tr>";
+              row += "<tr><th>Status</th><td>:</td><td><span class='badge bg-danger'>TIDAK AKTIF</span></td></tr>";
           }
 
           if(data.created_by != null){

@@ -34,7 +34,7 @@
 
 <!-- form start -->
 <form class="form-horizontal needs-validation" 
-      action="{{url('/fasilitas/layanan/tambah/step1')}}"
+      action="{{ route('fasilitas.layanan.tambah.step1') }}"
       method="post" 
       novalidate>
 @csrf
@@ -49,7 +49,9 @@
                             required>
                       <option value="">- Pilih -</option>
 @foreach ($fasilitas as $satu)
-                      <option value="{{ $satu->id }}">{{ $satu->kode }} - {{ $satu->nama }}</option>
+                      <option value="{{ $satu->id }}" {{ old('fasilitas') == $satu->id ? 'selected' : '' }}>
+                        {{ strtoupper($satu->kode) }} - {{ strtoupper($satu->nama) }}
+                      </option>
 @endforeach
                     </select>
                     <div class="invalid-feedback">Fasilitas wajib dipilih.</div>
@@ -62,7 +64,7 @@
                     <input type="text" 
                            name="kode" 
                            class="form-control"
-                           value=""
+                           value="{{ old('kode') }}"
                            required>
                     <div class="invalid-feedback">Kode wajib diisi</div>
                   </div>
@@ -74,7 +76,7 @@
                     <input type="text" 
                            name="nama" 
                            class="form-control"
-                           value=""
+                           value="{{ old('nama') }}"
                            required>
                     <div class="invalid-feedback">Nama wajib diisi</div>
                   </div>
@@ -89,7 +91,10 @@
                             required>
                       <option value="">- Pilih -</option>
     @foreach($lokasi_tk_1 as $satu)
-                      <option value="{{$satu->id}}">{{strtoupper($satu->nama)}}</option>
+                      <!-- <option value="{{$satu->id}}">{{strtoupper($satu->nama)}}</option> -->
+                      <option value="{{ $satu->id }}" {{ old('lokasi_tk_1') == $satu->id ? 'selected' : '' }}>
+                        {{ strtoupper($satu->kode) }} - {{ strtoupper($satu->nama) }}
+                      </option>
     @endforeach
                     </select>
                     <div class="invalid-feedback">Lokasi Tingkat I wajib dipilih.</div>
@@ -122,29 +127,18 @@
                   </div>
                 </div>
 
-                <div class="form-group row">
-                  <label class="col-sm-3 col-form-label required">Kondisi</label>
-                  <div class="col-sm-9">
-                    <select name="kondisi" 
-                            class="form-control" 
-                            required>
-                      <option value="">- Pilih -</option>
-                      <option value="1">SERVICEABLE</option>
-                      <option value="0">UNSERVICEABLE</option>
-                    </select>
-                    <div class="invalid-feedback">Kondisi wajib dipilih.</div>
-                  </div>
-                </div>
-
-
               </div>
               <!-- /.card-body -->
 
               <div class="card-footer">
                 <a class="btn btn-default btn-sm" 
-                   href="{{url('/fasilitas/layanan/daftar')}}" 
+                   href="{{ route('fasilitas.layanan.daftar') }}" 
                    role="button">Batal</a>
-                <button type="submit" class="btn btn-success btn-sm float-right">Lanjut &nbsp;&nbsp;&nbsp;<i class="fas fa-angle-right"></i></button>
+                <button type="submit" 
+                        class="btn btn-success btn-sm float-right">
+                        Lanjut &nbsp;&nbsp;&nbsp;
+                        <i class="fas fa-angle-right"></i>
+                </button>
               </div>
 
 </form>

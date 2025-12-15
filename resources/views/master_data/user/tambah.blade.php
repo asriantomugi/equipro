@@ -70,10 +70,14 @@
                 <div class="form-group row">
                   <label class="col-sm-4 col-form-label required">Role</label>
                   <div class="col-sm-8">
-                    <select class="form-control" name="role" required>
+                    <select class="form-control" 
+                            name="role" 
+                            required>
                       <option value="">- Pilih -</option>
   @foreach($roles as $role)
-                      <option value="{{ $role->id }}" {{ old('role') == $role->id ? 'selected' : '' }}>{{ strtoupper($role->nama) }}</option>
+                      <option value="{{ $role->id }}" {{ old('role') == $role->id ? 'selected' : '' }}>
+                        {{ strtoupper($role->nama) }}
+                      </option>
   @endforeach
                     </select>
                   </div>
@@ -83,10 +87,14 @@
                 <div class="form-group row">
                   <label class="col-sm-4 col-form-label required">Perusahaan</label>
                   <div class="col-sm-8">
-                    <select class="form-control" name="perusahaan" required>
+                    <select class="form-control" 
+                            name="perusahaan" 
+                            required>
                       <option value="">- Pilih -</option>
   @foreach($perusahaan as $satu)
-                      <option value="{{ $satu->id }}" {{ old('perusahaan') == $satu->id ? 'selected' : '' }}>{{ strtoupper($satu->nama) }}</option>
+                      <option value="{{ $satu->id }}" {{ old('perusahaan') == $satu->id ? 'selected' : '' }}>
+                        {{ strtoupper($satu->nama) }}
+                      </option>
   @endforeach
                     </select>
                   </div>

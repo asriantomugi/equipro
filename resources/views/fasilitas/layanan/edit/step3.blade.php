@@ -121,17 +121,18 @@
                    href="{{ route('fasilitas.layanan.edit.step2.form', ['id' => $layanan->id]) }}" 
                    role="button"><i class="fas fa-angle-left"></i>&nbsp;&nbsp;&nbsp;Kembali</a>
 
+                <a class="btn btn-primary btn-sm float-right" 
+                   href="{{ route('fasilitas.layanan.daftar') }}" 
+                   role="button">Selesai Review &nbsp;&nbsp;&nbsp;<i class="fas fa-check"></i></a>
+              {{-- 
                 <button type="button" 
                         class="btn btn-primary btn-sm float-right" 
                         onclick="submit('{{ $layanan->id }}')"
                         title="Submit">
                         Submit &nbsp;&nbsp;&nbsp;<i class="fas fa-check"></i>
                 </button>
+              --}}
 
-                <!--<a class="btn btn-primary btn-sm float-right" 
-                   href="{{ route('fasilitas.layanan.tambah.step3', ['id' => $layanan->id]) }}" 
-                   role="button">Submit &nbsp;&nbsp;&nbsp;<i class="fas fa-check"></i></a>
-                <button type="submit" class="btn btn-success btn-sm float-right">Lanjut &nbsp;&nbsp;&nbsp;<i class="fas fa-angle-right"></i></button> -->
               </div>
               
             </div>

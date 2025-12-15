@@ -186,9 +186,9 @@
               row += "<tr><th>Nama</th><td>:</td><td>"+ data.fasilitas.nama.toUpperCase(); +"</td></tr>";            
               
           if(data.fasilitas.status == 1){
-              row += "<tr><th>Status</th><td>:</td><td>AKTIF</td></tr>";
+              row += "<tr><th>Status</th><td>:</td><td><span class='badge bg-success'>AKTIF</span></td></tr>";
           }else{
-              row += "<tr><th>Status</th><td>:</td><td>TIDAK AKTIF</td></tr>";
+              row += "<tr><th>Status</th><td>:</td><td><span class='badge bg-danger'>TIDAK AKTIF</span></td></td></tr>";
           }
 
           if(data.created_by != null){

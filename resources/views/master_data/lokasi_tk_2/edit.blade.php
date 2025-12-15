@@ -62,7 +62,7 @@
                     <input type="text" 
                            name="kode" 
                            class="form-control"
-                           value="{{ strtoupper($lokasi_tk_2->kode) }}"
+                           value="{{ strtoupper(old('kode', $lokasi_tk_2->kode ?? '')) }}"
                            required>
                     <div class="invalid-feedback">Kode wajib diisi</div>
                   </div>
@@ -74,7 +74,7 @@
                     <input type="text" 
                            name="nama" 
                            class="form-control"
-                           value="{{ strtoupper($lokasi_tk_2->nama) }}"
+                           value="{{ strtoupper(old('nama', $lokasi_tk_2->nama ?? '')) }}"
                            required>
                     <div class="invalid-feedback">Nama wajib diisi</div>
                   </div>
@@ -83,15 +83,12 @@
                 <div class="form-group row">
                   <label class="col-sm-3 col-form-label required">Status</label>
                   <div class="col-sm-9">
-                    <select class="form-control" name="status" required>
+                    <select class="form-control" 
+                            name="status" 
+                            required>
                       <option value="">- Pilih -</option>
-  @if($lokasi_tk_2->status == 1)
-                      <option value="1" selected>AKTIF</option>
-                      <option value="0">TIDAK AKTIF</option>
-  @else
-                      <option value="1">AKTIF</option>
-                      <option value="0" selected>TIDAK AKTIF</option>
-  @endif
+                      <option value="1" {{ old('status', $lokasi_tk_2->status ?? '') == '1' ? 'selected' : '' }}>AKTIF</option>
+                      <option value="0" {{ old('status', $lokasi_tk_2->status ?? '') == '0' ? 'selected' : '' }}>TIDAK AKTIF</option>
                     </select>
                   </div>
                   <div class="invalid-feedback">Status wajib diisi</div>

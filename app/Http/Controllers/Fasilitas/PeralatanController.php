@@ -36,24 +36,6 @@ class PeralatanController extends Controller
      */
     public function daftar()
     {
-        // ========================= PROSES VERIFIKASI ========================
-        // cek session user
-        if (!Auth::check()) {
-            // jika tidak ada session user
-            return redirect('/login');
-        }    
-        // cek apakah status user = aktif
-        $status = User::find(session()->get('id'))->status;
-        if($status != TRUE){
-            return redirect('/logout');
-        }
-        // cek role user, hanya bisa diakses oleh super admin dan admin
-        if(session()->get('role_id') != config('constants.role.super_admin')
-         && session()->get('role_id') != config('constants.role.admin')){
-            return redirect('/');
-        }
-        // ===================== AKHIR PROSES VERIFIKASI =======================
-
         // ambil daftar peralatan
         $daftar = Peralatan::all();
        
@@ -61,7 +43,7 @@ class PeralatanController extends Controller
 		$judul = "Peralatan";
 		$module = "Fasilitas";
         $menu = "Peralatan";
-        $menu_url = "/fasilitas/peralatan/daftar";
+        $menu_url = route('fasilitas.peralatan.daftar');
         $submenu = "Daftar";
         
         // menampilkan halaman view
@@ -88,24 +70,6 @@ class PeralatanController extends Controller
      */
     public function formTambah()
     {
-        // ========================= PROSES VERIFIKASI ========================
-        // cek session user
-        if (!Auth::check()) {
-            // jika tidak ada session user
-            return redirect('/login');
-        }    
-        // cek apakah status user = aktif
-        $status = User::find(session()->get('id'))->status;
-        if($status != TRUE){
-            return redirect('/logout');
-        }
-        // cek role user, hanya bisa diakses oleh super admin dan admin
-        if(session()->get('role_id') != config('constants.role.super_admin')
-         && session()->get('role_id') != config('constants.role.admin')){
-            return redirect('/');
-        }
-        // ===================== AKHIR PROSES VERIFIKASI =======================
-
         // ambil daftar jenis alat yang aktif
         $jenis_alat = JenisAlat::where('status', 1)->get();
 
@@ -116,7 +80,7 @@ class PeralatanController extends Controller
         $judul = "Peralatan";
 		$module = "Fasilitas";
         $menu = "Peralatan";
-        $menu_url = "/fasilitas/peralatan/daftar";
+        $menu_url = route('fasilitas.peralatan.daftar');
         $submenu = "Tambah";
         
         // menampilkan halaman view
@@ -147,24 +111,6 @@ class PeralatanController extends Controller
      */
     public function tambah(Request $request)
     {
-        // ========================= PROSES VERIFIKASI ========================
-        // cek session user
-        if (!Auth::check()) {
-            // jika tidak ada session user
-            return redirect('/login');
-        }    
-        // cek apakah status user = aktif
-        $status = User::find(session()->get('id'))->status;
-        if($status != TRUE){
-            return redirect('/logout');
-        }
-        // cek role user, hanya bisa diakses oleh super admin dan admin
-        if(session()->get('role_id') != config('constants.role.super_admin')
-         && session()->get('role_id') != config('constants.role.admin')){
-            return redirect('/');
-        }
-        // ===================== AKHIR PROSES VERIFIKASI =======================
-
         // melakukan validasi input dari form
         // jika tidak sesuai parameter, maka akan muncul error
         $validasi  = $request->validate([
@@ -200,11 +146,17 @@ class PeralatanController extends Controller
         catch(QueryException $ex){
             //dd($ex->getMessage());
             // kembali ke halaman daftar dan tampilkan pesan error
-            return redirect('/fasilitas/peralatan/daftar')->with('notif', 'tambah_gagal');
+            // return redirect('/fasilitas/peralatan/daftar')->with('notif', 'tambah_gagal');
+            return redirect()
+            ->route('fasilitas.peralatan.daftar')
+            ->with('notif', 'tambah_gagal');
         }
 
         // jika proses insert berhasil
-        return redirect('/fasilitas/peralatan/daftar')->with('notif', 'tambah_sukses');
+        // return redirect('/fasilitas/peralatan/daftar')->with('notif', 'tambah_sukses');
+        return redirect()
+            ->route('fasilitas.peralatan.daftar')
+            ->with('notif', 'tambah_sukses');
     }
 
 
@@ -263,24 +215,6 @@ class PeralatanController extends Controller
      */
     public function formEdit($id)
     {
-        // ========================= PROSES VERIFIKASI ========================
-        // cek session user
-        if (!Auth::check()) {
-            // jika tidak ada session user
-            return redirect('/login');
-        }    
-        // cek apakah status user = aktif
-        $status = User::find(session()->get('id'))->status;
-        if($status != TRUE){
-            return redirect('/logout');
-        }
-        // cek role user, hanya bisa diakses oleh super admin dan admin
-        if(session()->get('role_id') != config('constants.role.super_admin')
-         && session()->get('role_id') != config('constants.role.admin')){
-            return redirect('/');
-        }
-        // ===================== AKHIR PROSES VERIFIKASI =======================
-
         // ambil data peralatan
         $peralatan = Peralatan::where('id', $id)
             ->first();
@@ -288,7 +222,10 @@ class PeralatanController extends Controller
         // jika peralatan dengan id tersebut tidak ada
         if($peralatan == null){
             // kembali ke halaman daftar dan kirim notif
-            return redirect('/fasilitas/peralatan/daftar')->with('notif', 'item_null');
+            // return redirect('/fasilitas/peralatan/daftar')->with('notif', 'item_null');
+            return redirect()
+                ->route('fasilitas.peralatan.daftar')
+                ->with('notif', 'item_null');
         }
 
         // ambil daftar jenis alat yang aktif
@@ -301,7 +238,7 @@ class PeralatanController extends Controller
         $judul = "Peralatan";
 		$module = "Fasilitas";
         $menu = "Peralatan";
-        $menu_url = "/fasilitas/peralatan/daftar";
+        $menu_url = route('fasilitas.peralatan.daftar');
         $submenu = "Edit Data";
         
         // menampilkan halaman view
@@ -333,24 +270,6 @@ class PeralatanController extends Controller
      */
     public function edit(Request $request)
     {
-        // ========================= PROSES VERIFIKASI ========================
-        // cek session user
-        if (!Auth::check()) {
-            // jika tidak ada session user
-            return redirect('/login');
-        }    
-        // cek apakah status user = aktif
-        $status = User::find(session()->get('id'))->status;
-        if($status != TRUE){
-            return redirect('/logout');
-        }
-        // cek role user, hanya bisa diakses oleh super admin dan admin
-        if(session()->get('role_id') != config('constants.role.super_admin')
-         && session()->get('role_id') != config('constants.role.admin')){
-            return redirect('/');
-        }
-        // ===================== AKHIR PROSES VERIFIKASI =======================
-
         // ===================== CEK DUPLIKASI KODE ============================
         // ambil data peralatan sebelumnya berdasarkan id
         $peralatan = Peralatan::where('id', $request->id)
@@ -368,7 +287,23 @@ class PeralatanController extends Controller
             }
         }
         // ===================== END OF CEK DUPLIKASI KODE =====================
-        
+
+        // ==================== CEK PERUBAHAN KONDISI ==========================
+        // perubahan kondisi dapat dilakukan hanya apabila peralatan tidak sedang
+        // berada di dalam Layanan.
+
+        // cek apakah ada perubahan kondisi
+        if($peralatan->kondisi != $request->kondisi){
+            // jika ada, cek apakah peralatan sedang berada di dalam Layanan
+            if($peralatan->flag_layanan != 0){
+                // buat pesan error
+                $errors = new MessageBag(['kode' => 'Kondisi Peralatan tidak dapat diubah, karena Peralatan sedang berada di dalam Layanan']);
+                // kembali ke halaman edit dan tampilkan pesan error
+                return redirect()->back()->withErrors($errors)->withInput();
+            }
+        }
+        // ================== END OF CEK PERUBAHAN KONDISI =====================
+
         try{
             // update data peralatan di tabel peralatan
             Peralatan::where('id', $request->id)
@@ -394,11 +329,17 @@ class PeralatanController extends Controller
         catch(QueryException $ex){
             //dd($ex->getMessage());
             // kembali ke halaman daftar dan tampilkan pesan error
-            return redirect('/fasilitas/peralatan/daftar')->with('notif', 'edit_gagal');
+            // return redirect('/fasilitas/peralatan/daftar')->with('notif', 'edit_gagal');
+            return redirect()
+                ->route('fasilitas.peralatan.daftar')
+                ->with('notif', 'edit_gagal');
         }
 
         // jika proses update berhasil
-        return redirect('/fasilitas/peralatan/daftar')->with('notif', 'edit_sukses');
+        // return redirect('/fasilitas/peralatan/daftar')->with('notif', 'edit_sukses');
+        return redirect()
+            ->route('fasilitas.peralatan.daftar')
+            ->with('notif', 'edit_sukses');
     }
 
 }

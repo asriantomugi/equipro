@@ -36,7 +36,7 @@
 
 <!-- form start -->
 <form class="form-horizontal needs-validation" 
-      action="{{url('/fasilitas/peralatan/edit')}}"
+      action="{{ route('fasilitas.peralatan.edit') }}"
       method="post" 
       novalidate>
 @csrf
@@ -53,11 +53,9 @@
                             required>
                       <option value="">- Pilih -</option>
 @foreach ($jenis_alat as $satu)
-  @if($satu->id == $peralatan->jenis_id)
-                      <option value="{{ $satu->id }}" selected>{{ $satu->kode }} - {{ $satu->nama }}</option>
-  @else
-                      <option value="{{ $satu->id }}">{{ $satu->kode }} - {{ $satu->nama }}</option>
-  @endif
+                      <option value="{{ $satu->id }}" {{ old('jenis', $peralatan->jenis_id ?? '') == $satu->id ? 'selected' : '' }}>
+                        {{ strtoupper($satu->kode) }} - {{ strtoupper($satu->nama) }}
+                      </option>
 @endforeach
                     </select>
                     <div class="invalid-feedback">Jenis Alat wajib dipilih.</div>
@@ -70,7 +68,7 @@
                     <input type="text" 
                            name="kode" 
                            class="form-control"
-                           value="{{ strtoupper($peralatan->kode) }}"
+                           value="{{ strtoupper(old('kode', $peralatan->kode ?? '')) }}"
                            required>
                     <div class="invalid-feedback">Kode wajib diisi</div>
                   </div>
@@ -82,7 +80,7 @@
                     <input type="text" 
                            name="nama" 
                            class="form-control"
-                           value="{{ strtoupper($peralatan->nama) }}"
+                           value="{{ strtoupper(old('nama', $peralatan->nama ?? '')) }}"
                            required>
                     <div class="invalid-feedback">Nama wajib diisi</div>
                   </div>
@@ -94,7 +92,7 @@
                     <input type="text" 
                            name="merk" 
                            class="form-control"
-                           value="{{ strtoupper($peralatan->merk) }}">
+                           value="{{ strtoupper(old('merk', $peralatan->merk ?? '')) }}">
                   </div>
                 </div>
 
@@ -104,7 +102,7 @@
                     <input type="text" 
                            name="tipe" 
                            class="form-control"
-                           value="{{ strtoupper($peralatan->tipe) }}">
+                           value="{{ strtoupper(old('tipe', $peralatan->tipe ?? '')) }}">
                   </div>
                 </div>
 
@@ -114,7 +112,7 @@
                     <input type="text" 
                            name="model" 
                            class="form-control"
-                           value="{{ strtoupper($peralatan->model) }}">
+                           value="{{ strtoupper(old('model', $peralatan->model ?? '')) }}">
                   </div>
                 </div>
 
@@ -124,7 +122,7 @@
                     <input type="text" 
                            name="serial_number" 
                            class="form-control"
-                           value="{{ strtoupper($peralatan->serial_number) }}">
+                           value="{{ strtoupper(old('serial_number', $peralatan->serial_number ?? '')) }}">
                   </div>
                 </div>
 
@@ -134,18 +132,17 @@
                     <select name="thn_produksi" 
                             class="form-control">
                       <option value="">- Pilih -</option>
-@php
-  $start = 1980;
-  $end = date("Y"); // tahun sekarang
-  for ($i = $end; $i >= $start; $i--) {
-    if($i == $peralatan->thn_produksi){
-      echo "<option value=\"$i\" selected>$i</option>";
-    }else{
-      echo "<option value=\"$i\">$i</option>";
-    }
-      
-  }
-@endphp
+
+                      @php
+                          $start = 1980;
+                          $end = date('Y');
+                      @endphp
+
+                      @for ($i = $end; $i >= $start; $i--)
+                        <option value="{{ $i }}" {{ old('thn_produksi', $peralatan->thn_produksi ?? '') == $i ? 'selected' : '' }}>
+                          {{ $i }}
+                        </option>
+                      @endfor
                     </select>
                   </div>
                 </div>
@@ -156,17 +153,17 @@
                     <select name="thn_pengadaan" 
                             class="form-control">
                       <option value="">- Pilih -</option>
-@php
-  $start = 1980;
-  $end = date("Y"); // tahun sekarang
-  for ($i = $end; $i >= $start; $i--) {
-    if($i == $peralatan->thn_pengadaan){
-      echo "<option value=\"$i\" selected>$i</option>";
-    }else{
-      echo "<option value=\"$i\">$i</option>";
-    }
-  }
-@endphp
+
+                      @php
+                          $start = 1980;
+                          $end = date('Y');
+                      @endphp
+
+                      @for ($i = $end; $i >= $start; $i--)
+                        <option value="{{ $i }}" {{ old('thn_pengadaan', $peralatan->thn_pengadaan ?? '') == $i ? 'selected' : '' }}>
+                          {{ $i }}
+                        </option>
+                      @endfor
                     </select>
                   </div>
                 </div>
@@ -178,13 +175,8 @@
                             class="form-control" 
                             required>
                       <option value="">- Pilih -</option>
-@if($peralatan->sewa == 1)
-                      <option value="1" selected>SEWA</option>
-                      <option value="0">ASET</option>
-@else
-                      <option value="1">SEWA</option>
-                      <option value="0" selected>ASET</option>
-@endif
+                      <option value="1" {{ old('sewa', $peralatan->sewa ?? '') == '1' ? 'selected' : '' }}>SEWA</option>
+                      <option value="0" {{ old('sewa', $peralatan->sewa ?? '') == '0' ? 'selected' : '' }}>ASET</option>
                     </select>
                     <div class="invalid-feedback">Status Kepemilikan wajib dipilih.</div>
                   </div>
@@ -198,11 +190,9 @@
                             required>
                       <option value="">- Pilih -</option>
 @foreach ($perusahaan as $satu)
-  @if($satu->id == $peralatan->perusahaan_id)
-                      <option value="{{ $satu->id }}" selected>{{ $satu->nama }}</option>
-  @else
-                      <option value="{{ $satu->id }}">{{ $satu->nama }}</option>
-  @endif
+                      <option value="{{ $satu->id }}" {{ old('perusahaan', $peralatan->perusahaan_id ?? '') == $satu->id ? 'selected' : '' }}>
+                        {{ $satu->nama }}
+                      </option>
 @endforeach
                     </select>
                     <div class="invalid-feedback">Perusahaan Pemilik wajib dipilih.</div>
@@ -216,13 +206,8 @@
                             class="form-control" 
                             required>
                       <option value="">- Pilih -</option>
-@if($peralatan->kondisi == 1)
-                      <option value="1" selected>NORMAL</option>
-                      <option value="0">RUSAK</option>
-@else
-                      <option value="1">NORMAL</option>
-                      <option value="0" selected>RUSAK</option>
-@endif
+                      <option value="1" {{ old('kondisi', $peralatan->kondisi ?? '') == '1' ? 'selected' : '' }}>NORMAL</option>
+                      <option value="0" {{ old('kondisi', $peralatan->kondisi ?? '') == '0' ? 'selected' : '' }}>RUSAK</option>
                     </select>
                     <div class="invalid-feedback">Kondisi wajib dipilih.</div>
                   </div>
@@ -233,7 +218,7 @@
                   <div class="col-sm-8">
                     <textarea name="keterangan" 
                               class="form-control"
-                              rows="2">{{ strtoupper($peralatan->keterangan) }}</textarea>
+                              rows="2">{{ strtoupper(old('keterangan', $peralatan->keterangan ?? '')) }}</textarea>
                   </div>
                 </div>
 
@@ -244,13 +229,8 @@
                             class="form-control" 
                             required>
                       <option value="">- Pilih -</option>
-@if($peralatan->status == 1)
-                      <option value="1" selected>AKTIF</option>
-                      <option value="0">TIDAK AKTIF</option>
-@else
-                      <option value="1">AKTIF</option>
-                      <option value="0" selected>TIDAK AKTIF</option>
-@endif
+                      <option value="1" {{ old('status', $peralatan->status ?? '') == '1' ? 'selected' : '' }}>AKTIF</option>
+                      <option value="0" {{ old('status', $peralatan->status ?? '') == '0' ? 'selected' : '' }}>TIDAK AKTIF</option>
                     </select>
                     <div class="invalid-feedback">Status wajib dipilih.</div>
                   </div>
@@ -261,9 +241,12 @@
 
               <div class="card-footer">
                 <a class="btn btn-default btn-sm" 
-                   href="{{url('/fasilitas/peralatan/daftar')}}" 
+                   href="{{ route('fasilitas.peralatan.daftar') }}" 
                    role="button">Batal</a>
-                <button type="submit" class="btn btn-primary btn-sm float-right">Simpan</button>
+                <button type="submit" 
+                        class="btn btn-primary btn-sm float-right">
+                        Simpan
+                </button>
               </div>
 
 </form>

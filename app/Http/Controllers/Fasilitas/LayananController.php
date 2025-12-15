@@ -42,24 +42,6 @@ class LayananController extends Controller
      */
     public function daftar()
     {
-        // ========================= PROSES VERIFIKASI ========================
-        // cek session user
-        if (!Auth::check()) {
-            // jika tidak ada session user
-            return redirect('/login');
-        }    
-        // cek apakah status user = aktif
-        $status = User::find(session()->get('id'))->status;
-        if($status != TRUE){
-            return redirect('/logout');
-        }
-        // cek role user, hanya bisa diakses oleh super admin dan admin
-        if(session()->get('role_id') != config('constants.role.super_admin')
-         && session()->get('role_id') != config('constants.role.admin')){
-            return redirect('/');
-        }
-        // ===================== AKHIR PROSES VERIFIKASI =======================
-
         // ambil daftar layanan
         $daftar = Layanan::all();
 
@@ -71,7 +53,7 @@ class LayananController extends Controller
 		$judul = "Layanan";
 		$module = "Fasilitas";
         $menu = "Layanan";
-        $menu_url = "/fasilitas/layanan/daftar";
+        $menu_url = route('fasilitas.layanan.daftar');
         $submenu = "Daftar";
         
         // menampilkan halaman view
@@ -107,25 +89,7 @@ class LayananController extends Controller
      * @return \Illuminate\Http\Response
      */
     public function filter(Request $request)
-    {
-        // ========================= PROSES VERIFIKASI ========================
-        // cek session user
-        if (!Auth::check()) {
-            // jika tidak ada session user
-            return redirect('/login');
-        }    
-        // cek apakah status user = aktif
-        $status = User::find(session()->get('id'))->status;
-        if($status != TRUE){
-            return redirect('/logout');
-        }
-        // cek role user, hanya bisa diakses oleh super admin dan admin
-        if(session()->get('role_id') != config('constants.role.super_admin')
-         && session()->get('role_id') != config('constants.role.admin')){
-            return redirect('/');
-        }
-        // ===================== AKHIR PROSES VERIFIKASI =======================
-        
+    {        
         // ambil parameter
         $fasilitas_id = $request->fasilitas;
         $lokasi_tk_1_id = $request->lokasi_tk_1;
@@ -178,7 +142,7 @@ class LayananController extends Controller
 		$judul = "Layanan";
 		$module = "Fasilitas";
         $menu = "Layanan";
-        $menu_url = "/fasilitas/layanan/daftar";
+        $menu_url = route('fasilitas.layanan.daftar');
         $submenu = "Daftar";
 
         // menampilkan halaman view
@@ -213,25 +177,7 @@ class LayananController extends Controller
      * @return \Illuminate\Http\Response
      */
     public function formTambahStep1()
-    {
-        // ========================= PROSES VERIFIKASI ========================
-        // cek session user
-        if (!Auth::check()) {
-            // jika tidak ada session user
-            return redirect('/login');
-        }    
-        // cek apakah status user = aktif
-        $status = User::find(session()->get('id'))->status;
-        if($status != TRUE){
-            return redirect('/logout');
-        }
-        // cek role user, hanya bisa diakses oleh super admin dan admin
-        if(session()->get('role_id') != config('constants.role.super_admin')
-         && session()->get('role_id') != config('constants.role.admin')){
-            return redirect('/');
-        }
-        // ===================== AKHIR PROSES VERIFIKASI =======================
-        
+    {   
         // ambil daftar fasilitas yang aktif
         $fasilitas = Fasilitas::where('status', 1)->get();
 
@@ -242,7 +188,7 @@ class LayananController extends Controller
         $judul = "Layanan";
 		$module = "Fasilitas";
         $menu = "Layanan";
-        $menu_url = "/fasilitas/layanan/daftar";
+        $menu_url = route('fasilitas.layanan.daftar');
         $submenu = "Tambah";
         
         // menampilkan halaman view
@@ -272,24 +218,6 @@ class LayananController extends Controller
      */
     public function formTambahStep1Back($id)
     {
-        // ========================= PROSES VERIFIKASI ========================
-        // cek session user
-        if (!Auth::check()) {
-            // jika tidak ada session user
-            return redirect('/login');
-        }    
-        // cek apakah status user = aktif
-        $status = User::find(session()->get('id'))->status;
-        if($status != TRUE){
-            return redirect('/logout');
-        }
-        // cek role user, hanya bisa diakses oleh super admin dan admin
-        if(session()->get('role_id') != config('constants.role.super_admin')
-         && session()->get('role_id') != config('constants.role.admin')){
-            return redirect('/');
-        }
-        // ===================== AKHIR PROSES VERIFIKASI =======================
-
         // ambil data layanan dengan status draft berdasarkan id
         $layanan = Layanan::where('id', $id)
             ->where('status', config('constants.status_layanan.draft'))
@@ -297,8 +225,11 @@ class LayananController extends Controller
 
         // jika layanan dengan id dan status tersebut tidak ada
         if($layanan == null){
-            // kembali ke halaman daftar dan kirim notif
-            return redirect('/fasilitas/layanan/daftar')->with('notif', 'item_null');
+            // kembali ke halaman daftar dan tampilkan pesan error
+            // return redirect('/fasilitas/layanan/daftar')->with('notif', 'item_null');
+            return redirect()
+                ->route('fasilitas.layanan.daftar')
+                ->with('notif', 'item_null');
         }
         
         // ambil daftar fasilitas yang aktif
@@ -321,7 +252,7 @@ class LayananController extends Controller
         $judul = "Layanan";
 		$module = "Fasilitas";
         $menu = "Layanan";
-        $menu_url = "/fasilitas/layanan/daftar";
+        $menu_url = route('fasilitas.layanan.daftar');
         $submenu = "Tambah";
         
         // menampilkan halaman view
@@ -354,31 +285,13 @@ class LayananController extends Controller
      */
     public function tambahStep1(Request $request)
     {
-        // ========================= PROSES VERIFIKASI ========================
-        // cek session user
-        if (!Auth::check()) {
-            // jika tidak ada session user
-            return redirect('/login');
-        }    
-        // cek apakah status user = aktif
-        $status = User::find(session()->get('id'))->status;
-        if($status != TRUE){
-            return redirect('/logout');
-        }
-        // cek role user, hanya bisa diakses oleh super admin dan admin
-        if(session()->get('role_id') != config('constants.role.super_admin')
-         && session()->get('role_id') != config('constants.role.admin')){
-            return redirect('/');
-        }
-        // ===================== AKHIR PROSES VERIFIKASI =======================
-
         // ===================== CEK DUPLIKASI KODE ============================
         // jika ada, cek apakah kode yang baru sudah terdaftar
         $cekKode = Layanan::where('kode', $request->kode)->first();
         // jika kode sudah terdaftar
         if($cekKode != null){
-            // kembali ke halaman edit dan tampilkan pesan error
-            return redirect()->back()->with('notif', 'kode_terdaftar')->withInput();
+            // kembali ke halaman tambah step 1 dan tampilkan pesan error
+            return redirect()->back()->with('notif', 'kode_terdaftar');
         }
         // ===================== END OF CEK DUPLIKASI KODE =====================
 
@@ -391,8 +304,7 @@ class LayananController extends Controller
                 'lokasi_tk_1_id' => $request->lokasi_tk_1,
                 'lokasi_tk_2_id' => $request->lokasi_tk_2,
                 'lokasi_tk_3_id' => $request->lokasi_tk_3,
-                'kondisi' => $request->kondisi,
-                'status' => 2, // draft
+                'status' => config('constants.status_layanan.draft'), // status layanan draft
                 'created_by' => session()->get('id')
             ]);
         }
@@ -400,11 +312,18 @@ class LayananController extends Controller
         catch(QueryException $ex){
             // dd($ex->getMessage());
             // kembali ke halaman daftar dan tampilkan pesan error
-            return redirect('/fasilitas/layanan/daftar')->with('notif', 'tambah_gagal');
+            // return redirect('/fasilitas/layanan/daftar')->with('notif', 'tambah_gagal');
+            return redirect()
+                ->route('fasilitas.layanan.daftar')
+                ->with('notif', 'tambah_gagal');
         }
 
         // jika proses insert berhasil
-        return redirect('/fasilitas/layanan/tambah/step2/'.$layanan->id)->with('notif', 'simpan_sukses');
+        // diteruskan ke halaman tambah step 2 dan tampilkan pesan sukses
+        // return redirect('/fasilitas/layanan/tambah/step2/'.$layanan->id)->with('notif', 'simpan_sukses');
+        return redirect()
+            ->route('fasilitas.layanan.tambah.step2.form', $layanan->id)
+            ->with('notif', 'simpan_sukses');
     }
 
 
@@ -423,28 +342,20 @@ class LayananController extends Controller
      */
     public function tambahStep1Back(Request $request)
     {
-        // ========================= PROSES VERIFIKASI ========================
-        // cek session user
-        if (!Auth::check()) {
-            // jika tidak ada session user
-            return redirect('/login');
-        }    
-        // cek apakah status user = aktif
-        $status = User::find(session()->get('id'))->status;
-        if($status != TRUE){
-            return redirect('/logout');
+        // ambil data layanan dengan status draft berdasarkan id
+        $layanan = Layanan::where('id', $request->id)
+            ->where('status', config('constants.status_layanan.draft'))
+            ->first();
+
+        // jika layanan dengan id dan status tersebut tidak ada
+        if($layanan == null){
+            // kembali ke halaman daftar dan tampilkan pesan error
+            return redirect()
+                ->route('fasilitas.layanan.daftar')
+                ->with('notif', 'item_null');
         }
-        // cek role user, hanya bisa diakses oleh super admin dan admin
-        if(session()->get('role_id') != config('constants.role.super_admin')
-         && session()->get('role_id') != config('constants.role.admin')){
-            return redirect('/');
-        }
-        // ===================== AKHIR PROSES VERIFIKASI =======================
 
         // ===================== CEK DUPLIKASI KODE ============================
-        // ambil data layanan sebelumnya berdasarkan id
-        $layanan = Layanan::where('id', $request->id)
-            ->first();
         // cek apakah ada perubahan kode
         if($layanan->kode != strtoupper($request->kode)){
             // jika ada, cek apakah kode yang baru sudah terdaftar
@@ -452,7 +363,7 @@ class LayananController extends Controller
             // jika kode sudah terdaftar
             if($cekKode != null){
                 // kembali ke halaman edit dan tampilkan pesan error
-                return redirect()->back()->with('notif', 'kode_terdaftar')->withInput();
+                return redirect()->back()->with('notif', 'kode_terdaftar');
             }
         }
         // ===================== END OF CEK DUPLIKASI KODE =====================
@@ -467,19 +378,25 @@ class LayananController extends Controller
                 'lokasi_tk_1_id' => $request->lokasi_tk_1,
                 'lokasi_tk_2_id' => $request->lokasi_tk_2,
                 'lokasi_tk_3_id' => $request->lokasi_tk_3,
-                'kondisi' => $request->kondisi,
                 'updated_by' => session()->get('id')
             ]);
         }
         // jika proses update gagal
         catch(QueryException $ex){
             //dd($ex->getMessage());
-            // kembali ke halaman daftar dan tampilkan pesan error
-            return redirect('/fasilitas/layanan/tambah/step1/back/'.$layanan->id)->with('notif', 'simpan_gagal');
+            // kembali ke halaman tambah step 1 back dan tampilkan pesan error
+            // return redirect('/fasilitas/layanan/tambah/step1/back/'.$layanan->id)->with('notif', 'simpan_gagal');
+            return redirect()
+                ->route('fasilitas.layanan.tambah.step1.back.form', $layanan->id)
+                ->with('notif', 'simpan_gagal');
         }
 
-        // jika proses update berhasil
-        return redirect('/fasilitas/layanan/tambah/step2/'.$layanan->id)->with('notif', 'simpan_sukses');
+        // jika proses update berhasil dan tampilkan pesan sukses
+        // diteruskan ke halaman tambah step 2
+        // return redirect('/fasilitas/layanan/tambah/step2/'.$layanan->id)->with('notif', 'simpan_sukses');
+        return redirect()
+            ->route('fasilitas.layanan.tambah.step2.form', $layanan->id)
+            ->with('notif', 'simpan_sukses');
     }
 
 
@@ -497,24 +414,6 @@ class LayananController extends Controller
      */
     public function formTambahStep2($id)
     {
-        // ========================= PROSES VERIFIKASI ========================
-        // cek session user
-        if (!Auth::check()) {
-            // jika tidak ada session user
-            return redirect('/login');
-        }    
-        // cek apakah status user = aktif
-        $status = User::find(session()->get('id'))->status;
-        if($status != TRUE){
-            return redirect('/logout');
-        }
-        // cek role user, hanya bisa diakses oleh super admin dan admin
-        if(session()->get('role_id') != config('constants.role.super_admin')
-         && session()->get('role_id') != config('constants.role.admin')){
-            return redirect('/');
-        }
-        // ===================== AKHIR PROSES VERIFIKASI =======================
-
         // ambil data layanan dengan status draft dari form tambah 1
         $layanan = Layanan::where('id', $id)
             ->where('status', config('constants.status_layanan.draft'))
@@ -522,17 +421,15 @@ class LayananController extends Controller
 
         // jika layanan dengan id dan status tersebut tidak ada
         if($layanan == null){
-            // kembali ke halaman daftar dan kirim notif
-            return redirect('/fasilitas/layanan/daftar')->with('notif', 'item_null');
+            // kembali ke halaman daftar dan tampilkan pesan error
+            return redirect()
+                ->route('fasilitas.layanan.daftar')
+                ->with('notif', 'item_null');
         }
 
         // ambil daftar peralatan dari layanan tersebut
         $daftar_peralatan = DaftarPeralatanLayanan::where('layanan_id', $layanan->id)
-            ->where('status', 1)
             ->get();
-
-        // ambil daftar peralatan tersedia
-        $daftar_tersedia = Peralatan::where('status', 1)->get();
 
         // ambil daftar perusahaan yang aktif
         $perusahaan = Perusahaan::where('status', 1)->get();
@@ -544,7 +441,7 @@ class LayananController extends Controller
         $judul = "Layanan";
 		$module = "Fasilitas";
         $menu = "Layanan";
-        $menu_url = "/fasilitas/layanan/daftar";
+        $menu_url = route('fasilitas.layanan.daftar');
         $submenu = "Tambah";
         
         // menampilkan halaman view
@@ -557,7 +454,6 @@ class LayananController extends Controller
         ->with('layanan', $layanan)
         ->with('daftar_peralatan', $daftar_peralatan)
         ->with('daftar_tersedia', $daftar_tersedia)
-        ->with('perusahaan', $perusahaan)
         ->with('jenis', $jenis)
         ;
     }
@@ -577,24 +473,6 @@ class LayananController extends Controller
      */
     public function formTambahStep3($id)
     {
-        // ========================= PROSES VERIFIKASI ========================
-        // cek session user
-        if (!Auth::check()) {
-            // jika tidak ada session user
-            return redirect('/login');
-        }    
-        // cek apakah status user = aktif
-        $status = User::find(session()->get('id'))->status;
-        if($status != TRUE){
-            return redirect('/logout');
-        }
-        // cek role user, hanya bisa diakses oleh super admin dan admin
-        if(session()->get('role_id') != config('constants.role.super_admin')
-         && session()->get('role_id') != config('constants.role.admin')){
-            return redirect('/');
-        }
-        // ===================== AKHIR PROSES VERIFIKASI =======================
-
         // ambil data layanan dengan status draft dari form tambah 2
         $layanan = Layanan::where('id', $id)
             ->where('status', config('constants.status_layanan.draft'))
@@ -602,20 +480,29 @@ class LayananController extends Controller
 
         // jika layanan dengan id dan status tersebut tidak ada
         if($layanan == null){
-            // kembali ke halaman daftar dan kirim notif
-            return redirect('/fasilitas/layanan/daftar')->with('notif', 'item_null');
+            // kembali ke halaman daftar dan tampilkan pesan error
+            return redirect()
+                ->route('fasilitas.layanan.daftar')
+                ->with('notif', 'item_null');
         }
 
         // ambil daftar peralatan dari layanan tersebut
         $daftar_peralatan = DaftarPeralatanLayanan::where('layanan_id', $layanan->id)
-            ->where('status', 1)
             ->get();
+
+        // jika daftar peralatan masih kosong
+        if($daftar_peralatan->isEmpty()){
+            // kembali ke halaman layanan tambah step 2 dan tampilkan pesan error
+            return redirect()
+                ->route('fasilitas.layanan.tambah.step2.form', $layanan->id)
+                ->with('notif', 'peralatan_null');
+        }
 
         // variabel untuk dikirim ke halaman view
         $judul = "Layanan";
 		$module = "Fasilitas";
         $menu = "Layanan";
-        $menu_url = "/fasilitas/layanan/daftar";
+        $menu_url = route('fasilitas.layanan.daftar');
         $submenu = "Tambah";
         
         // menampilkan halaman view
@@ -646,24 +533,6 @@ class LayananController extends Controller
      */
     public function tambahStep3(Request $request)
     {
-        // ========================= PROSES VERIFIKASI ========================
-        // cek session user
-        if (!Auth::check()) {
-            // jika tidak ada session user
-            return redirect('/login');
-        }    
-        // cek apakah status user = aktif
-        $status = User::find(session()->get('id'))->status;
-        if($status != TRUE){
-            return redirect('/logout');
-        }
-        // cek role user, hanya bisa diakses oleh super admin dan admin
-        if(session()->get('role_id') != config('constants.role.super_admin')
-         && session()->get('role_id') != config('constants.role.admin')){
-            return redirect('/');
-        }
-        // ===================== AKHIR PROSES VERIFIKASI =======================
-
         // ambil data layanan dengan status draft dari form tambah 2
         $layanan = Layanan::where('id', $request->id)
             ->where('status', config('constants.status_layanan.draft'))
@@ -671,27 +540,53 @@ class LayananController extends Controller
 
         // jika layanan dengan id dan status tersebut tidak ada
         if($layanan == null){
-            // kembali ke halaman daftar dan kirim notif
-            return redirect('/fasilitas/layanan/daftar')->with('notif', 'item_null');
+            // kembali ke halaman daftar dan tampilkan pesan error
+            return redirect()
+                ->route('fasilitas.layanan.daftar')
+                ->with('notif', 'item_null');
+        }
+
+        // ambil daftar peralatan dari layanan tersebut
+        $daftar_peralatan = DaftarPeralatanLayanan::where('layanan_id', $layanan->id)
+            ->get();
+
+        // jika daftar peralatan masih kosong
+        if($daftar_peralatan->isEmpty()){
+            // kembali ke halaman layanan tambah step 2 dan tampilkan pesan error
+            return redirect()
+                ->route('fasilitas.layanan.tambah.step2.form', $layanan->id)
+                ->with('notif', 'peralatan_null');
         }
         
         try{
-            // update data layanan di tabel layanan
+            // update status layanan di tabel layanan
             Layanan::where('id', $request->id)
             ->update([
                 'status' => config('constants.status_layanan.aktif'), // status layanan = aktif
+                'status' => config('constants.kondisi_layanan.serviceable'), // kondisi layanan = serviceable
                 'updated_by' => session()->get('id')
             ]);
+
+            // update data peralatan dari yang baru ditambahkan
+            $daftar_peralatan_id = DaftarPeralatanLayanan::where('layanan_id', $request->id)
+                ->update(['kondisi' => config('constants.kondisi_peralatan_layanan.beroperasi')]); // kondisi beroperasi
         }
         // jika proses update gagal
         catch(QueryException $ex){
             //dd($ex->getMessage());
             // kembali ke halaman daftar dan tampilkan pesan error
-            return redirect('/fasilitas/layanan/tambah/step3/'.$layanan->id)->with('notif', 'tambah_gagal');
+            // return redirect('/fasilitas/layanan/tambah/step3/'.$layanan->id)->with('notif', 'tambah_gagal');
+            return redirect()
+                ->route('fasilitas.layanan.tambah.step3.form', $layanan->id)
+                ->with('notif', 'aktif_gagal');
         }
 
         // jika proses update berhasil
-        return redirect('/fasilitas/layanan/daftar')->with('notif', 'tambah_sukses');
+        // kembali ke halaman daftar dan tampilkan pesan sukses
+        // return redirect('/fasilitas/layanan/daftar')->with('notif', 'tambah_sukses');
+        return redirect()
+            ->route('fasilitas.layanan.daftar')
+            ->with('notif', 'aktif_sukses');
     }
 
 
@@ -709,25 +604,7 @@ class LayananController extends Controller
      * @return \Illuminate\Http\Response
      */
     public function hapus(Request $request)
-    {
-        // ========================= PROSES VERIFIKASI ========================
-        // cek session user
-        if (!Auth::check()) {
-            // jika tidak ada session user
-            return redirect('/login');
-        }    
-        // cek apakah status user = aktif
-        $status = User::find(session()->get('id'))->status;
-        if($status != TRUE){
-            return redirect('/logout');
-        }
-        // cek role user, hanya bisa diakses oleh super admin dan admin
-        if(session()->get('role_id') != config('constants.role.super_admin')
-         && session()->get('role_id') != config('constants.role.admin')){
-            return redirect('/');
-        }
-        // ===================== AKHIR PROSES VERIFIKASI =======================
-
+    {        
         // ambil data layanan dengan status draft dari modal hapus
         $layanan = Layanan::where('id', $request->id)
             ->where('status', config('constants.status_layanan.draft'))
@@ -735,19 +612,21 @@ class LayananController extends Controller
 
         // jika layanan dengan id dan status tersebut tidak ada
         if($layanan == null){
-            // kembali ke halaman daftar dan kirim notif
-            return redirect('/fasilitas/layanan/daftar')->with('notif', 'item_null');
+            // kembali ke halaman daftar dan tampilkan pesan error
+            // return redirect('/fasilitas/layanan/daftar')->with('notif', 'item_null');
+            return redirect()
+                ->route('fasilitas.layanan.daftar')
+                ->with('notif', 'item_null');
         }
         
         try{
             // Ambil semua ID peralatan dari tabel daftar_peralatan_layanan berdasarkan layanan_id
-            $daftar_peralatan = DaftarPeralatanLayanan::where('layanan_id', $request->id)
+            $daftar_peralatan_id = DaftarPeralatanLayanan::where('layanan_id', $request->id)
                 ->pluck('peralatan_id'); // hasil: Collection dari peralatan_id
 
             // Update flag_layanan di tabel peralatan berdasarkan ID yang diambil
-            Peralatan::whereIn('id', $daftar_peralatan)
+            Peralatan::whereIn('id', $daftar_peralatan_id)
                 ->update(['flag_layanan' => 0]); // peralatan sedang tidak terpasang di layanan
-
 
             // hapus data peralatan di tabel daftar peralatan layanan
             DaftarPeralatanLayanan::where('layanan_id', $request->id)
@@ -761,11 +640,60 @@ class LayananController extends Controller
         catch(QueryException $ex){
             //dd($ex->getMessage());
             // kembali ke halaman daftar dan tampilkan pesan error
-            return redirect('/fasilitas/layanan/daftar')->with('notif', 'hapus_gagal');
+            // return redirect('/fasilitas/layanan/daftar')->with('notif', 'hapus_gagal');
+            return redirect()
+                ->route('fasilitas.layanan.daftar')
+                ->with('notif', 'hapus_gagal');
         }
 
         // jika proses update berhasil
-        return redirect('/fasilitas/layanan/daftar')->with('notif', 'hapus_sukses');
+        // kembali ke halaman daftar dan tampilkan pesan sukses
+        // return redirect('/fasilitas/layanan/daftar')->with('notif', 'hapus_sukses');
+        return redirect()
+            ->route('fasilitas.layanan.daftar')
+            ->with('notif', 'hapus_sukses');
+    }
+
+
+    /**
+     * Menampilkan JSON data layanan berdasarkan id layanan
+     *
+     * Akses:
+     * - Super Admin
+     * - Admin
+     * 
+     * Method: POST
+     * URL: /fasilitas/layanan/detail
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @return \Illuminate\Http\Response
+     */
+    public function detail(Request $request)
+    {
+        // ambil data layanan dengan status draft dari modal hapus
+        $layanan = Layanan::with ([
+            'fasilitas',
+            'lokasiTk1',
+            'lokasiTk2',
+            'lokasiTk3',
+            'getCreatedName',
+            'getUpdatedName'
+            ])
+            ->where('id', $request->id)
+            ->first();
+            
+        // Ambil data peralatan berdasarkan layanan_id
+        $daftarPeralatan = DaftarPeralatanLayanan::with([
+                'peralatan.jenis'
+            ])
+            ->where('layanan_id', $layanan->id)
+            ->get();
+
+        //return response()->json($user);
+        return response()->json([
+            'layanan'=>$layanan,
+            'daftarPeralatan'=>$daftarPeralatan
+        ]);
     }
 
 
@@ -783,33 +711,17 @@ class LayananController extends Controller
      */
     public function formEditStep1($id)
     {
-        // ========================= PROSES VERIFIKASI ========================
-        // cek session user
-        if (!Auth::check()) {
-            // jika tidak ada session user
-            return redirect('/login');
-        }    
-        // cek apakah status user = aktif
-        $status = User::find(session()->get('id'))->status;
-        if($status != TRUE){
-            return redirect('/logout');
-        }
-        // cek role user, hanya bisa diakses oleh super admin dan admin
-        if(session()->get('role_id') != config('constants.role.super_admin')
-         && session()->get('role_id') != config('constants.role.admin')){
-            return redirect('/');
-        }
-        // ===================== AKHIR PROSES VERIFIKASI =======================
-
-        // ambil data layanan dengan status aktif berdasarkan id
+        // ambil data layanan dengan status aktif atau tidak aktif berdasarkan id
         $layanan = Layanan::where('id', $id)
-            ->where('status', config('constants.status_layanan.aktif'))
+            ->where('status', '!=', config('constants.status_layanan.draft'))
             ->first();
 
         // jika layanan dengan id dan status tersebut tidak ada
         if($layanan == null){
-            // kembali ke halaman daftar dan kirim notif
-            return redirect('/fasilitas/layanan/daftar')->with('notif', 'item_null');
+            // kembali ke halaman daftar dan tampilkan pesan error
+            return redirect()
+                ->route('fasilitas.layanan.daftar')
+                ->with('notif', 'item_null');
         }
         
         // ambil daftar fasilitas yang aktif
@@ -832,7 +744,7 @@ class LayananController extends Controller
         $judul = "Layanan";
 		$module = "Fasilitas";
         $menu = "Layanan";
-        $menu_url = "/fasilitas/layanan/daftar";
+        $menu_url = route('fasilitas.layanan.daftar');
         $submenu = "Edit Data";
         
         // menampilkan halaman view
@@ -866,28 +778,19 @@ class LayananController extends Controller
      */
     public function editStep1(Request $request)
     {
-        // ========================= PROSES VERIFIKASI ========================
-        // cek session user
-        if (!Auth::check()) {
-            // jika tidak ada session user
-            return redirect('/login');
-        }    
-        // cek apakah status user = aktif
-        $status = User::find(session()->get('id'))->status;
-        if($status != TRUE){
-            return redirect('/logout');
-        }
-        // cek role user, hanya bisa diakses oleh super admin dan admin
-        if(session()->get('role_id') != config('constants.role.super_admin')
-         && session()->get('role_id') != config('constants.role.admin')){
-            return redirect('/');
-        }
-        // ===================== AKHIR PROSES VERIFIKASI =======================
-
-        // ===================== CEK DUPLIKASI KODE ============================
         // ambil data layanan sebelumnya berdasarkan id
         $layanan = Layanan::where('id', $request->id)
+            ->where('status', '!=', config('constants.status_layanan.draft'))
             ->first();
+        // jika layanan dengan id dan status tersebut tidak ada
+        if($layanan == null){
+            // kembali ke halaman daftar dan tampilkan pesan error
+            return redirect()
+                ->route('fasilitas.layanan.daftar')
+                ->with('notif', 'item_null');
+        }
+                
+        // ===================== CEK DUPLIKASI KODE ============================        
         // cek apakah ada perubahan kode
         if($layanan->kode != strtoupper($request->kode)){
             // jika ada, cek apakah kode yang baru sudah terdaftar
@@ -909,19 +812,26 @@ class LayananController extends Controller
                 'lokasi_tk_1_id' => $request->lokasi_tk_1,
                 'lokasi_tk_2_id' => $request->lokasi_tk_2,
                 'lokasi_tk_3_id' => $request->lokasi_tk_3,
-                'kondisi' => $request->kondisi,
+                'status' => $request->status,
                 'updated_by' => session()->get('id')
             ]);
         }
         // jika proses update gagal
         catch(QueryException $ex){
-            //dd($ex->getMessage());
-            // kembali ke halaman daftar dan tampilkan pesan error
-            return redirect('/fasilitas/layanan/edit/step1/'.$layanan->id)->with('notif', 'simpan_gagal');
+            // dd($ex->getMessage());
+            // kembali ke halaman edit step 1 dan tampilkan pesan error
+            // return redirect('/fasilitas/layanan/edit/step1/'.$layanan->id)->with('notif', 'simpan_gagal');
+            return redirect()
+                ->route('fasilitas.layanan.edit.step1.form', $layanan->id)
+                ->with('notif', 'simpan_gagal');
         }
 
         // jika proses update berhasil
-        return redirect('/fasilitas/layanan/edit/step2/'.$layanan->id)->with('notif', 'simpan_sukses');
+        // kembali ke halaman edit step 2 dan tampilkan pesan sukses
+        // return redirect('/fasilitas/layanan/edit/step2/'.$layanan->id)->with('notif', 'simpan_sukses');
+        return redirect()
+            ->route('fasilitas.layanan.edit.step2.form', $layanan->id)
+            ->with('notif', 'simpan_sukses');
     }
 
 
@@ -939,42 +849,23 @@ class LayananController extends Controller
      */
     public function formEditStep2($id)
     {
-        // ========================= PROSES VERIFIKASI ========================
-        // cek session user
-        if (!Auth::check()) {
-            // jika tidak ada session user
-            return redirect('/login');
-        }    
-        // cek apakah status user = aktif
-        $status = User::find(session()->get('id'))->status;
-        if($status != TRUE){
-            return redirect('/logout');
-        }
-        // cek role user, hanya bisa diakses oleh super admin dan admin
-        if(session()->get('role_id') != config('constants.role.super_admin')
-         && session()->get('role_id') != config('constants.role.admin')){
-            return redirect('/');
-        }
-        // ===================== AKHIR PROSES VERIFIKASI =======================
-
-        // ambil data layanan dengan status aktif dari form tambah 1
+        // ambil data layanan dengan status aktif atau tidak aktif dari form tambah 1
         $layanan = Layanan::where('id', $id)
-            ->where('status', config('constants.status_layanan.aktif'))
+            ->where('status', '!=', config('constants.status_layanan.draft'))
             ->first();
 
         // jika layanan dengan id dan status tersebut tidak ada
         if($layanan == null){
-            // kembali ke halaman daftar dan kirim notif
-            return redirect('/fasilitas/layanan/daftar')->with('notif', 'item_null');
+            // kembali ke halaman daftar dan tampilkan pesan error
+            // return redirect('/fasilitas/layanan/daftar')->with('notif', 'item_null');
+            return redirect()
+                ->route('fasilitas.layanan.daftar')
+                ->with('notif', 'item_null');
         }
 
         // ambil daftar peralatan dari layanan tersebut
         $daftar_peralatan = DaftarPeralatanLayanan::where('layanan_id', $layanan->id)
-            ->where('status', 1)
             ->get();
-
-        // ambil daftar peralatan tersedia
-        $daftar_tersedia = Peralatan::where('status', 1)->get();
 
         // ambil daftar perusahaan yang aktif
         $perusahaan = Perusahaan::where('status', 1)->get();
@@ -986,7 +877,7 @@ class LayananController extends Controller
         $judul = "Layanan";
 		$module = "Fasilitas";
         $menu = "Layanan";
-        $menu_url = "/fasilitas/layanan/daftar";
+        $menu_url = route('fasilitas.layanan.daftar');
         $submenu = "Edit Data";
         
         // menampilkan halaman view
@@ -998,7 +889,6 @@ class LayananController extends Controller
         ->with('submenu', $submenu)
         ->with('layanan', $layanan)
         ->with('daftar_peralatan', $daftar_peralatan)
-        ->with('daftar_tersedia', $daftar_tersedia)
         ->with('perusahaan', $perusahaan)
         ->with('jenis', $jenis)
         ;
@@ -1019,45 +909,40 @@ class LayananController extends Controller
      */
     public function formEditStep3($id)
     {
-        // ========================= PROSES VERIFIKASI ========================
-        // cek session user
-        if (!Auth::check()) {
-            // jika tidak ada session user
-            return redirect('/login');
-        }    
-        // cek apakah status user = aktif
-        $status = User::find(session()->get('id'))->status;
-        if($status != TRUE){
-            return redirect('/logout');
-        }
-        // cek role user, hanya bisa diakses oleh super admin dan admin
-        if(session()->get('role_id') != config('constants.role.super_admin')
-         && session()->get('role_id') != config('constants.role.admin')){
-            return redirect('/');
-        }
-        // ===================== AKHIR PROSES VERIFIKASI =======================
-
-        // ambil data layanan dengan status aktif dari form tambah 2
+        // ambil data layanan dengan status aktif atau tidak aktif dari form tambah 2
         $layanan = Layanan::where('id', $id)
-            ->where('status', config('constants.status_layanan.aktif'))
+            ->where('status', '!=', config('constants.status_layanan.draft'))
             ->first();
 
         // jika layanan dengan id dan status tersebut tidak ada
         if($layanan == null){
-            // kembali ke halaman daftar dan kirim notif
-            return redirect('/fasilitas/layanan/daftar')->with('notif', 'item_null');
+            // kembali ke halaman daftar dan tampilkan pesan error
+            // return redirect('/fasilitas/layanan/daftar')->with('notif', 'item_null');
+            return redirect()
+                ->route('fasilitas.layanan.daftar')
+                ->with('notif', 'item_null');
         }
 
         // ambil daftar peralatan dari layanan tersebut
         $daftar_peralatan = DaftarPeralatanLayanan::where('layanan_id', $layanan->id)
-            ->where('status', 1)
             ->get();
+
+        // jika daftar peralatan kosong
+        if($daftar_peralatan->isEmpty()){
+            // dan status layanan aktif
+            if($layanan->status == config('constants.status_layanan.aktif')){
+                // kembali ke halaman layanan tambah step 2 dan tampilkan pesan error
+                return redirect()
+                    ->route('fasilitas.layanan.edit.step2.form', $layanan->id)
+                    ->with('notif', 'peralatan_null');
+            }
+        }
 
         // variabel untuk dikirim ke halaman view
         $judul = "Layanan";
 		$module = "Fasilitas";
         $menu = "Layanan";
-        $menu_url = "/fasilitas/layanan/daftar";
+        $menu_url = route('fasilitas.layanan.daftar');
         $submenu = "Edit Data";
         
         // menampilkan halaman view
@@ -1075,6 +960,8 @@ class LayananController extends Controller
 
     /**
      * Function untuk memproses edit layanan step 3 (review).
+     * Pada proses ini, hanya menampilkan halaman review hasil perubahan data layanan.
+     * Semua proses update data telah dilakukan pada step 1 dan step 2.
      * 
      * Akses:
      * - Super Admin
@@ -1088,52 +975,25 @@ class LayananController extends Controller
      */
     public function editStep3(Request $request)
     {
-        // ========================= PROSES VERIFIKASI ========================
-        // cek session user
-        if (!Auth::check()) {
-            // jika tidak ada session user
-            return redirect('/login');
-        }    
-        // cek apakah status user = aktif
-        $status = User::find(session()->get('id'))->status;
-        if($status != TRUE){
-            return redirect('/logout');
-        }
-        // cek role user, hanya bisa diakses oleh super admin dan admin
-        if(session()->get('role_id') != config('constants.role.super_admin')
-         && session()->get('role_id') != config('constants.role.admin')){
-            return redirect('/');
-        }
-        // ===================== AKHIR PROSES VERIFIKASI =======================
-
         // ambil data layanan dengan status aktif dari form tambah 2
         $layanan = Layanan::where('id', $request->id)
-            ->where('status', config('constants.status_layanan.aktif'))
+            ->where('status', '!=', config('constants.status_layanan.draft'))
             ->first();
 
         // jika layanan dengan id dan status tersebut tidak ada
         if($layanan == null){
-            // kembali ke halaman daftar dan kirim notif
-            return redirect('/fasilitas/layanan/daftar')->with('notif', 'item_null');
-        }
-        
-        try{
-            // update data layanan di tabel layanan
-            Layanan::where('id', $request->id)
-            ->update([
-                'status' => config('constants.status_layanan.aktif'), // status layanan = aktif
-                'updated_by' => session()->get('id')
-            ]);
-        }
-        // jika proses update gagal
-        catch(QueryException $ex){
-            //dd($ex->getMessage());
             // kembali ke halaman daftar dan tampilkan pesan error
-            return redirect('/fasilitas/layanan/edit/step3/'.$layanan->id)->with('notif', 'simpan_gagal');
+            // return redirect('/fasilitas/layanan/daftar')->with('notif', 'item_null');
+            return redirect()
+                ->route('fasilitas.layanan.daftar')
+                ->with('notif', 'item_null');
         }
 
-        // jika proses update berhasil
-        return redirect('/fasilitas/layanan/daftar')->with('notif', 'simpan_sukses');
+        // kembali ke halaman daftar dan tampilkan pesan sukses
+        // return redirect('/fasilitas/layanan/daftar')->with('notif', 'simpan_sukses');
+        return redirect()
+            ->route('fasilitas.layanan.daftar')
+            ->with('notif', 'simpan_sukses');
     }
 
 
@@ -1151,38 +1011,17 @@ class LayananController extends Controller
      * @return \Illuminate\Http\Response
      */
     public function peralatanFilter(Request $request)
-    {
-        // ========================= PROSES VERIFIKASI ========================
-        // cek session user
-        if (!Auth::check()) {
-            // jika tidak ada session user
-            return redirect('/login');
-        }    
-        // cek apakah status user = aktif
-        $status = User::find(session()->get('id'))->status;
-        if($status != TRUE){
-            return redirect('/logout');
-        }
-        // cek role user, hanya bisa diakses oleh super admin dan admin
-        if(session()->get('role_id') != config('constants.role.super_admin')
-         && session()->get('role_id') != config('constants.role.admin')){
-            return redirect('/');
-        }
-        // ===================== AKHIR PROSES VERIFIKASI =======================
-        
+    {     
         // buat query untuk mengambil daftar peralatan
         $query = Peralatan::query();
         // ambil peralatan dengan status aktif dan belum ditambahkan ke Layanan manapun
-        $query->where('status', 1)->where('flag_layanan', 0);
+        $query->where('status', 1)
+              ->where('kondisi', config('constants.kondisi_peralatan.normal')) // kondisi peralatan normal
+              ->where('flag_layanan', 0);
 
         // jika field jenis alat terpilih
         if ($request->filled('jenis')) {
             $query->where('jenis_id', $request->jenis);
-        }
-
-        // jika field kondisi terpilih
-        if ($request->filled('kondisi')) {
-            $query->where('kondisi', $request->kondisi);
         }
 
         // jika field status kepemilikan terpilih
@@ -1204,7 +1043,7 @@ class LayananController extends Controller
 
 
     /**
-     * Function untuk memproses tambah peralatan ke layanan.
+     * Function untuk memproses tambah peralatan ke layanan baru.
      * 
      * Akses:
      * - Super Admin
@@ -1219,24 +1058,6 @@ class LayananController extends Controller
      */
     public function tambahPeralatan(Request $request)
     {
-        // ========================= PROSES VERIFIKASI ========================
-        // cek session user
-        if (!Auth::check()) {
-            // jika tidak ada session user
-            return redirect('/login');
-        }    
-        // cek apakah status user = aktif
-        $status = User::find(session()->get('id'))->status;
-        if($status != TRUE){
-            return redirect('/logout');
-        }
-        // cek role user, hanya bisa diakses oleh super admin dan admin
-        if(session()->get('role_id') != config('constants.role.super_admin')
-         && session()->get('role_id') != config('constants.role.admin')){
-            return redirect('/');
-        }
-        // ===================== AKHIR PROSES VERIFIKASI =======================
-
         $validasi = $request->validate([
             'layanan_id' => 'required|exists:layanan,id',
             'peralatan_id' => 'required|exists:peralatan,id',
@@ -1254,21 +1075,75 @@ class LayananController extends Controller
             DaftarPeralatanLayanan::create([
                 'layanan_id' => strtoupper($request->layanan_id),
                 'peralatan_id' => strtoupper($request->peralatan_id),
-                'kondisi' => config('constants.kondisi_peralatan_layanan.beroperasi'), // default beroperasi
-                'status' => 1, // default aktif
+                //'kondisi' => config('constants.kondisi_peralatan_layanan.beroperasi')
                 'created_by' => session()->get('id')
             ]);
 
             // update flag_layanan menjadi 1, sebagai penanda bahwa peralatan sudah ditambahkan ke layanan
             Peralatan::where('id', $request->peralatan_id)
             ->update([
-                'flag_layanan' => 1,
+                'flag_layanan' => 1, // peralatan diberi tanda bahwa sedang terpasang di layanan
                 'updated_by' => session()->get('id')
             ]);
         }
         // jika proses tambah gagal
         catch(QueryException $ex){
-            //dd($ex->getMessage());
+            // kirim pesan error ke file storage/logs/laravel.log
+            // \Log::error('Gagal tambah peralatan ke layanan: '.$ex->getMessage());
+            // kirim pesan gagal melalui JSON
+            return response()->json(['success' => false, 'reason' => 'Gagal menambahkan peralatan'], 400);
+        }
+
+        return response()->json(['success' => true]);
+    }
+
+
+    /**
+     * Function untuk memproses tambah peralatan ke layanan lama (edit layanan).
+     * 
+     * Akses:
+     * - Super Admin
+     * - Admin
+     * 
+     * Method: POST
+     * URL: /fasilitas/layanan/peralatan/edit/tambah
+     *
+     * @param  layanan_id
+     * @param  peralatan_id
+     * @return \Illuminate\Http\Response
+     */
+    public function editTambahPeralatan(Request $request)
+    {
+        $validasi = $request->validate([
+            'layanan_id' => 'required|exists:layanan,id',
+            'peralatan_id' => 'required|exists:peralatan,id',
+        ]);
+
+        // cek apakah status peralatan aktif
+        $status = Peralatan::find($request->peralatan_id)->status;
+        if (!$status || $status == 0) {
+           // kirim pesan gagal melalui JSON
+           return response()->json(['success' => false, 'reason' => 'Peralatan tidak aktif'], 400);
+        }
+        
+        try{
+            // tambah row di tabel daftar peralatan layanan
+            DaftarPeralatanLayanan::create([
+                'layanan_id' => strtoupper($request->layanan_id),
+                'peralatan_id' => strtoupper($request->peralatan_id),
+                'kondisi' => config('constants.kondisi_peralatan_layanan.beroperasi'),
+                'created_by' => session()->get('id')
+            ]);
+
+            // update flag_layanan menjadi 1, sebagai penanda bahwa peralatan sudah ditambahkan ke layanan
+            Peralatan::where('id', $request->peralatan_id)
+            ->update([
+                'flag_layanan' => 1, // peralatan diberi tanda bahwa sedang terpasang di layanan
+                'updated_by' => session()->get('id')
+            ]);
+        }
+        // jika proses tambah gagal
+        catch(QueryException $ex){
             // kirim pesan error ke file storage/logs/laravel.log
             // \Log::error('Gagal tambah peralatan ke layanan: '.$ex->getMessage());
             // kirim pesan gagal melalui JSON
@@ -1295,30 +1170,17 @@ class LayananController extends Controller
      */
     public function hapusPeralatan(Request $request)
     {
-        // ========================= PROSES VERIFIKASI ========================
-        // cek session user
-        if (!Auth::check()) {
-            // jika tidak ada session user
-            return redirect('/login');
-        }    
-        // cek apakah status user = aktif
-        $status = User::find(session()->get('id'))->status;
-        if($status != TRUE){
-            return redirect('/logout');
-        }
-        // cek role user, hanya bisa diakses oleh super admin dan admin
-        if(session()->get('role_id') != config('constants.role.super_admin')
-         && session()->get('role_id') != config('constants.role.admin')){
-            return redirect('/');
-        }
-        // ===================== AKHIR PROSES VERIFIKASI =======================
-
         // ambil data layanan sebelumnya berdasarkan id
         $layanan = Layanan::where('id', $request->layanan_id)
             ->first();
         // cek apakah layanan ada
         if($layanan == null){
-            return redirect('/fasilitas/layanan/daftar')->with('notif', 'item_null');
+            // jika tidak ada, kembali ke halaman daftar dan tampilkan pesan error
+            // return redirect('/fasilitas/layanan/daftar')->with('notif', 'item_null');
+            return redirect()
+                ->route('fasilitas.layanan.daftar')
+                ->with('notif', 'item_null');
+            
         }
         // cek apakah ada data peralatan tsb
         $peralatan = DaftarPeralatanLayanan::where('layanan_id', $request->layanan_id)
@@ -1326,6 +1188,7 @@ class LayananController extends Controller
             ->first();
         // jika tidak ada
         if($peralatan == null){
+            // kembali ke ahlaman daftar dan tampilkan pesan error
              return redirect()->back()->with('notif', 'item_null')->withInput();
         }
 
@@ -1350,6 +1213,7 @@ class LayananController extends Controller
         }
 
         // jika proses update berhasil
+        // kembali ke halaman daftar dan tampilkan pesan sukses
         return redirect()->back()->with('notif', 'hapus_sukses');
     }
 
@@ -1370,29 +1234,13 @@ class LayananController extends Controller
      */
     public function editPeralatan(Request $request)
     {
-        // ========================= PROSES VERIFIKASI ========================
-        // cek session user
-        if (!Auth::check()) {
-            // jika tidak ada session user
-            return redirect('/login');
-        }    
-        // cek apakah status user = aktif
-        $status = User::find(session()->get('id'))->status;
-        if($status != TRUE){
-            return redirect('/logout');
-        }
-        // cek role user, hanya bisa diakses oleh super admin dan admin
-        if(session()->get('role_id') != config('constants.role.super_admin')
-         && session()->get('role_id') != config('constants.role.admin')){
-            return redirect('/');
-        }
-        // ===================== AKHIR PROSES VERIFIKASI =======================
-
         // cek apakah ada data peralatan tsb
         $peralatan = DaftarPeralatanLayanan::where('id', $request->id)
             ->where('peralatan_id', $request->peralatan_id)
             ->first();
+        // jika tidak ada
         if($peralatan == null){
+            // kembali ke halaman sebelumnya dan tampilkan pesan error
             return redirect()->back()->with('notif', 'item_null');
         }
 
@@ -1401,13 +1249,11 @@ class LayananController extends Controller
             DaftarPeralatanLayanan::where('id', $request->id)
             ->update([
                 'ip_address' => $request->ip_address,
-                'kondisi' => $request->kondisi,
                 'updated_by' => session()->get('id')
             ]);
         }
         // jika proses update gagal
         catch(QueryException $ex){
-            //dd($ex->getMessage());
             // kembali ke halaman daftar dan tampilkan pesan error
             return redirect()->back()->with('notif', 'edit_gagal');
         }
@@ -1437,7 +1283,6 @@ class LayananController extends Controller
         // ambil data dari tabel daftar peralatan layanan
         $satuPeralatan = DaftarPeralatanLayanan::where('id', $request->id)
             ->where('peralatan_id', $request->peralatan_id)
-            ->where('status', 1)
             ->first();
 
         //return response()->json($user);

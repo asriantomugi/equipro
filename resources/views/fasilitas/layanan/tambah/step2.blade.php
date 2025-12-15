@@ -65,8 +65,10 @@
                       <td><center>{{ strtoupper($satu->ip_address) }}</center></td>
   @if($satu->kondisi == config('constants.kondisi_peralatan_layanan.beroperasi'))
                       <td><center><span class="badge bg-success">BEROPERASI</span></center></td>
-  @else
+  @elseif($satu->kondisi == config('constants.kondisi_peralatan_layanan.gangguan'))
                       <td><center><span class="badge bg-danger">GANGGUAN</span></center></td>
+  @else
+                      <td></td>
   @endif
                       <td>
                         <center>
@@ -99,7 +101,7 @@
 
               <div class="card-footer">
                 <a class="btn btn-success btn-sm" 
-                   href="{{url('/fasilitas/layanan/tambah/step1/back/'.$layanan->id)}}" 
+                   href="{{ route('fasilitas.layanan.tambah.step1.back.form', ['id' => $layanan->id]) }}"
                    role="button"><i class="fas fa-angle-left"></i>&nbsp;&nbsp;&nbsp;Kembali</a>
                 <a class="btn btn-success btn-sm float-right" 
                    href="{{ route('fasilitas.layanan.tambah.step3.form', ['id' => $layanan->id]) }}" 
@@ -194,15 +196,6 @@
               </div>
 
               <div class="col-lg-3">
-                <label for="kondisi" class="form-label">Kondisi</label>
-                <select name="kondisi" class="form-control">
-                    <option value="">- ALL -</option>
-                    <option value="1">NORMAL</option>
-                    <option value="0">RUSAK</option>
-                </select>
-              </div>
-
-              <div class="col-lg-3">
                 <label for="sewa" class="form-label">Status Kepemilikan</label>
                 <select name="sewa" class="form-control">
                     <option value="">- ALL -</option>
@@ -277,6 +270,14 @@
               autohide: true,
               delay: 3000
             })
+        @elseif (session()->get('notif') == 'edit_sukses')
+          $(document).Toasts('create', {
+              class: 'bg-success',
+              title: 'Sukses!',
+              body: 'Data peralatan telah berhasil diubah',
+              autohide: true,
+              delay: 3000
+            })
         @elseif(session()->get('notif') == 'hapus_gagal')
           $(document).Toasts('create', {
               class: 'bg-danger',
@@ -293,11 +294,27 @@
               autohide: true,
               delay: 3000
             })
+        @elseif(session()->get('notif') == 'edit_gagal')
+          $(document).Toasts('create', {
+              class: 'bg-danger',
+              title: 'Error!',
+              body: 'Gagal mengubah data peralatan',
+              autohide: true,
+              delay: 3000
+            })
         @elseif(session()->get('notif') == 'item_null')
           $(document).Toasts('create', {
               class: 'bg-danger',
               title: 'Error!',
               body: 'Peralatan tidak ditemukan',
+              autohide: true,
+              delay: 3000
+            })
+          @elseif(session()->get('notif') == 'peralatan_null')
+          $(document).Toasts('create', {
+              class: 'bg-danger',
+              title: 'Error!',
+              body: 'Peralatan masih kosong',
               autohide: true,
               delay: 3000
             })
@@ -333,7 +350,7 @@
             e.preventDefault();
 
             // proses POST filter data daftar peralatan tersedia
-            $.post('{{ url('/fasilitas/layanan/peralatan/filter') }}', 
+            $.post('{{ route('fasilitas.layanan.peralatan.filter') }}', // url('/fasilitas/layanan/peralatan/filter') 
               $(this).serialize(), 
               function (data) {
                 $('#daftar-peralatan-tabel').html(data);
@@ -395,7 +412,7 @@
           const peralatanId = $(this).data('id');
           const layananId = $('input[name="layanan_id"]').val();
 
-          $.post('{{ url('/fasilitas/layanan/peralatan/tambah') }}', {
+          $.post('{{ route('fasilitas.layanan.peralatan.tambah') }}', { // url('/fasilitas/layanan/peralatan/tambah')
               _token: '{{ csrf_token() }}',
               peralatan_id: peralatanId,
               layanan_id: layananId,
@@ -451,7 +468,7 @@
 
         // Ajax Load data from ajax
         $.ajax({
-            url : "{{url('/fasilitas/peralatan/detail')}}",
+            url : "{{ route('fasilitas.peralatan.detail') }}",
             type: "POST",
             data : {id: id},
             success: function(data){
@@ -568,7 +585,7 @@
         //alert(id);
         $('#isi_modal_hapus').empty();;
 
-          var html = '<form action="{{route('fasilitas.layanan.peralatan.hapus')}}" method="post">';
+          var html = '<form action="{{ route('fasilitas.layanan.peralatan.hapus') }}" method="post">';
               html += '@csrf';
               html += '<div class="modal-body">';
               html += '<p><center>Ingin menghapus peralatan ini?</center></p>';
@@ -614,7 +631,7 @@
                   html += '<h4 class="modal-title">Form Ubah Data Peralatan</h4>';
                   html += '<button type="button" class="close" data-dismiss="modal" aria-label="Close">';
                   html += '<span aria-hidden="true">&times;</span></button></div>';// modal header
-                  html += '<form action="{{route('fasilitas.layanan.peralatan.edit')}}" method="post">';
+                  html += '<form action="{{ route('fasilitas.layanan.peralatan.edit') }}" method="post">';
                   html += '@csrf';
                   html += '<div class="modal-body">';
                   html += '<input type="text" name="id" value="'+ id +'" hidden>';

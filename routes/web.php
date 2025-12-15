@@ -86,7 +86,7 @@ Route::middleware(['role:super_admin,admin,teknisi'])->group(function () {
  * URL: /master-data/... 
  */ 
 Route::prefix('/master-data')->name('master_data.')
-    ->middleware(['role:super_admin, admin']) // Akses oleh Super Admin dan Admin
+    ->middleware(['role:super_admin,admin']) // Akses oleh Super Admin dan Admin
     ->group(function () {
 
     /**
@@ -473,129 +473,280 @@ Route::prefix('/master-data')->name('master_data.')
 
 });
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+/** 
+ * ------------------------------------------------------------------------------------
+ *                               END OF MODULE MASTER DATA
+ * ------------------------------------------------------------------------------------
+ */ 
 
 
 
 
 /** 
  * ------------------------------------------------------------------------------------
- *                             END OF MODULE MASTER DATA
+ *                                  MODULE FASILITAS
+ *                            (SUPER ADMIN, ADMIN, TEKNISI)
  * ------------------------------------------------------------------------------------
  */ 
 
- /** 
- * ------------------------------------------------------------------------------------
- *                             MODULE FASILITAS
- *                          (HANYA SUPER ADMIN & ADMIN)
- * ------------------------------------------------------------------------------------
+/**
+ * Group route untuk module master data
+ * URL: /fasilitas/... 
  */ 
+Route::prefix('/fasilitas')->name('fasilitas.')
+    ->middleware(['role:super_admin,admin']) // Akses oleh Super Admin dan Admin
+    ->group(function () {
 
-// Menampilkan halaman utama module Fasilitas
-Route::get('/fasilitas/home', [FasilitasModuleController::class, 'home'])->middleware(['role:super_admin,admin']);
+    /**
+     * Menampilkan halaman utama module Fasilitas
+     * Method: GET
+     * Name: fasilitas.home
+     * URL: /fasilitas/home 
+     */ 
+    Route::get('/home', [FasilitasModuleController::class, 'home'])->name('home');
 
-/* ============================== MENU PERALATAN ==================================== */
-// Menampilkan daftar peralatan
-Route::get('/fasilitas/peralatan/daftar', [PeralatanController::class, 'daftar'])->middleware(['role:super_admin,admin']);
+    /* ==================================== MENU PERALATAN ==================================== */
+    /**
+     * Menampilkan daftar peralatan
+     * Method: GET
+     * Name: fasilitas.peralatan.daftar
+     * URL: /fasilitas/peralatan/daftar 
+     */
+    Route::get('/peralatan/daftar', [PeralatanController::class, 'daftar'])->name('peralatan.daftar');
 
-// Menampilkan form tambah peralatan
-Route::get('/fasilitas/peralatan/tambah', [PeralatanController::class, 'formTambah'])->middleware(['role:super_admin,admin']);
+    /**
+     * Menampilkan form tambah peralatan
+     * Method: GET
+     * Name: fasilitas.peralatan.tambah.form
+     * URL: /fasilitas/peralatan/tambah
+     */
+    Route::get('/peralatan/tambah', [PeralatanController::class, 'formTambah'])->name('peralatan.tambah.form');
 
-// Melakukan proses tambah peralatan
-Route::post('/fasilitas/peralatan/tambah', [PeralatanController::class, 'tambah'])->middleware(['role:super_admin,admin']);
+    /**
+     * Melakukan proses tambah peralatan
+     * Method: POST
+     * Name: fasilitas.peralatan.tambah
+     * URL: /fasilitas/peralatan/tambah
+     */
+    Route::post('/peralatan/tambah', [PeralatanController::class, 'tambah'])->name('peralatan.tambah');
 
-// Menampilkan form edit peralatan
-Route::get('/fasilitas/peralatan/edit/{id}', [PeralatanController::class, 'formEdit'])->middleware(['role:super_admin,admin']);
+    /**
+     * Menampilkan form edit peralatan
+     * Method: GET
+     * Name: fasilitas.peralatan.edit.form
+     * URL: /fasilitas/peralatan/edit/{id}
+     */
+    Route::get('/peralatan/edit/{id}', [PeralatanController::class, 'formEdit'])->name('peralatan.edit.form');
 
-// Melakukan proses edit peralatan
-Route::post('/fasilitas/peralatan/edit', [PeralatanController::class, 'edit'])->middleware(['role:super_admin,admin']);
+    /**
+     * Melakukan proses edit peralatan
+     * Method: POST
+     * Name: fasilitas.peralatan.edit
+     * URL: /fasilitas/peralatan/edit
+     */
+    Route::post('/peralatan/edit', [PeralatanController::class, 'edit'])->name('peralatan.edit');
 
-// Menampilkan JSON data peralatan
-Route::post('/fasilitas/peralatan/detail', [PeralatanController::class, 'detail'])->middleware(['role:super_admin,admin']);
+    /**
+     * Menampilkan JSON data peralatan
+     * Method: POST
+     * Name: fasilitas.peralatan.detail
+     * URL: /fasilitas/peralatan/detail
+     */
+    Route::post('/peralatan/detail', [PeralatanController::class, 'detail'])->name('peralatan.detail');
 
-/* =========================== END OF MENU PERALATAN ============================== */
+    /* ================================ END OF MENU PERALATAN ================================ */
 
-/* ============================== MENU LAYANAN ==================================== */
-// Menampilkan daftar layanan
-Route::get('/fasilitas/layanan/daftar', [LayananController::class, 'daftar'])->name('fasilitas.layanan.daftar')->middleware(['role:super_admin,admin']);
+    /* ===================================== MENU LAYANAN ==================================== */
 
-// Menampilkan form tambah layanan step 1
-Route::get('/fasilitas/layanan/tambah/step1', [LayananController::class, 'formTambahStep1'])->name('fasilitas.layanan.tambah.step1.form')->middleware(['role:super_admin,admin']);
+    /**
+     * Menampilkan daftar layanan
+     * Method: GET
+     * Name: fasilitas.layanan.daftar
+     * URL: /fasilitas/layanan/daftar
+     */
+    Route::get('/layanan/daftar', [LayananController::class, 'daftar'])->name('layanan.daftar');
 
-// Menampilkan form tambah layanan step 1 (tombol back)
-Route::get('/fasilitas/layanan/tambah/step1/back/{id}', [LayananController::class, 'formTambahStep1Back'])->name('fasilitas.layanan.tambah.step1.back.form')->middleware(['role:super_admin,admin']);
+    /**
+     * Menampilkan form layanan step 1
+     * Method: GET
+     * Name: fasilitas.layanan.tambah.step1.form
+     * URL: /fasilitas/layanan/tambah/step1
+     */
+    Route::get('/layanan/tambah/step1', [LayananController::class, 'formTambahStep1'])->name('layanan.tambah.step1.form');
 
-// Melakukan proses tambah layanan step 1
-Route::post('/fasilitas/layanan/tambah/step1', [LayananController::class, 'tambahStep1'])->name('fasilitas.layanan.tambah.step1')->middleware(['role:super_admin,admin']);
+    /**
+     * Menampilkan form tambah layanan step 1 (tombol back)
+     * Method: GET
+     * Name: fasilitas.layanan.tambah.step1.back.form
+     * URL: /fasilitas/layanan/tambah/step1.back/{id}
+     */
+    Route::get('/layanan/tambah/step1/back/{id}', [LayananController::class, 'formTambahStep1Back'])->name('layanan.tambah.step1.back.form');
 
-// Melakukan proses tambah layanan step 1 (tombol back)
-Route::post('/fasilitas/layanan/tambah/step1/back', [LayananController::class, 'tambahStep1Back'])->name('fasilitas.layanan.tambah.step1.back')->middleware(['role:super_admin,admin']);
+    /**
+     * Melakukan proses tambah layanan step 1
+     * Method: POST
+     * Name: fasilitas.layanan.tambah.step1
+     * URL: /fasilitas/layanan/tambah/step1
+     */
+    Route::post('/layanan/tambah/step1', [LayananController::class, 'tambahStep1'])->name('layanan.tambah.step1');
 
-// Menampilkan form tambah layanan step 2
-Route::get('/fasilitas/layanan/tambah/step2/{id}', [LayananController::class, 'formTambahStep2'])->name('fasilitas.layanan.tambah.step2.form')->middleware(['role:super_admin,admin']);
+    /**
+     * Melakukan proses tambah layanan step 1 (tombol back)
+     * Method: POST
+     * Name: fasilitas.layanan.tambah.step1.back
+     * URL: /fasilitas/layanan/tambah/step1/back
+     */
+    Route::post('/layanan/tambah/step1/back', [LayananController::class, 'tambahStep1Back'])->name('layanan.tambah.step1.back');
 
-// Melakukan proses tambah layanan step 2
-Route::post('/fasilitas/layanan/tambah/step2', [LayananController::class, 'tambahStep2'])->name('fasilitas.layanan.tambah.step2')->middleware(['role:super_admin,admin']);
+    /**
+     * Menampilkan form tambah layanan step 2
+     * Method: GET
+     * Name: fasilitas.layanan.tambah.step2.form
+     * URL: /fasilitas/layanan/tambah/step2/{id}
+     */
+    Route::get('/layanan/tambah/step2/{id}', [LayananController::class, 'formTambahStep2'])->name('layanan.tambah.step2.form');
 
-// Menampilkan form tambah layanan step 3
-Route::get('/fasilitas/layanan/tambah/step3/{id}', [LayananController::class, 'formTambahStep3'])->name('fasilitas.layanan.tambah.step3.form')->middleware(['role:super_admin,admin']);
+    /**
+     * Melakukan proses tambah layanan step 2
+     * Method: POST
+     * Name: fasilitas.layanan.tambah.step2
+     * URL: /fasilitas/layanan/tambah/step2
+     */
+    Route::post('/layanan/tambah/step2', [LayananController::class, 'tambahStep2'])->name('fasilitas.layanan.tambah.step2');
 
-// Melakukan proses tambah layanan step 3
-Route::post('/fasilitas/layanan/tambah/step3', [LayananController::class, 'tambahStep3'])->name('fasilitas.layanan.tambah.step3')->middleware(['role:super_admin,admin']);
+    /**
+     * Menampilkan form tambah layanan step 3
+     * Method: GET
+     * Name: fasilitas.layanan.tambah.step3.form
+     * URL: /fasilitas/layanan/tambah/step3/{id}
+     */
+    Route::get('/layanan/tambah/step3/{id}', [LayananController::class, 'formTambahStep3'])->name('layanan.tambah.step3.form');
 
-// Melakukan menghapus draft layanan
-Route::post('/fasilitas/layanan/hapus', [LayananController::class, 'hapus'])->name('fasilitas.layanan.hapus')->middleware(['role:super_admin,admin']);
+    /**
+     * Melakukan proses tambah layanan step 3
+     * Method: POST
+     * Name: fasilitas.layanan.tambah.step3
+     * URL: /fasilitas/layanan/tambah/step3
+     */
+    Route::post('/layanan/tambah/step3', [LayananController::class, 'tambahStep3'])->name('layanan.tambah.step3');
 
-// Menampilkan form edit layanan step 1
-Route::get('/fasilitas/layanan/edit/step1/{id}', [LayananController::class, 'formEditStep1'])->name('fasilitas.layanan.edit.step1.form')->middleware(['role:super_admin,admin']);
+    /**
+     * Melakukan menghapus draft layanan
+     * Method: POST
+     * Name: fasilitas.layanan.hapus
+     * URL: /fasilitas/layanan/hapus
+     */
+    Route::post('/layanan/hapus', [LayananController::class, 'hapus'])->name('layanan.hapus');
 
-// Melakukan proses edit layanan step 1
-Route::post('/fasilitas/layanan/edit/step1', [LayananController::class, 'editStep1'])->name('fasilitas.layanan.edit.step1')->middleware(['role:super_admin,admin']);
+    /**
+     * Menampilkan form edit layanan step 1
+     * Method: GET
+     * Name: fasilitas.layanan.edit.step1.form
+     * URL: /fasilitas/layanan/edit/step1/{id}
+     */
+    Route::get('/layanan/edit/step1/{id}', [LayananController::class, 'formEditStep1'])->name('layanan.edit.step1.form');
 
-// Menampilkan form edit layanan step 2
-Route::get('/fasilitas/layanan/edit/step2/{id}', [LayananController::class, 'formEditStep2'])->name('fasilitas.layanan.edit.step2.form')->middleware(['role:super_admin,admin']);
+    /**
+     * Melakukan proses edit layanan step 1
+     * Method: POST
+     * Name: fasilitas.layanan.edit.step1
+     * URL: /fasilitas/layanan/edit/step1
+     */
+    Route::post('/layanan/edit/step1', [LayananController::class, 'editStep1'])->name('layanan.edit.step1');
 
-// Menampilkan form edit layanan step 3
-Route::get('/fasilitas/layanan/edit/step3/{id}', [LayananController::class, 'formEditStep3'])->name('fasilitas.layanan.edit.step3.form')->middleware(['role:super_admin,admin']);
+    /**
+     * Menampilkan form edit layanan step 2
+     * Method: GET
+     * Name: fasilitas.layanan.edit.step2.form
+     * URL: /fasilitas/layanan/edit/step2/{id}
+     */
+    Route::get('/layanan/edit/step2/{id}', [LayananController::class, 'formEditStep2'])->name('layanan.edit.step2.form');
 
-// Melakukan proses edit layanan step 3
-Route::post('/fasilitas/layanan/edit/step3', [LayananController::class, 'editStep3'])->name('fasilitas.layanan.edit.step3')->middleware(['role:super_admin,admin']);
+    /**
+     * Menampilkan form edit layanan step 3
+     * Method: GET
+     * Name: fasilitas.layanan.edit.step3.form
+     * URL: /fasilitas/layanan/edit/step3/{id}
+     */
+    Route::get('/layanan/edit/step3/{id}', [LayananController::class, 'formEditStep3'])->name('layanan.edit.step3.form');
 
-// Melakukan proses filter layanan
-Route::post('/fasilitas/layanan/filter', [LayananController::class, 'filter'])->name('fasilitas.layanan.filter')->middleware(['role:super_admin,admin']);
+    /**
+     * Melakukan proses edit layanan step 3
+     * Method: POST
+     * Name: fasilitas.layanan.edit.step3
+     * URL: /fasilitas/layanan/edit/step3
+     */
+    Route::post('/layanan/edit/step3', [LayananController::class, 'editStep3'])->name('layanan.edit.step3');
 
-// Menampilkan JSON data layanan
-Route::post('/fasilitas/layanan/detail', [LayananController::class, 'detail'])->name('fasilitas.layanan.detail')->middleware(['role:super_admin,admin']);
+    /**
+     * Melakukan proses filter layanan
+     * Method: POST
+     * Name: fasilitas.layanan.filter
+     * URL: /fasilitas/layanan/filter
+     */
+    Route::post('/layanan/filter', [LayananController::class, 'filter'])->name('layanan.filter');
 
-// Menampilkan daftar peralatan tersedia berdasarkan filter
-Route::post('/fasilitas/layanan/peralatan/filter', [LayananController::class, 'peralatanFilter'])->name('fasilitas.layanan.peralatan.filter')->middleware(['role:super_admin,admin']);
+    /**
+     * Menampilkan JSON data layanan
+     * Method: POST
+     * Name: fasilitas.layanan.detail
+     * URL: /fasilitas/layanan/detail
+     */
+    Route::post('/layanan/detail', [LayananController::class, 'detail'])->name('layanan.detail');
 
-// Melakukan proses tambah peralatan ke layanan
-Route::post('/fasilitas/layanan/peralatan/tambah', [LayananController::class, 'tambahPeralatan'])->name('fasilitas.layanan.peralatan.tambah')->middleware(['role:super_admin,admin']);
+    /**
+     * Menampilkan daftar peralatan tersedia berdasarkan filter
+     * Method: POST
+     * Name: fasilitas.layanan.peralatan.filter
+     * URL: /fasilitas/layanan/peralatan/filter
+     */
+    Route::post('/layanan/peralatan/filter', [LayananController::class, 'peralatanFilter'])->name('layanan.peralatan.filter');
 
-// Menampilkan halaman edit ip address peralatan
-Route::post('/fasilitas/layanan/peralatan/edit', [LayananController::class, 'editPeralatan'])->name('fasilitas.layanan.peralatan.edit')->middleware(['role:super_admin,admin']);
+    /**
+     * Melakukan proses tambah peralatan ke layanan baru
+     * Method: POST
+     * Name: fasilitas.layanan.peralatan.tambah
+     * URL: /fasilitas/layanan/peralatan/tambah
+     */
+    Route::post('/layanan/peralatan/tambah', [LayananController::class, 'tambahPeralatan'])->name('layanan.peralatan.tambah');
 
-// Menghapus peralatan dari layanan
-Route::post('/fasilitas/layanan/peralatan/hapus', [LayananController::class, 'hapusPeralatan'])->name('fasilitas.layanan.peralatan.hapus')->middleware(['role:super_admin,admin']);
+    /**
+     * Melakukan proses tambah peralatan ke layanan lama (edit layanan)
+     * Method: POST
+     * Name: fasilitas.layanan.peralatan.edit.tambah
+     * URL: /fasilitas/layanan/peralatan/edit/tambah
+     */
+    Route::post('/layanan/peralatan/edit/tambah', [LayananController::class, 'editTambahPeralatan'])->name('layanan.peralatan.edit.tambah');
 
-// Menampilkan JSON data peralatan layanan
-Route::post('/fasilitas/layanan/peralatan/detail', [LayananController::class, 'detailPeralatan'])->name('fasilitas.layanan.peralatan.detail')->middleware(['role:super_admin,admin']);
+    /**
+     * Menampilkan halaman edit ip address peralatan
+     * Method: POST
+     * Name: fasilitas.layanan.peralatan.edit
+     * URL: /fasilitas/layanan/peralatan/edit
+     */
+    Route::post('/layanan/peralatan/edit', [LayananController::class, 'editPeralatan'])->name('layanan.peralatan.edit');
 
-/* =========================== END OF MENU LAYANAN ================================ */
+    /**
+     * Menghapus peralatan dari layanan
+     * Method: POST
+     * Name: fasilitas.layanan.peralatan.hapus
+     * URL: /fasilitas/layanan/peralatan/hapus
+     */
+    Route::post('/layanan/peralatan/hapus', [LayananController::class, 'hapusPeralatan'])->name('layanan.peralatan.hapus');
+
+    /**
+     * Menampilkan JSON data peralatan layanan
+     * Method: POST
+     * Name: fasilitas.layanan.peralatan.detail
+     * URL: /fasilitas/layanan/peralatan/detail
+     */
+    Route::post('/layanan/peralatan/detail', [LayananController::class, 'detailPeralatan'])->name('layanan.peralatan.detail');
+
+    /* ================================= END OF MENU LAYANAN ================================= */
+
+
+});
+
 
 /* =========================== MENU EXPORT LAYANAN ================================ */
 // Menampilkan halaman daftar export layanan
