@@ -121,6 +121,9 @@ class PeralatanController extends Controller
             'kode.unique' => 'Kode yang dimasukkan sudah terdaftar'
         ]);
 
+        // mulai transaksi ke database
+        DB::beginTransaction();
+
         try{
             // tambah row di tabel peralatan
             $peralatan = Peralatan::create([
@@ -130,6 +133,7 @@ class PeralatanController extends Controller
                 'tipe' => strtoupper($request->tipe),
                 'model' => strtoupper($request->model),
                 'serial_number' => strtoupper($request->serial_number),
+                'no_aset' => strtoupper($request->no_aset),
                 'thn_produksi' => $request->thn_produksi,
                 'thn_pengadaan' => $request->thn_pengadaan,
                 'keterangan' => strtoupper($request->keterangan),
@@ -141,9 +145,13 @@ class PeralatanController extends Controller
                 'flag_layanan' => 0, // default = 0
                 'created_by' => session()->get('id')
             ]);
+            // simpan transaksi ke database
+            DB::commit();
         }
         // jika proses tambah gagal
         catch(QueryException $ex){
+            // batalkan semua transaksi ke database
+            DB::rollBack();
             //dd($ex->getMessage());
             // kembali ke halaman daftar dan tampilkan pesan error
             // return redirect('/fasilitas/peralatan/daftar')->with('notif', 'tambah_gagal');
@@ -304,6 +312,9 @@ class PeralatanController extends Controller
         }
         // ================== END OF CEK PERUBAHAN KONDISI =====================
 
+        // mulai transaksi ke database
+        DB::beginTransaction();
+        
         try{
             // update data peralatan di tabel peralatan
             Peralatan::where('id', $request->id)
@@ -314,6 +325,7 @@ class PeralatanController extends Controller
                 'tipe' => strtoupper($request->tipe),
                 'model' => strtoupper($request->model),
                 'serial_number' => strtoupper($request->serial_number),
+                'no_aset' => strtoupper($request->no_aset),
                 'thn_produksi' => $request->thn_produksi,
                 'thn_pengadaan' => $request->thn_pengadaan,
                 'keterangan' => strtoupper($request->keterangan),
@@ -324,9 +336,13 @@ class PeralatanController extends Controller
                 'status' => $request->status,
                 'updated_by' => session()->get('id')
             ]);
+            // simpan transaksi ke database
+            DB::commit();
         }
         // jika proses update gagal
         catch(QueryException $ex){
+            // batalkan semua transaksi ke database
+            DB::rollBack();
             //dd($ex->getMessage());
             // kembali ke halaman daftar dan tampilkan pesan error
             // return redirect('/fasilitas/peralatan/daftar')->with('notif', 'edit_gagal');

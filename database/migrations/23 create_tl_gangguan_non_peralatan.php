@@ -23,6 +23,7 @@ return new class extends Migration
             $table->datetime('waktu');
             $table->string('deskripsi');
             $table->boolean('kondisi');
+            $table->integer('jenis');
             $table->bigInteger('created_by')->nullable();
             $table->bigInteger('updated_by')->nullable();
             $table->timestamps();

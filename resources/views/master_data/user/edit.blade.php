@@ -43,7 +43,7 @@
 
               <div class="card-body">
 
-                <input type="text" name="id" value="{{ $user->id }}" hidden>
+                <input type="hidden" name="id" value="{{ $user->id }}">
  
                 <div class="form-group row">
                   <label class="col-sm-4 col-form-label required">Nama</label>

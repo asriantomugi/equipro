@@ -19,7 +19,8 @@ return new class extends Migration
             $table->bigIncrements('id');
             $table->bigInteger('laporan_id');
             $table->bigInteger('layanan_id');
-            $table->string('deskripsi');
+            $table->string('deskripsi')->nullable();
+            $table->date('tanggal_gangguan')->nullable();
             $table->bigInteger('created_by')->nullable();
             $table->bigInteger('updated_by')->nullable();
             $table->timestamps();

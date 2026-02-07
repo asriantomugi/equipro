@@ -23,6 +23,7 @@ return new class extends Migration
             $table->string('tipe')->nullable();
             $table->string('model')->nullable();
             $table->string('serial_number')->nullable();
+            $table->string('no_aset')->nullable();
             $table->integer('thn_produksi')->nullable();
             $table->integer('thn_pengadaan')->nullable();
             $table->bigInteger('jenis_id');

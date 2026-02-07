@@ -8,7 +8,7 @@
   @yield('head')
   
   <!-- JS untuk menampilkan chart -->
-  <script src="{{asset('/plugins/chart.js/Chart.min.js')}}"></script>
+  <script src="{{ asset('/plugins/chart.js/Chart.min.js') }}"></script>
 </head>
 <body class="hold-transition sidebar-mini layout-fixed">
 <div class="wrapper">
@@ -50,9 +50,6 @@
 
 <!-- spesific tail -->
 @yield('tail')
-
-<!-- script tambahan -->
-@stack('scripts')
 
 </body>
 </html>

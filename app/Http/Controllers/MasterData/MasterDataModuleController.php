@@ -10,12 +10,13 @@ namespace App\Http\Controllers\MasterData;
  * @author Mugi Asrianto
  */
 
-use App\Models\Gse;
 use App\Models\User;
-use App\Models\Mohon;
-use App\Models\Stiker;
-use App\Models\Konstanta;
 use App\Models\Perusahaan;
+use App\Models\Fasilitas;
+use App\Models\JenisAlat;
+use App\Models\LokasiTk1;
+use App\Models\LokasiTk2;
+use App\Models\LokasiTk3;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Auth;
@@ -55,10 +56,46 @@ class MasterDataModuleController extends Controller
             ->where('role_id', config('constants.role.teknisi')) // role teknisi
             ->get()->count();
 
+        // Ambil jumlah perusahaan
+        $jlhPerusahaan = Perusahaan::where('status', 1) // status aktif
+            ->get()->count();
+
+        // Ambil jumlah fasilitas
+        $jlhFasilitas = Fasilitas::where('status', 1) // status aktif
+            ->get()->count();
+        
+        // Ambil jumlah jenis alat
+        $jlhJenisAlat = JenisAlat::where('status', 1) // status aktif
+            ->get()->count();
+
+        // Ambil jumlah lokasi tingkat I
+        $jlhLokasiTk1 = LokasiTk1::where('status', 1) // status aktif
+            ->get()->count();
+
+        // Ambil jumlah lokasi tingkat II
+        $jlhLokasiTk2= LokasiTk2::where('status', 1) // status aktif
+            ->get()->count();
+
+        // Ambil jumlah lokasi tingkat III
+        $jlhLokasiTk3= LokasiTk3::where('status', 1) // status aktif
+            ->get()->count();
+
         // Buat array untuk data chart jumlah user berdasarkan role
         $dataChartRoleUser = [
             'labels' => ['Super Admin', 'Admin', 'Teknisi'],
             'data' => [$jlhSuperAdmin, $jlhAdmin, $jlhTeknisi]
+        ];
+
+        // Buat array untuk data chart jumlah perusahaan, fasilitas, jenis alat
+        $dataChartInfo = [
+            'labels' => ['Perusahaan', 'Fasilitas', 'Jenis Alat'],
+            'data' => [$jlhPerusahaan, $jlhFasilitas, $jlhJenisAlat]
+        ];
+
+        // Buat array untuk data chart jumlah lokasi tingkat I, II, dan III
+        $dataChartLokasi = [
+            'labels' => ['Lokasi Tingkat I', 'Lokasi Tingkat II', 'Lokasi Tingkat III'],
+            'data' => [$jlhLokasiTk1, $jlhLokasiTk2, $jlhLokasiTk3]
         ];
         // ===================== AKHIR PROSES PENGAMBILAN DATA USER =======================
 
@@ -75,6 +112,8 @@ class MasterDataModuleController extends Controller
 		->with('menu', $menu)
         ->with('menu_url', $menu_url)	
         ->with('dataChartRoleUser', $dataChartRoleUser)
+        ->with('dataChartInfo', $dataChartInfo)
+        ->with('dataChartLokasi', $dataChartLokasi)
 		;
     }	
 

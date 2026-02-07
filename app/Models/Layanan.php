@@ -22,8 +22,6 @@ class Layanan extends Model
         'id'
     ];
 
-
-    /**
     /**
      * Function untuk memanggil fasilitas dari layanan.
      */

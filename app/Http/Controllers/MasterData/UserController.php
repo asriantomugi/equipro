@@ -124,6 +124,9 @@ class UserController extends Controller
             'password.confirmed' => 'Password yang dimasukkan tidak sama.'
         ]);
 
+        // mulai transaksi ke database
+        DB::beginTransaction();
+
         try{
             // tambah row di tabel user
             $user = User::create([
@@ -134,18 +137,7 @@ class UserController extends Controller
                 'password' => bcrypt($request->password),
                 'created_by' => session()->get('id')
             ]);
-        }
-        // jika proses tambah gagal
-        catch(QueryException $ex){
-            //dd($ex->getMessage());
-            // kembali ke halaman daftar dan tampilkan pesan error
-            // return redirect('/master-data/user/daftar')->with('notif', 'tambah_gagal');
-            return redirect()
-                ->route('master_data.user.daftar')
-                ->with('notif', 'tambah_gagal');
-        }
 
-        try{
             // tambah row di tabel detail user
             $detailUser = DetailUser::create([
                 'user_id' => $user->id,
@@ -155,12 +147,15 @@ class UserController extends Controller
                 'jabatan' => $request->jabatan,
                 'created_by' => session()->get('id')
             ]);
+
+            // simpan transaksi ke database
+            DB::commit();
         }
         // jika proses tambah gagal
         catch(QueryException $ex){
-            dd($ex->getMessage());
-            // hapus user di tabel user
-            User::where('id', $user->id)->delete();
+            // batalkan semua transaksi ke database
+            DB::rollBack();
+            //dd($ex->getMessage());
             // kembali ke halaman daftar dan tampilkan pesan error
             // return redirect('/master-data/user/daftar')->with('notif', 'tambah_gagal');
             return redirect()
@@ -302,6 +297,9 @@ class UserController extends Controller
         }
         // ===================== AKHIR PROSES VERIFIKASI =======================
 
+        // mulai transaksi ke database
+        DB::beginTransaction();
+
         try{
             // update data user di tabel User
             User::where('id', $request->id)
@@ -321,9 +319,14 @@ class UserController extends Controller
                 'telepon' => strtoupper($request->telepon),
                 'updated_by' => session()->get('id')
             ]);
+
+            // simpan transaksi ke database
+            DB::commit();
         }
         // jika proses update gagal
         catch(QueryException $ex){
+            // batalkan semua transaksi ke database
+            DB::rollBack();
             // kembali ke halaman daftar dan tampilkan pesan error
             // return redirect('/master-data/user/daftar')->with('notif', 'edit_gagal');
             return redirect()
@@ -428,6 +431,9 @@ class UserController extends Controller
             // pesan error
             'password.confirmed' => 'Password yang dimasukkan tidak sama'
         ]);
+
+        // mulai transaksi ke database
+        DB::beginTransaction();
 		
 		try{
             // update data user di tabel User
@@ -439,9 +445,14 @@ class UserController extends Controller
 
             // paksa user yang di-reset password nya untuk logout
             DB::table('sessions')->where('user_id', $user->id)->delete();
+
+            // simpan transaksi ke database
+            DB::commit();
         }
         // jika proses update gagal
         catch(QueryException $ex){
+            // batalkan semua transaksi ke database
+            DB::rollBack();
             // kembali ke halaman daftar dan tampilkan pesan error
             // return redirect('/master-data/user/daftar')->with('notif', 'password_gagal');
             return redirect()

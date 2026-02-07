@@ -447,7 +447,7 @@
             });
 
           } else {
-              row += "<tr><td colspan='4' class='text-center'>Tidak ada peralatan</td></tr>";
+              row += "<tr><td colspan='7' class='text-center'>Tidak ada peralatan</td></tr>";
           }
               row += "</tbody>";
 

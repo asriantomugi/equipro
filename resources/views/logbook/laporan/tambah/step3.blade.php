@@ -24,13 +24,30 @@
             </div>
         </div>
 
+        <!-- pesan error validasi -->
+@if($errors->any())
+        <div class="row">
+          <div class="col-lg-6">
+            <div class="alert alert-danger alert-dismissible">
+                  <button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
+                  <h5><b></b>Kesalahan !</b></h5>
+                  <ul>
+  @foreach ($errors->all() as $error)
+                  <li>{{$error}}</li>
+  @endforeach
+                  </ul>
+                </div>
+          </div>
+        </div>
+@endif
+
         {{-- Form --}}
         <div class="row">
             <div class="col-lg-12">
                 <div class="card">
                     <div class="card-header"><h3 class="card-title">FORM TINDAK LANJUT</h3></div>
                     <div class="card-body">
-
+<!--
                     @if ($errors->any())
                         <div class="alert alert-danger">
                             <ul class="mb-0">
@@ -40,26 +57,89 @@
                             </ul>
                         </div>
                     @endif
+-->
 
                         <form action="{{ route('tambah.simpanStep3') }}" method="POST" id="formStep3">
                             @csrf
                             <input type="hidden" name="laporan_id" value="{{ $laporan->id }}">
                             <input type="hidden" name="layanan_id" value="{{ $laporan->layanan_id }}">
-                            <input type="hidden" name="jenis_laporan" value="{{ $laporan->jenis == 1 ? 1 : 0 }}">
+                            <input type="hidden" name="jenis_laporan" value="{{ $laporan->jenis == 1 ? 1 : 2 }}">
                             
                             {{-- Hidden field untuk kondisi layanan yang akan diset otomatis --}}
                             <input type="hidden" name="kondisi_setelah" id="kondisi_setelah_hidden" value="">
 
                             {{-- =============== PERALATAN (jika gangguan_peralatan) =============== --}}
-                            @if ($laporan->jenis == 1)
-                                @php $shown = 0; @endphp
-                                @foreach ($layanan->daftarPeralatanLayanan as $index => $dpl)
-                                    @continue(!in_array($dpl->peralatan->id, $peralatanGangguanIds)) {{-- skip beroperasi --}}
-                                    @php $shown++; @endphp
-                                    @if ($shown > 1)<hr>@endif
+@if ($laporan->jenis == 1)
+
+    @foreach ($gangguanPeralatan as $satu)
+
+                            <input type="hidden" name="peralatan_id[]"  value="{{ $satu->peralatan->id }}">
+                    
+                            <div class="form-group row">
+                                <label class="col-sm-2 col-form-label">Kode</label>
+                                <div class="col-sm-6">
+                                    <input type="text" 
+                                           name="kode" 
+                                           class="form-control" 
+                                           value="{{ strtoupper($satu->peralatan->kode) }}" 
+                                           readonly>
+                                </div>
+                            </div>
+
+                            <div class="form-group row">
+                                <label class="col-sm-2 col-form-label">Nama</label>
+                                <div class="col-sm-6">
+                                    <input type="text" 
+                                           name="nama" 
+                                           class="form-control" 
+                                           value="{{ strtoupper($satu->peralatan->nama) }}" 
+                                           readonly>
+                                </div>
+                            </div>
+
+                            <div class="form-group row">
+                                <label class="col-sm-2 col-form-label">Merk</label>
+                                <div class="col-sm-6">
+                                    <input type="text" 
+                                           name="merk" 
+                                           class="form-control" 
+                                           value="{{ strtoupper($satu->peralatan->merk) }}" 
+                                           readonly>
+                                </div>
+                            </div>
+
+                            <div class="form-group row">
+                                <label class="col-sm-2 col-form-label">Jenis Alat</label>
+                                <div class="col-sm-6">
+                                    <input type="text" 
+                                           name="jenis_alat" 
+                                           class="form-control" 
+                                           value="{{ strtoupper($satu->peralatan->jenis->nama) }}" 
+                                           readonly>
+                                </div>
+                            </div>
+
+                    html += '<div class="form-group row">';
+                    html += '<label class="col-sm-2 col-form-label">IP Address</label>';
+                    html += '<div class="col-sm-6">';
+                    if(alat.ip_address != null){
+                        html += '<input type="text" name="ip_address" class="form-control" value="'+ alat.ip_address +'" readonly>';
+                    }else{
+                        html += '<input type="text" name="ip_address" class="form-control" value="" readonly>';
+                    }
+                    html += '</div></div>';
+
+                    html += '<div class="form-group row">';
+                    html += '<label class="col-sm-2 col-form-label required">Kondisi Peralatan</label>';
+                    html += '<div class="col-sm-6">';
+                    html += '<select name="kondisi[]" class="form-control kondisi-peralatan" data-index="'+ index +'">';
+                    html += '<option value="1">BEROPERASI</option>';
+                    html += '<option value="0">GANGGUAN</option>';
+                    html += '</select>';
+                    html += '</div></div>';
 
                                     <div class="mb-3">
-                                        <strong>Peralatan {{ $shown }}:
+                                        <strong>Peralatan {{ $i }}:
                                             <span class="badge bg-primary">{{ $dpl->peralatan->nama }}</span>
                                         </strong>
                                     </div>
@@ -117,8 +197,9 @@
                                             <div class="invalid-feedback dynamic"></div>
                                         </div>
                                     </div>
-                                @endforeach
-                            @else
+    @endforeach
+
+@else
                                 {{-- =============== NON‑PERALATAN =============== --}}
                                 <div class="form-group row">
                                     <label class="col-sm-3 col-form-label">Waktu <span class="text-danger">*</span></label>
@@ -151,7 +232,7 @@
                                         <div class="invalid-feedback dynamic"></div>
                                     </div>
                                 </div>
-                            @endif
+@endif
 
                             <div class="card-footer">
                                 <a href="{{ route('tambah.step2.back', ['laporan_id' => $laporan->id]) }}"

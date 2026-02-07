@@ -17,10 +17,9 @@ return new class extends Migration
 
             // membuat field-field
             $table->bigIncrements('id');
-            $table->bigInteger('no_laporan')->unique();
+            $table->string('no_laporan', 50)->unique();
             $table->bigInteger('layanan_id');
-            $table->integer('jenis');
-            $table->dateTime('waktu');
+            $table->integer('jenis');   
             $table->integer('status');
             $table->boolean('kondisi_layanan_temp');
             $table->bigInteger('created_by')->nullable();

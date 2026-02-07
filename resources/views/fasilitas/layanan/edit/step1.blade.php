@@ -17,7 +17,7 @@
                             <li class="step-item active"><a href="#">Data Layanan</a></li>
                             <li class="step-item "><a href="#">Daftar Peralatan</a></li>
                             <li class="step-item"><a href="#">Review</a></li>
-                            
+                        </ul>    
                     </div>
                 </div>
             </div>
@@ -41,7 +41,7 @@
 
               <div class="card-body">
 
-                <input type="text" name="id" value="{{ $layanan->id }}" hidden>
+                <input type="hidden" name="id" value="{{ $layanan->id }}">
 
                 <div class="form-group row">
                   <label class="col-sm-3 col-form-label required">Fasilitas</label>
@@ -142,11 +142,11 @@
                   <label class="col-sm-3 col-form-label required">Kondisi</label>
                   <div class="col-sm-9">
                     <select name="kondisi" 
-                            class="form-control" 
+                            class="form-control"
                             disabled>
                       <option value="">- Pilih -</option>
-                      <option value="1" {{ old('kondisi', $layanan->kondisi ?? '') == '1' ? 'selected' : '' }}>SERVICEABLE</option>
-                      <option value="0" {{ old('kondisi', $layanan->kondisi ?? '') == '0' ? 'selected' : '' }}>UNSERVICEABLE</option>
+                      <option value="1" {{ old('kondisi', $layanan->kondisi ?? '') == 1 ? 'selected' : '' }}>SERVICEABLE</option>
+                      <option value="0" {{ old('kondisi', $layanan->kondisi ?? '') == 0 ? 'selected' : '' }}>UNSERVICEABLE</option>
                     </select>
                     <div class="invalid-feedback">Kondisi wajib dipilih.</div>
                   </div>
@@ -159,8 +159,8 @@
                             class="form-control" 
                             required>
                       <option value="">- Pilih -</option>
-                      <option value="1" {{ old('status', $layanan->status ?? '') == '1' ? 'selected' : '' }}>AKTIF</option>
-                      <option value="0" {{ old('status', $layanan->status ?? '') == '0' ? 'selected' : '' }}>TIDAK AKTIF</option>
+                      <option value="1" {{ old('status', $layanan->status ?? '') == 1 ? 'selected' : '' }}>AKTIF</option>
+                      <option value="0" {{ old('status', $layanan->status ?? '') == 0 ? 'selected' : '' }}>TIDAK AKTIF</option>
                     </select>
                     <div class="invalid-feedback">Kondisi wajib dipilih.</div>
                   </div>

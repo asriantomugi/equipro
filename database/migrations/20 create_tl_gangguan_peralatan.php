@@ -24,7 +24,7 @@ return new class extends Migration
             $table->dateTime('waktu');
             $table->string('deskripsi');
             $table->boolean('kondisi');
-            $table->boolean('jenis_tindaklanjut');
+            $table->integer('jenis');
             $table->bigInteger('created_by')->nullable();
             $table->bigInteger('updated_by')->nullable();
             $table->timestamps();

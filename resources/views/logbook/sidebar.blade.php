@@ -21,7 +21,7 @@
 
         <!-- MENU MODULE -->
         <li class="nav-item">
-          <a href="{{url('/module')}}" class="nav-link @if($menu == 'Module') active @endif">
+          <a href="{{ route('index') }}" class="nav-link @if($menu == 'Module') active @endif">
             <i class="nav-icon fas fa-th"></i>
             <p>Module</p>
           </a>
@@ -31,7 +31,7 @@
 
         <!-- MENU HOME -->
         <li class="nav-item">
-          <a href="{{url('/logbook/home')}}" class="nav-link @if($menu == 'Home') active @endif">
+          <a href="{{ route('logbook.home') }}" class="nav-link @if($menu == 'Home') active @endif">
             <i class="nav-icon fas fa-home"></i>
             <p>Home</p>
           </a>
@@ -39,7 +39,7 @@
 
         <!-- MENU LAPORAN -->
         <li class="nav-item">
-          <a href="{{url('/logbook/laporan/daftar')}}" class="nav-link @if($menu == 'Laporan') active @endif">
+          <a href="{{ route('logbook.laporan.daftar') }}" class="nav-link @if($menu == 'Laporan') active @endif">
             <i class="nav-icon fas fa-file-alt"></i>
             <p>Laporan</p>
           </a>

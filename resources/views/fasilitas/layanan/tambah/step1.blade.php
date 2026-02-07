@@ -17,7 +17,7 @@
                             <li class="step-item active"><a href="#">Data Layanan</a></li>
                             <li class="step-item "><a href="#">Daftar Peralatan</a></li>
                             <li class="step-item"><a href="#">Review</a></li>
-                            
+                        </ul>  
                     </div>
                 </div>
             </div>

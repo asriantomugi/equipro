@@ -33,8 +33,9 @@ return [
 
     // konstanta untuk kondisi layanan
     'kondisi_layanan' => [
-        'serviceable' => TRUE,
-        'unserviceable' => FALSE,
+        'serviceable' => 1,
+        'conditional_serviceable' => 2,
+        'unserviceable' => 3,
     ],
 
     // konstanta untuk status layanan
@@ -58,26 +59,31 @@ return [
 
     // konstanta untuk jenis laporan
     'jenis_laporan' => [
-        'gangguan_peralatan' => TRUE,
-        'gangguan_non_peralatan' => FALSE,
+        'gangguan_peralatan' => 1,
+        'gangguan_non_peralatan' => 2,
     ],
 
     // konstanta untuk kondisi gangguan peralatan 
-    'kondisi_gangguan_peralatan' => [
-        'beroperasi' => '1',
-        'gangguan' => '0',
+    'kondisi_gangguan' => [
+        'beroperasi' => 1,
+        'gangguan' => 0,
     ],
 
-    // konstanta untuk kondisi tindaklanjut
+    // konstanta untuk kondisi tindaklanjut peralatan
     'kondisi_tindaklanjut' => [
-        'beroperasi' => TRUE,
-        'gangguan' => FALSE,
+        'beroperasi' => 1,
+        'gangguan' => 0,
     ],
 
-    // konstanta untuk kondisi tindaklanjut
-    'jenis_tindaklanjut' => [
-        'perbaikan' => TRUE,
-        'penggantian' => FALSE,
+    // konstanta untuk jenis tindaklanjut gangguan peralatan
+    'jenis_tindaklanjut_gangguan_peralatan' => [
+        'perbaikan' => 1,
+        'penggantian' => 2,
+    ],
+
+    // konstanta untuk jenis tindaklanjut gangguan non peralatan
+    'jenis_tindaklanjut_gangguan_non_peralatan' => [
+        'perbaikan' => 1,
     ],
 
     //konstanta untuk status laporan

@@ -116,6 +116,9 @@ class LokasiTk3Controller extends Controller
             'kode.unique' => 'Kode yang dimasukkan sudah terdaftar'
         ]);
 
+        // mulai transaksi ke database
+        DB::beginTransaction();
+
         try{
             // tambah row di tabel lokasi tingkat III
             $lokasi_tk_3 = LokasiTk3::create([
@@ -126,9 +129,14 @@ class LokasiTk3Controller extends Controller
                 'lokasi_tk_2_id' => $request->lokasi_tk_2,
                 'created_by' => session()->get('id')
             ]);
+
+            // simpan transaksi ke database
+            DB::commit();
         }
         // jika proses tambah gagal
         catch(QueryException $ex){
+            // batalkan semua transaksi ke database
+            DB::rollBack();
             //dd($ex->getMessage());
             // kembali ke halaman daftar dan tampilkan pesan error
             // return redirect('/master-data/lokasi-tk-3/daftar')->with('notif', 'tambah_gagal');
@@ -262,6 +270,9 @@ class LokasiTk3Controller extends Controller
         }
         // ===================== END OF CEK DUPLIKASI KODE =====================
 
+        // mulai transaksi ke database
+        DB::beginTransaction();
+
         try{
             // update data lokasi tingkat III di tabel lokasi_tk_3
             LokasiTk3::where('id', $request->id)
@@ -271,9 +282,14 @@ class LokasiTk3Controller extends Controller
                 'status' => $request->status,
                 'updated_by' => session()->get('id')
             ]);
+
+            // simpan transaksi ke database
+            DB::commit();
         }
         // jika proses update gagal
         catch(QueryException $ex){
+            // batalkan semua transaksi ke database
+            DB::rollBack();
             // kembali ke halaman daftar dan tampilkan pesan error
             // return redirect('/master-data/lokasi-tk-3/daftar')->with('notif', 'edit_gagal');
             return redirect()

@@ -43,7 +43,7 @@
 
               <div class="card-body">
 
-                <input type="text" name="id" value="{{ $lokasi_tk_3->id }}" hidden>
+                <input type="hidden" name="id" value="{{ $lokasi_tk_3->id }}">
  
                 <div class="form-group row">
                   <label class="col-sm-3 col-form-label required">Lokasi Tingkat I</label>

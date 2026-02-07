@@ -18,33 +18,6 @@ class Laporan extends Model
         'id'
     ];
 
-    protected $casts = [
-        'waktu_open' => 'datetime',
-        'waktu_close' => 'datetime',
-        'created_at' => 'datetime',
-        'updated_at' => 'datetime',
-    ];
-
-    /**
-     * The "booted" method of the model.
-     */
-    protected static function booted()
-    {
-        // Auto fill created_by saat create
-        static::creating(function ($model) {
-            if (Auth::check()) {
-                $model->created_by = Auth::id();
-            }
-        });
-
-        // Auto fill updated_by saat update
-        static::updating(function ($model) {
-            if (Auth::check()) {
-                $model->updated_by = Auth::id();
-            }
-        });
-    }
-
      /**
      * Function untuk memanggil layanan dari laporan.
      */
@@ -149,20 +122,5 @@ class Laporan extends Model
     public function getUpdatedAtFormattedAttribute()
     {
         return $this->updated_at ? $this->updated_at->format('d-m-Y H:i:s') : null;
-    }
-
-    // Di model Laporan.php
-    public function getStatusLabelAttribute()
-    {
-        switch ($this->status) {
-            case config('constants.status_laporan.draft'):
-                return '<span class="badge badge-warning">DRAFT</span>';
-            case config('constants.status_laporan.open'):
-                return '<span class="badge badge-success">OPEN</span>';
-            case config('constants.status_laporan.closed'):
-                return '<span class="badge badge-secondary">CLOSED</span>';
-            default:
-                return '<span class="badge badge-light">UNKNOWN</span>';
-        }
     }
 }

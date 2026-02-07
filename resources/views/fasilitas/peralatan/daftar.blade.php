@@ -225,6 +225,12 @@
               row += "<tr><th>Serial Number</th><td>:</td><td></td></tr>";
           }
 
+          if(data.peralatan.no_aset != null){
+              row += "<tr><th>No. Aset</th><td>:</td><td>"+ data.peralatan.no_aset.toUpperCase(); +"</td></tr>";
+          }else{
+              row += "<tr><th>No. Aset</th><td>:</td><td></td></tr>";
+          }
+
           if(data.peralatan.thn_produksi != null){
               row += "<tr><th>Tahun Produksi</th><td>:</td><td>"+ data.peralatan.thn_produksi; +"</td></tr>";
           }else{

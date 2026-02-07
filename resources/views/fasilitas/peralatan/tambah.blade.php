@@ -125,6 +125,16 @@
                 </div>
 
                 <div class="form-group row">
+                  <label class="col-sm-4 col-form-label">No. Aset</label>
+                  <div class="col-sm-8">
+                    <input type="text" 
+                           name="no_aset" 
+                           class="form-control"
+                           value="{{ old('no_aset') }}">
+                  </div>
+                </div>
+
+                <div class="form-group row">
                   <label class="col-sm-4 col-form-label">Tahun Produksi</label>
                   <div class="col-sm-8">
                     <select name="thn_produksi" 

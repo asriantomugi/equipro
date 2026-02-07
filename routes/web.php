@@ -490,7 +490,7 @@ Route::prefix('/master-data')->name('master_data.')
  */ 
 
 /**
- * Group route untuk module master data
+ * Group route untuk module fasilitas
  * URL: /fasilitas/... 
  */ 
 Route::prefix('/fasilitas')->name('fasilitas.')
@@ -744,9 +744,7 @@ Route::prefix('/fasilitas')->name('fasilitas.')
 
     /* ================================= END OF MENU LAYANAN ================================= */
 
-
 });
-
 
 /* =========================== MENU EXPORT LAYANAN ================================ */
 // Menampilkan halaman daftar export layanan
@@ -779,12 +777,86 @@ Route::get('/fasilitas/layanan/export/lokasi-tk3', [ExportLayananController::cla
  * ------------------------------------------------------------------------------------
  */ 
 
+/**
+ * Group route untuk module logbook
+ * URL: /logbook/... 
+ */ 
+Route::prefix('/logbook')->name('logbook.')
+    ->middleware(['role:super_admin,admin,teknisi']) // Akses oleh Super Admin, Admin, Teknisi
+    ->group(function () {
+
+    /**
+     * Menampilkan halaman utama module Logbook
+     * Method: GET
+     * Name: logbook.home
+     * URL: /logbook/home 
+     */ 
+    Route::get('/home', [LogbookModuleController::class, 'home'])->name('home');
+
+
+    /* ============================== MENU LAPORAN ==================================== */
+    
+    /**
+     * Menampilkan daftar laporan
+     * Method: GET
+     * Name: logbook.laporan.daftar
+     * URL: /logbook/laporan/daftar
+     */
+    Route::get('/laporan/daftar', [LaporanController::class, 'daftar'])->name('laporan.daftar');
+
+    /**
+     * Menampilkan form tambah laporan step 1
+     * Method: GET
+     * Name: logbook.laporan.tambah.step1.form
+     * URL: /logbook/laporan/tambah/step1
+     */
+    Route::get('/laporan/tambah/step1', [LaporanController::class, 'formTambahStep1'])->name('laporan.tambah.step1.form');
+
+    /**
+     * Menampilkan hasil filter pada form tambah laporan step 1
+     * Method: GET
+     * Name: logbook.laporan.tambah.step1.filter
+     * URL: /logbook/laporan/tambah/step1/filter
+     */
+    Route::post('/laporan/tambah/step1/filter', [LaporanController::class, 'formTambahStep1Filter'])->name('laporan.tambah.step1.filter');
+    
+    /**
+     * Menampilkan form tambah laporan step 2
+     * Method: GET
+     * Name: logbook.laporan.tambah.step2.form
+     * URL: /logbook/laporan/tambah/step2/{layanan_id}
+     */
+    Route::get('/laporan/tambah/step2/{layanan_id}', [LaporanController::class, 'formTambahStep2'])->name('laporan.tambah.step2.form');
+
+    /**
+     * Memproses form tambah laporan step 2
+     * Method: POST
+     * Name: logbook.laporan.tambah.step2
+     * URL: /logbook/laporan/tambah/step2
+     */
+    Route::post('/laporan/tambah/step2', [LaporanController::class, 'tambahStep2'])->name('laporan.tambah.step2');
+
+    /**
+     * Menampilkan form tambah laporan step 3
+     * Method: GET
+     * Name: logbook.laporan.tambah.step3.form
+     * URL: /logbook/laporan/tambah/step3/{id}
+     */
+    Route::get('/laporan/tambah/step3/{id}', [LaporanController::class, 'formTambahStep3'])->name('laporan.tambah.step3.form');
+
+    /**
+     * Memproses form tambah laporan step 3
+     * Method: POST
+     * Name: logbook.laporan.tambah.step3
+     * URL: /logbook/laporan/tambah/step3
+     */
+    Route::post('/laporan/tambah/step3', [LaporanController::class, 'tambahStep3'])->name('laporan.tambah.step3');
+
+
+});
+
 // Logbook Module Routes
 Route::group(['prefix' => 'logbook', 'middleware' => ['auth']], function () {
-    // Menampilkan halaman utama module Logbook
-    Route::get('/home', [LogbookModuleController::class, 'home'])
-        ->name('logbook.home')
-        ->middleware(['role:super_admin,admin,teknisi']);
     
     // Menampilkan halaman laporan logbook
     Route::get('/laporan', [LogbookModuleController::class, 'laporan'])
@@ -806,34 +878,11 @@ Route::group(['prefix' => 'logbook', 'middleware' => ['auth']], function () {
 
 /* ============================== MENU LAPORAN ==================================== */
 
-// Menampilkan daftar laporan
-Route::get('/logbook/laporan/daftar', [LaporanController::class, 'daftar'])->name('logbook.laporan.daftar')->middleware(['role:super_admin,admin,teknisi']);
-
-/* ====== TAMBAH LAPORAN ====== */
-
-// Step 1 - Menampilkan form filter
-Route::get('/logbook/laporan/tambah/step1', [LaporanController::class, 'formStep1'])->name('tambah.step1')->middleware(['role:super_admin,admin,teknisi']);
-
-// Step 1 - Melakukan proses filter
-Route::post('/logbook/laporan/filter', [LaporanController::class, 'filter'])->name('logbook.laporan.filter')->middleware(['role:super_admin,admin,teknisi']);
-
-// Step 2 - Menampilkan form pilih jenis laporan dan input gangguan
-Route::get('/logbook/laporan/tambah/step2', [LaporanController::class, 'formStep2'])->name('tambah.step2')->middleware(['role:super_admin,admin,teknisi']);
-
-// Step 2 - Menyimpan jenis laporan dan input gangguan
-Route::post('/logbook/laporan/tambah/step2/simpan', [LaporanController::class, 'simpanStep2'])->name('tambah.step2.simpan')->middleware(['role:super_admin,admin,teknisi']);
-
 // Menampilkan form Step 2 saat kembali dari Step 3
 Route::get('/logbook/laporan/tambah/step2_back/{laporan_id}', [LaporanController::class, 'formStep2Back'])->name('tambah.step2.back')->middleware(['role:super_admin,admin,teknisi']);
 
 // Menyimpan Step 2 dari mode kembali Step 3
 Route::post('/logbook/laporan/tambah/step2/back/simpan', [LaporanController::class, 'tambahStep2Back'])->name('tambah.step2.back.simpan')->middleware(['role:super_admin,admin,teknisi']);
-
-// Step 3 - Menampilkan form tindaklanjut
-Route::get('/logbook/laporan/tambah/step3/{laporan_id}', [LaporanController::class, 'formStep3'])->name('tambah.step3')->middleware(['role:super_admin,admin,teknisi']);
-
-// Step 3 - Menyimpan tindaklanjut
-Route::post('/logbook/laporan/tambah/step3/simpan', [LaporanController::class, 'simpanStep3'])->name('tambah.simpanStep3')->middleware(['role:super_admin,admin,teknisi']);
 
 // Route untuk menampilkan form step3 back
 Route::get('/logbook/laporan/tambah/step3/back/{laporan_id}', [LaporanController::class, 'formStep3Back'])->name('tambah.step3.form.back')->middleware(['role:super_admin,admin,teknisi']);

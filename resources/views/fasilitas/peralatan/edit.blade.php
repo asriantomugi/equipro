@@ -43,7 +43,7 @@
 
               <div class="card-body">
 
-                <input type="text" name="id" value="{{ $peralatan->id }}" hidden>
+                <input type="hidden" name="id" value="{{ $peralatan->id }}">
 
                 <div class="form-group row">
                   <label class="col-sm-4 col-form-label required">Jenis Alat</label>
@@ -123,6 +123,16 @@
                            name="serial_number" 
                            class="form-control"
                            value="{{ strtoupper(old('serial_number', $peralatan->serial_number ?? '')) }}">
+                  </div>
+                </div>
+
+                <div class="form-group row">
+                  <label class="col-sm-4 col-form-label">No. Aset</label>
+                  <div class="col-sm-8">
+                    <input type="text" 
+                           name="no_aset" 
+                           class="form-control"
+                           value="{{ strtoupper(old('no_aset', $peralatan->no_aset ?? '')) }}">
                   </div>
                 </div>
 

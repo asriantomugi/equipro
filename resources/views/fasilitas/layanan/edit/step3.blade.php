@@ -20,7 +20,7 @@
                             <li class="step-item completed"><a href="#">Data Layanan</a></li>
                             <li class="step-item completed"><a href="#">Daftar Peralatan</a></li>
                             <li class="step-item active"><a href="#">Review</a></li>
-                            
+                        </ul>     
                     </div>
                 </div>
             </div>
@@ -41,9 +41,9 @@
                 <tr><th>Fasilitas</th><td>:</td><td>{{ $layanan->fasilitas->kode }} - {{ $layanan->fasilitas->nama }}</td></tr>
                 <tr><th>Kode</th><td>:</td><td>{{ $layanan->kode }}</td></tr>
                 <tr><th>Nama</th><td>:</td><td>{{ $layanan->nama }}</td></tr>
-                <tr><th>Lokasi Tingkat I</th><td>:</td><td>{{ $layanan->LokasiTk1->kode }} - {{ $layanan->LokasiTk1->nama }}</td></tr>
-                <tr><th>Lokasi Tingkat II</th><td>:</td><td>{{ $layanan->LokasiTk2->kode }} - {{ $layanan->LokasiTk2->nama }}</td></tr>
-                <tr><th>Lokasi Tingkat III</th><td>:</td><td>{{ $layanan->LokasiTk3->kode }} - {{ $layanan->LokasiTk3->nama }}</td></tr>
+                <tr><th>Lokasi Tingkat I</th><td>:</td><td>{{ $layanan->lokasiTk1->kode }} - {{ $layanan->lokasiTk1->nama }}</td></tr>
+                <tr><th>Lokasi Tingkat II</th><td>:</td><td>{{ $layanan->lokasiTk2->kode }} - {{ $layanan->lokasiTk2->nama }}</td></tr>
+                <tr><th>Lokasi Tingkat III</th><td>:</td><td>{{ $layanan->lokasiTk3->kode }} - {{ $layanan->lokasiTk3->nama }}</td></tr>
   @if($layanan->kondisi == config('constants.kondisi_layanan.serviceable'))
                 <tr><th>Kondisi Layanan</th><td>:</td><td><span class="badge bg-success">SERVICEABLE</span></td></tr>
   @else
@@ -94,10 +94,14 @@
                       <td><center>{{ strtoupper($satu->peralatan->merk) }}</center></td>
                       <td><center>{{ strtoupper($satu->peralatan->jenis->nama) }}</center></td>
                       <td><center>{{ strtoupper($satu->ip_address) }}</center></td>
-  @if($satu->kondisi == config('constants.kondisi_peralatan_layanan.beroperasi'))
-                      <td><center><span class="badge bg-success">BEROPERASI</span></center></td>
+  @if($satu->kondisi === null)
+                      <td></td>
+  @elseif($satu->kondisi == config('constants.kondisi_peralatan_layanan.beroperasi'))
+                      <td class="text-center"><span class="badge bg-success">BEROPERASI</span></td>
+  @elseif($satu->kondisi == config('constants.kondisi_peralatan_layanan.gangguan'))
+                      <td class="text-center"><span class="badge bg-danger">GANGGUAN</span></td>
   @else
-                      <td><center><span class="badge bg-danger">GANGGUAN</span></center></td>
+                      <td></td>
   @endif
                       <td>
                         <center>
@@ -249,6 +253,12 @@
                 row += "<tr><th>Serial Number</th><td>:</td><td></td></tr>";
             }
 
+            if(data.peralatan.no_aset != null){
+                row += "<tr><th>No. Aset</th><td>:</td><td>"+ data.peralatan.no_aset.toUpperCase(); +"</td></tr>";
+            }else{
+                row += "<tr><th>No. Aset</th><td>:</td><td></td></tr>";
+            }
+
             if(data.peralatan.thn_produksi != null){
                 row += "<tr><th>Tahun Produksi</th><td>:</td><td>"+ data.peralatan.thn_produksi; +"</td></tr>";
             }else{
@@ -278,9 +288,9 @@
             }
 
             if(data.peralatan.status == 1){
-                row += "<tr><th>Status</th><td>:</td><td>AKTIF</td></tr>";
+                row += "<tr><th>Status</th><td>:</td><td><span class='badge bg-success'>AKTIF</span></td></tr>";
             }else{
-                row += "<tr><th>Status</th><td>:</td><td>TIDAK AKTIF</td></tr>";
+                row += "<tr><th>Status</th><td>:</td><td><span class='badge bg-danger'>TIDAK AKTIF</span></td></tr>";
             }
 
             if(data.created_by != null){

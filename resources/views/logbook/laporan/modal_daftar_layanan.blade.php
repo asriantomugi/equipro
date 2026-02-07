@@ -1,38 +1,44 @@
 <table id="layananTable" class="table table-bordered table-striped">
   <thead>
     <tr>
-      <th>NO.</th>
-      <th>KODE</th>
-      <th>NAMA LAYANAN</th>
-      <th>FASILITAS</th>
-      <th>LOKASI T.1</th>
-      <th>LOKASI T.2</th>
-      <th>LOKASI T.3</th>
-      <th>ACTION</th>
+      <th><center>NO</center></th>
+      <th><center>KODE</center></th>
+      <th><center>NAMA LAYANAN</center></th>
+      <th><center>FASILITAS</center></th>
+      <th><center>LOKASI TK 1</center></th>
+      <th><center>LOKASI TK 2</center></th>
+      <th><center>LOKASI TK 3</center></th>
+      <th><center></center></th>
     </tr>
   </thead>
   <tbody>
     @php $no = 1; @endphp
     @forelse($layanan as $item)
     <tr>
-      <td>{{ $no++ }}</td>
-      <td>{{ $item->kode ?? '-' }}</td>
-      <td>{{ $item->nama }}</td>
-      <td>{{ $item->fasilitas->nama ?? '-' }}</td>
-      <td>{{ $item->LokasiTk1->nama ?? '-' }}</td>
-      <td>{{ $item->LokasiTk2->nama ?? '-' }}</td>
-      <td>{{ $item->LokasiTk3->nama ?? '-' }}</td>
-      <td>
-        <a href="{{ url('/logbook/laporan/tambah/step2?layanan_id=' . $item->id) }}" 
-           class="btn btn-sm btn-primary">
-          <i class="fas fa-plus"></i> Pilih
+      <td><center>{{ $no++ }}</center></td>
+      <td><center>{{ $item->kode ?? '-' }}</center></td>
+      <td><center>{{ $item->nama ?? '-' }}</center></td>
+      <td><center>{{ $item->fasilitas->nama ?? '-' }}</center></td>
+      <td><center>{{ $item->lokasiTk1->nama ?? '-' }}</center></td>
+      <td><center>{{ $item->lokasiTk2->nama ?? '-' }}</center></td>
+      <td><center>{{ $item->lokasiTk3->nama ?? '-' }}</center></td>
+      <td><center>
+        <div class="d-flex">
+        <button class="btn btn-secondary btn-sm" 
+                onclick="detail('{{ $item->id }}')"
+                title="Detail">
+                <i class="fas fa-angle-double-right"></i>
+        </button>
+        <a href="{{ route('logbook.laporan.tambah.step2.form', $item->id) }}"
+           class="btn btn-sm btn-primary">Pilih
         </a>
-      </td>
+      </div>
+      </center></td>
     </tr>
     @empty
     <tr>
       <td colspan="8" class="text-center">
-        <em>Tidak ada layanan tersedia. Semua layanan sedang dalam proses laporan.</em>
+        <em>Tidak ada layanan tersedia</em>
       </td>
     </tr>
     @endforelse

@@ -15,23 +15,6 @@ class LogbookModuleController extends Controller
 {
     public function home(Request $request)
     {
-        // ========================= PROSES VERIFIKASI ========================
-        if (!Auth::check()) {
-            return redirect('/login');
-        }
-
-        $status = User::find(session()->get('id'))->status;
-        if ($status != TRUE) {
-            return redirect('/logout');
-        }
-
-        if (session()->get('role_id') != config('constants.role.super_admin') 
-            && session()->get('role_id') != config('constants.role.admin')
-            && session()->get('role_id') != config('constants.role.teknisi')) {
-            return redirect('/');
-        }
-        // ===================== AKHIR PROSES VERIFIKASI =======================
-
         // ===================== KONSTANTA STATUS LAPORAN =======================
         $STATUS_OPEN = config('constants.status_laporan.open', 2);
         $STATUS_CLOSED = config('constants.status_laporan.closed', 3);
@@ -157,7 +140,7 @@ class LogbookModuleController extends Controller
             ->orderBy('fasilitas.nama', 'ASC')
             ->get();
 
-        // ===================== PERHITUNGAN SUMMARY DATA =======================
+        // ================================== PERHITUNGAN SUMMARY DATA =======================================
         $total_laporan = $fasilitas->sum('total_laporan');
         $total_open = $fasilitas->sum('laporan_open');
         $total_close = $fasilitas->sum('laporan_close');

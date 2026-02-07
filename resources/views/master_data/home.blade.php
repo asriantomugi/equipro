@@ -106,7 +106,7 @@
 
                       <div class="info-box-content">
                         <span class="info-box-text">Perusahaan</span>
-                        <span class="info-box-number">{{ $dataChartRoleUser['data'][0] }}</span>
+                        <span class="info-box-number">{{ $dataChartInfo['data'][0] }}</span>
                       </div>
                       <!-- /.info-box-content -->
                     </div>
@@ -116,7 +116,7 @@
 
                       <div class="info-box-content">
                         <span class="info-box-text">Fasilitas</span>
-                        <span class="info-box-number">{{ $dataChartRoleUser['data'][1] }}</span>
+                        <span class="info-box-number">{{ $dataChartInfo['data'][1] }}</span>
                       </div>
                       <!-- /.info-box-content -->
                     </div>
@@ -126,7 +126,7 @@
 
                       <div class="info-box-content">
                         <span class="info-box-text">Jenis Alat</span>
-                        <span class="info-box-number">{{ $dataChartRoleUser['data'][2] }}</span>
+                        <span class="info-box-number">{{ $dataChartInfo['data'][2] }}</span>
                       </div>
                       <!-- /.info-box-content -->
                     </div>
@@ -142,7 +142,7 @@
 
                       <div class="info-box-content">
                         <span class="info-box-text">Lokasi Tingkat I</span>
-                        <span class="info-box-number">{{ $dataChartRoleUser['data'][0] }}</span>
+                        <span class="info-box-number">{{ $dataChartLokasi['data'][0] }}</span>
                       </div>
                       <!-- /.info-box-content -->
                     </div>
@@ -152,7 +152,7 @@
 
                       <div class="info-box-content">
                         <span class="info-box-text">Lokasi Tingkat II</span>
-                        <span class="info-box-number">{{ $dataChartRoleUser['data'][1] }}</span>
+                        <span class="info-box-number">{{ $dataChartLokasi['data'][1] }}</span>
                       </div>
                       <!-- /.info-box-content -->
                     </div>
@@ -162,7 +162,7 @@
 
                       <div class="info-box-content">
                         <span class="info-box-text">Lokasi Tingkat III</span>
-                        <span class="info-box-number">{{ $dataChartRoleUser['data'][2] }}</span>
+                        <span class="info-box-number">{{ $dataChartLokasi['data'][2] }}</span>
                       </div>
                       <!-- /.info-box-content -->
                     </div>

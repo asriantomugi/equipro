@@ -11,6 +11,23 @@
       <div class="container-fluid">
         <!-- Small boxes (Stat box) -->
 
+<!-- pesan error validasi -->
+@if($errors->any())
+        <div class="row">
+          <div class="col-lg-6">
+            <div class="alert alert-danger alert-dismissible">
+                  <button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
+                  <h5><b></b>Kesalahan !</b></h5>
+                  <ul>
+  @foreach ($errors->all() as $error)
+                  <li>{{$error}}</li>
+  @endforeach
+                  </ul>
+                </div>
+          </div>
+        </div>
+@endif
+
         {{-- Step Navigation --}}
         <div class="row mb-2">
             <div class="col-lg-12">
@@ -20,7 +37,7 @@
                             <li class="step-item completed"><a href="#">Data Layanan</a></li>
                             <li class="step-item active"><a href="#">Daftar Peralatan</a></li>
                             <li class="step-item"><a href="#">Review</a></li>
-                            
+                        </ul>      
                     </div>
                 </div>
             </div>
@@ -63,10 +80,14 @@
                       <td><center>{{ strtoupper($satu->peralatan->merk) }}</center></td>
                       <td><center>{{ strtoupper($satu->peralatan->jenis->nama) }}</center></td>
                       <td><center>{{ strtoupper($satu->ip_address) }}</center></td>
-  @if($satu->kondisi == config('constants.kondisi_peralatan_layanan.beroperasi'))
-                      <td><center><span class="badge bg-success">BEROPERASI</span></center></td>
+  @if($satu->kondisi === null)
+                      <td></td>
+  @elseif($satu->kondisi == config('constants.kondisi_peralatan_layanan.beroperasi'))
+                      <td class="text-center"><span class="badge bg-success">BEROPERASI</span></td>
+  @elseif($satu->kondisi == config('constants.kondisi_peralatan_layanan.gangguan'))
+                      <td class="text-center"><span class="badge bg-danger">GANGGUAN</span></td>
   @else
-                      <td><center><span class="badge bg-danger">GANGGUAN</span></center></td>
+                      <td></td>
   @endif
                       <td>
                         <center>
@@ -493,6 +514,12 @@
                   row += "<tr><th>Serial Number</th><td>:</td><td></td></tr>";
               }
 
+              if(data.peralatan.no_aset != null){
+                  row += "<tr><th>No. Aset</th><td>:</td><td>"+ data.peralatan.no_aset.toUpperCase(); +"</td></tr>";
+              }else{
+                  row += "<tr><th>No. Aset</th><td>:</td><td></td></tr>";
+              }
+
               if(data.peralatan.thn_produksi != null){
                   row += "<tr><th>Tahun Produksi</th><td>:</td><td>"+ data.peralatan.thn_produksi; +"</td></tr>";
               }else{
@@ -522,9 +549,9 @@
               }
 
               if(data.peralatan.status == 1){
-                  row += "<tr><th>Status</th><td>:</td><td>AKTIF</td></tr>";
+                  row += "<tr><th>Status</th><td>:</td><td><span class='badge bg-success'>AKTIF</span></td></tr>";
               }else{
-                  row += "<tr><th>Status</th><td>:</td><td>TIDAK AKTIF</td></tr>";
+                  row += "<tr><th>Status</th><td>:</td><td><span class='badge bg-danger'>TIDAK AKTIF</span></td></tr>";
               }
 
               if(data.created_by != null){

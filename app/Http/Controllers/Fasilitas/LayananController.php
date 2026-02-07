@@ -295,6 +295,9 @@ class LayananController extends Controller
         }
         // ===================== END OF CEK DUPLIKASI KODE =====================
 
+        // mulai transaksi ke database
+        DB::beginTransaction();
+
         try{
             // tambah row di tabel layanan
             $layanan = Layanan::create([
@@ -307,9 +310,14 @@ class LayananController extends Controller
                 'status' => config('constants.status_layanan.draft'), // status layanan draft
                 'created_by' => session()->get('id')
             ]);
+
+            // simpan transaksi ke database
+            DB::commit();
         }
         // jika proses tambah gagal
         catch(QueryException $ex){
+            // batalkan semua transaksi ke database
+            DB::rollBack();
             // dd($ex->getMessage());
             // kembali ke halaman daftar dan tampilkan pesan error
             // return redirect('/fasilitas/layanan/daftar')->with('notif', 'tambah_gagal');
@@ -367,7 +375,10 @@ class LayananController extends Controller
             }
         }
         // ===================== END OF CEK DUPLIKASI KODE =====================
-        
+
+        // mulai transaksi ke database
+        DB::beginTransaction();
+
         try{
             // update data layanan di tabel layanan
             Layanan::where('id', $request->id)
@@ -380,9 +391,13 @@ class LayananController extends Controller
                 'lokasi_tk_3_id' => $request->lokasi_tk_3,
                 'updated_by' => session()->get('id')
             ]);
+            // simpan transaksi ke database
+            DB::commit();
         }
         // jika proses update gagal
         catch(QueryException $ex){
+            // batalkan semua transaksi ke database
+            DB::rollBack();
             //dd($ex->getMessage());
             // kembali ke halaman tambah step 1 back dan tampilkan pesan error
             // return redirect('/fasilitas/layanan/tambah/step1/back/'.$layanan->id)->with('notif', 'simpan_gagal');
@@ -453,8 +468,8 @@ class LayananController extends Controller
         ->with('submenu', $submenu)
         ->with('layanan', $layanan)
         ->with('daftar_peralatan', $daftar_peralatan)
-        ->with('daftar_tersedia', $daftar_tersedia)
         ->with('jenis', $jenis)
+        ->with('perusahaan', $perusahaan)
         ;
     }
 
@@ -557,22 +572,30 @@ class LayananController extends Controller
                 ->route('fasilitas.layanan.tambah.step2.form', $layanan->id)
                 ->with('notif', 'peralatan_null');
         }
-        
+
+        // mulai transaksi ke database
+        DB::beginTransaction();
+
         try{
             // update status layanan di tabel layanan
             Layanan::where('id', $request->id)
             ->update([
                 'status' => config('constants.status_layanan.aktif'), // status layanan = aktif
-                'status' => config('constants.kondisi_layanan.serviceable'), // kondisi layanan = serviceable
+                'kondisi' => config('constants.kondisi_layanan.serviceable'), // kondisi layanan = serviceable
                 'updated_by' => session()->get('id')
             ]);
 
             // update data peralatan dari yang baru ditambahkan
             $daftar_peralatan_id = DaftarPeralatanLayanan::where('layanan_id', $request->id)
                 ->update(['kondisi' => config('constants.kondisi_peralatan_layanan.beroperasi')]); // kondisi beroperasi
+            
+            // simpan transaksi ke database
+            DB::commit();
         }
         // jika proses update gagal
         catch(QueryException $ex){
+            // batalkan semua transaksi ke database
+            DB::rollBack();
             //dd($ex->getMessage());
             // kembali ke halaman daftar dan tampilkan pesan error
             // return redirect('/fasilitas/layanan/tambah/step3/'.$layanan->id)->with('notif', 'tambah_gagal');
@@ -618,6 +641,9 @@ class LayananController extends Controller
                 ->route('fasilitas.layanan.daftar')
                 ->with('notif', 'item_null');
         }
+
+        // mulai transaksi ke database
+        DB::beginTransaction();
         
         try{
             // Ambil semua ID peralatan dari tabel daftar_peralatan_layanan berdasarkan layanan_id
@@ -635,9 +661,14 @@ class LayananController extends Controller
             // hapus layanan dari tabel layanan
             Layanan::where('id', $request->id)
                 ->delete();
+
+            // simpan transaksi ke database
+            DB::commit();
         }
         // jika proses update gagal
         catch(QueryException $ex){
+            // batalkan semua transaksi ke database
+            DB::rollBack();
             //dd($ex->getMessage());
             // kembali ke halaman daftar dan tampilkan pesan error
             // return redirect('/fasilitas/layanan/daftar')->with('notif', 'hapus_gagal');
@@ -803,6 +834,9 @@ class LayananController extends Controller
         }
         // ===================== END OF CEK DUPLIKASI KODE =====================
         
+        // mulai transaksi ke database
+        DB::beginTransaction();
+
         try{
             // update data layanan di tabel layanan
             Layanan::where('id', $request->id)
@@ -815,9 +849,14 @@ class LayananController extends Controller
                 'status' => $request->status,
                 'updated_by' => session()->get('id')
             ]);
+
+            // simpan transaksi ke database
+            DB::commit();
         }
         // jika proses update gagal
         catch(QueryException $ex){
+             // batalkan semua transaksi ke database
+            DB::rollBack();
             // dd($ex->getMessage());
             // kembali ke halaman edit step 1 dan tampilkan pesan error
             // return redirect('/fasilitas/layanan/edit/step1/'.$layanan->id)->with('notif', 'simpan_gagal');
@@ -1058,17 +1097,22 @@ class LayananController extends Controller
      */
     public function tambahPeralatan(Request $request)
     {
-        $validasi = $request->validate([
-            'layanan_id' => 'required|exists:layanan,id',
-            'peralatan_id' => 'required|exists:peralatan,id',
-        ]);
+        // cek apakah peralatan ada
+        $peralatan = Peralatan::find($request->peralatan_id);
+        if ($peralatan == null) {
+           // kirim pesan gagal melalui JSON
+           return response()->json(['success' => false, 'reason' => 'Peralatan tidak terdaftar'], 400);
+        }
 
         // cek apakah status peralatan aktif
-        $status = Peralatan::find($request->peralatan_id)->status;
+        $status = $peralatan->status;
         if (!$status || $status == 0) {
            // kirim pesan gagal melalui JSON
            return response()->json(['success' => false, 'reason' => 'Peralatan tidak aktif'], 400);
         }
+
+        // mulai transaksi ke database
+        DB::beginTransaction();
         
         try{
             // tambah row di tabel daftar peralatan layanan
@@ -1085,9 +1129,14 @@ class LayananController extends Controller
                 'flag_layanan' => 1, // peralatan diberi tanda bahwa sedang terpasang di layanan
                 'updated_by' => session()->get('id')
             ]);
+
+            // simpan transaksi ke database
+            DB::commit();
         }
         // jika proses tambah gagal
         catch(QueryException $ex){
+             // batalkan semua transaksi ke database
+            DB::rollBack();
             // kirim pesan error ke file storage/logs/laravel.log
             // \Log::error('Gagal tambah peralatan ke layanan: '.$ex->getMessage());
             // kirim pesan gagal melalui JSON
@@ -1114,17 +1163,22 @@ class LayananController extends Controller
      */
     public function editTambahPeralatan(Request $request)
     {
-        $validasi = $request->validate([
-            'layanan_id' => 'required|exists:layanan,id',
-            'peralatan_id' => 'required|exists:peralatan,id',
-        ]);
+        // cek apakah peralatan ada
+        $peralatan = Peralatan::find($request->peralatan_id);
+        if ($peralatan == null) {
+           // kirim pesan gagal melalui JSON
+           return response()->json(['success' => false, 'reason' => 'Peralatan tidak terdaftar'], 400);
+        }
 
         // cek apakah status peralatan aktif
-        $status = Peralatan::find($request->peralatan_id)->status;
+        $status = $peralatan->status;
         if (!$status || $status == 0) {
            // kirim pesan gagal melalui JSON
            return response()->json(['success' => false, 'reason' => 'Peralatan tidak aktif'], 400);
         }
+
+        // mulai transaksi ke database
+        DB::beginTransaction();
         
         try{
             // tambah row di tabel daftar peralatan layanan
@@ -1141,9 +1195,14 @@ class LayananController extends Controller
                 'flag_layanan' => 1, // peralatan diberi tanda bahwa sedang terpasang di layanan
                 'updated_by' => session()->get('id')
             ]);
+
+            // simpan transaksi ke database
+            DB::commit();
         }
         // jika proses tambah gagal
         catch(QueryException $ex){
+            // batalkan semua transaksi ke database
+            DB::rollBack();
             // kirim pesan error ke file storage/logs/laravel.log
             // \Log::error('Gagal tambah peralatan ke layanan: '.$ex->getMessage());
             // kirim pesan gagal melalui JSON
@@ -1192,6 +1251,9 @@ class LayananController extends Controller
              return redirect()->back()->with('notif', 'item_null')->withInput();
         }
 
+        // mulai transaksi ke database
+        DB::beginTransaction();
+
         try{
             // hapus data peralatan di tabel daftar peralatan layanan
             DaftarPeralatanLayanan::where('layanan_id', $request->layanan_id)
@@ -1204,9 +1266,14 @@ class LayananController extends Controller
                 'flag_layanan' => 0, // peralatan sedang tidak terpasang pada layanan
                 'updated_by' => session()->get('id')
             ]);
+
+            // simpan transaksi ke database
+            DB::commit();
         }
         // jika proses update gagal
         catch(QueryException $ex){
+            // batalkan semua transaksi ke database
+            DB::rollBack();
             //dd($ex->getMessage());
             // kembali ke halaman daftar dan tampilkan pesan error
             return redirect()->back()->with('notif', 'hapus_gagal');
@@ -1244,6 +1311,9 @@ class LayananController extends Controller
             return redirect()->back()->with('notif', 'item_null');
         }
 
+        // mulai transaksi ke database
+        DB::beginTransaction();
+
         try{
             // update data peralatan di tabel peralatan layanan
             DaftarPeralatanLayanan::where('id', $request->id)
@@ -1251,9 +1321,13 @@ class LayananController extends Controller
                 'ip_address' => $request->ip_address,
                 'updated_by' => session()->get('id')
             ]);
+            // simpan transaksi ke database
+            DB::commit();
         }
         // jika proses update gagal
         catch(QueryException $ex){
+            // batalkan semua transaksi ke database
+            DB::rollBack();
             // kembali ke halaman daftar dan tampilkan pesan error
             return redirect()->back()->with('notif', 'edit_gagal');
         }
