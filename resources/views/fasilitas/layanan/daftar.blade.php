@@ -98,10 +98,10 @@
                             name="status"
                             id="status">
                       <option value="" >- ALL -</option>
-                      <option value="" @if($kondisi === null || $kondisi === '') selected @endif>- ALL -</option>
-                      <option value="2" @if($kondisi === 1) selected @endif>DRAFT</option>
-                      <option value="1" @if($kondisi === 0) selected @endif>AKTIF</option>
-                      <option value="0" @if($kondisi === 0) selected @endif>TIDAK AKTIF</option>
+                      <option value="" @if($status === null || $status === '') selected @endif>- ALL -</option>
+                      <option value="2" @if($status === 1) selected @endif>DRAFT</option>
+                      <option value="1" @if($status === 0) selected @endif>AKTIF</option>
+                      <option value="0" @if($status === 0) selected @endif>TIDAK AKTIF</option>
                     </select>
                   </div>
 
@@ -435,10 +435,12 @@
               row += "<td><center>"+ satu.peralatan.jenis.nama.toUpperCase() +"</center></td>";
               row += "<td><center>"+ (satu.ip_address ?? '-') +"</center></td>";
 
-            if (satu.kondisi == 1) {
-              row += "<td><center><span class='badge bg-success'>BEROPERASI</span></center></td>";
-            } else if (satu.kondisi == 0) {
-              row += "<td><center><span class='badge bg-danger'>GANGGUAN</span></center></td>";
+            if (satu.peralatan.kondisi == 1) {
+              row += "<td><center><span class='badge bg-success'>NORMAL</span></center></td>";
+            } else if (satu.peralatan.kondisi == 2) {
+              row += "<td><center><span class='badge bg-warning'>NORMAL SEBAGIAN</span></center></td>";
+            } else if (satu.peralatan.kondisi == 3) {
+              row += "<td><center><span class='badge bg-danger'>RUSAK</span></center></td>";
             } else {
               row += "<td></td>";
             }

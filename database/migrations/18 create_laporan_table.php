@@ -21,7 +21,12 @@ return new class extends Migration
             $table->bigInteger('layanan_id');
             $table->integer('jenis');   
             $table->integer('status');
-            $table->boolean('kondisi_layanan_temp');
+            $table->integer('status_temp')->nullable();
+            $table->boolean('kondisi_layanan_open');
+            $table->boolean('kondisi_layanan_close')->nullable();
+            $table->boolean('kondisi_layanan_temp')->nullable();
+            $table->datetime('waktu_open');
+            $table->datetime('waktu_close')->nullable();
             $table->bigInteger('created_by')->nullable();
             $table->bigInteger('updated_by')->nullable();
             $table->timestamps();

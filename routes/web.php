@@ -852,6 +852,22 @@ Route::prefix('/logbook')->name('logbook.')
      */
     Route::post('/laporan/tambah/step3', [LaporanController::class, 'tambahStep3'])->name('laporan.tambah.step3');
 
+    /**
+     * Menampilkan daftar peralatan tersedia pada form penggantian peralatan
+     * berdasarkan pilihan filter.
+     * Method: POST
+     * Name: logbook.laporan.peralatan.filter
+     * URL: /logbook/laporan/peralatan/filter
+     */
+    Route::post('/laporan/peralatan/filter', [LaporanController::class, 'peralatanFilter'])->name('laporan.peralatan.filter');
+
+    /**
+     * Memproses penambahan peralatan baru pada form penggantian peralatan
+     * Method: POST
+     * Name: logbook.laporan.tambah.step3.peralatan.tambah
+     * URL: /logbook/laporan/tambah/step3/peralatan/tambah
+     */
+    Route::post('/laporan/tambah/step3/peralatan/tambah', [LaporanController::class, 'tambahStep3Peralatan'])->name('laporan.tambah.step3.peralatan.tambah');
 
 });
 
@@ -897,7 +913,7 @@ Route::get('/logbook/laporan/tambah/step4/{laporan_id}', [LaporanController::cla
 Route::post('/logbook/laporan/tambah/step4/{laporan_id}/simpan', [LaporanController::class, 'simpanStep4'])->name('tambah.simpanStep4')->middleware(['role:super_admin,admin,teknisi']);
 
 // Step 4 - Filter peralatan pengganti
-Route::post('/logbook/laporan/peralatan/filter', [LaporanController::class, 'filterPeralatanPengganti'])->name('laporan.filterPeralatan')->middleware(['role:super_admin,admin,teknisi']);
+//Route::post('/logbook/laporan/peralatan/filter', [LaporanController::class, 'filterPeralatanPengganti'])->name('laporan.filterPeralatan')->middleware(['role:super_admin,admin,teknisi']);
 
 // Menampilkan form Step 4 saat kembali dari Step 5
 Route::get('/logbook/laporan/tambah/step4/back/{laporan_id}', [LaporanController::class, 'formStep4Back'])->name('tambah.step4.back')->middleware(['role:super_admin,admin,teknisi']);

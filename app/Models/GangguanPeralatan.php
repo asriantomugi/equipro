@@ -48,6 +48,22 @@ class GangguanPeralatan extends Model
     }
 
     /**
+     * Relasi ke tindaklanjut gangguan peralatan
+     */
+    public function tlGangguanPeralatan()
+    {
+        return $this->hasMany(TlGangguanPeralatan::class, 'gangguan_id');
+    }
+
+    /**
+     * Relasi ke tindaklanjut penggantian peralatan
+     */
+    public function tlPenggantianPeralatan()
+    {
+        return $this->hasOne(TlGangguanPeralatan::class, 'gangguan_id');
+    }
+
+    /**
      * Function untuk memanggil user created_by.
      */
     public function getCreatedName()

@@ -21,58 +21,40 @@ return [
 
     // konstanta untuk kondisi peralatan
     'kondisi_peralatan' => [
-        'normal' => TRUE,
-        'rusak' => FALSE,
+        'normal' => 1, // NORMAL
+        'normal_sebagian' => 2, // NORMAL SEBAGIAN
+        'rusak' => 0, // RUSAK
     ],
 
     // konstanta untuk status histori gangguan peralatan
     'status_histori_gangguan_peralatan' => [
-        'close' => TRUE,
-        'open' => FALSE,
+        'close' => 1, // TRUE
+        'open' => 0, // FALSE
     ],
 
     // konstanta untuk kondisi layanan
     'kondisi_layanan' => [
-        'serviceable' => 1,
-        'conditional_serviceable' => 2,
-        'unserviceable' => 3,
+        'serviceable' => 1, // TRUE
+        'unserviceable' => 0, // FALSE
     ],
 
     // konstanta untuk status layanan
     'status_layanan' => [
-        'tidak_aktif' => 0,
-        'aktif' => 1,
-        'draft' => 2,
-    ],
-
-    // konstanta untuk kondisi peralatan di layanan
-    'kondisi_peralatan_layanan' => [
-        'beroperasi' => TRUE,
-        'gangguan' => FALSE,
+        'tidak_aktif' => 0, // TIDAK AKTIF
+        'aktif' => 1, // AKTIF
+        'draft' => 2, // DRAFT
     ],
 
     // konstanta untuk status histori gangguan layanan
     'status_histori_gangguan_layanan' => [
-        'close' => TRUE,
-        'open' => FALSE,
+        'close' => 1, // TRUE
+        'open' => 0, // FALSE
     ],
 
     // konstanta untuk jenis laporan
     'jenis_laporan' => [
         'gangguan_peralatan' => 1,
         'gangguan_non_peralatan' => 2,
-    ],
-
-    // konstanta untuk kondisi gangguan peralatan 
-    'kondisi_gangguan' => [
-        'beroperasi' => 1,
-        'gangguan' => 0,
-    ],
-
-    // konstanta untuk kondisi tindaklanjut peralatan
-    'kondisi_tindaklanjut' => [
-        'beroperasi' => 1,
-        'gangguan' => 0,
     ],
 
     // konstanta untuk jenis tindaklanjut gangguan peralatan
@@ -88,8 +70,8 @@ return [
 
     //konstanta untuk status laporan
     'status_laporan' => [
-        'draft'  => 1,
-        'open'   => 2,
-        'closed' => 3,
+        'open'   => 0,
+        'close' => 1,
+        'draft'  => 2,
     ],
 ];

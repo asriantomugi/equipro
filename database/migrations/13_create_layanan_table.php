@@ -23,7 +23,7 @@ return new class extends Migration
             $table->bigInteger('lokasi_tk_1_id');
             $table->bigInteger('lokasi_tk_2_id');
             $table->bigInteger('lokasi_tk_3_id');
-            $table->boolean('kondisi')->nullable();
+            $table->boolean('kondisi');
             $table->integer('status');
             $table->bigInteger('created_by')->nullable();
             $table->bigInteger('updated_by')->nullable();

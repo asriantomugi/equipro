@@ -80,12 +80,14 @@
                       <td><center>{{ strtoupper($satu->peralatan->merk) }}</center></td>
                       <td><center>{{ strtoupper($satu->peralatan->jenis->nama) }}</center></td>
                       <td><center>{{ strtoupper($satu->ip_address) }}</center></td>
-  @if($satu->kondisi === null)
+  @if($satu->peralatan->kondisi === null)
                       <td></td>
-  @elseif($satu->kondisi == config('constants.kondisi_peralatan_layanan.beroperasi'))
-                      <td class="text-center"><span class="badge bg-success">BEROPERASI</span></td>
-  @elseif($satu->kondisi == config('constants.kondisi_peralatan_layanan.gangguan'))
-                      <td class="text-center"><span class="badge bg-danger">GANGGUAN</span></td>
+  @elseif($satu->peralatan->kondisi == config('constants.kondisi_peralatan.normal'))
+                      <td class="text-center"><span class="badge bg-success">NORMAL</span></td>
+  @elseif($satu->peralatan->kondisi == config('constants.kondisi_peralatan.normal_sebagian'))
+                      <td class="text-center"><span class="badge bg-warning">NORMAL SEBAGIAN</span></td>
+  @elseif($satu->peralatan->kondisi == config('constants.kondisi_peralatan.rusak'))
+                      <td class="text-center"><span class="badge bg-danger">RUSAK</span></td>
   @else
                       <td></td>
   @endif
@@ -711,7 +713,20 @@
                   html += '<div class="col-sm-9">';
                   html += '<select name="kondisi" class="form-control" required>';
                   html += '<option value="1" selected>BEROPERASI</option>';
-                  html += '<option value="0">GANGGUAN</option>';
+                  html += '<option value="2">BEROPERASI SEBAGIAN</option>';
+                  html += '<option value="3">GANGGUAN</option>';
+                  html += '</select>';
+                  html += '<div class="invalid-feedback">Kondisi wajib dipilih.</div>';
+                  html += '</div>';
+                  html += '</div>';
+              }else if(data.satuPeralatan.kondisi == 2){
+                  html += '<div class="form-group row">';
+                  html += '<label class="col-sm-3 col-form-label required">Kondisi</label>';
+                  html += '<div class="col-sm-9">';
+                  html += '<select name="kondisi" class="form-control" required>';
+                  html += '<option value="1">BEROPERASI</option>';
+                  html += '<option value="2" selected>BEROPERASI SEBAGIAN</option>';
+                  html += '<option value="3">GANGGUAN</option>';
                   html += '</select>';
                   html += '<div class="invalid-feedback">Kondisi wajib dipilih.</div>';
                   html += '</div>';
@@ -722,7 +737,8 @@
                   html += '<div class="col-sm-9">';
                   html += '<select name="kondisi" class="form-control" required>';
                   html += '<option value="1">BEROPERASI</option>';
-                  html += '<option value="0" selected>GANGGUAN</option>';
+                  html += '<option value="2">BEROPERASI SEBAGIAN</option>';
+                  html += '<option value="3" selected>GANGGUAN</option>';
                   html += '</select>';
                   html += '<div class="invalid-feedback">Kondisi wajib dipilih.</div>';
                   html += '</div>';

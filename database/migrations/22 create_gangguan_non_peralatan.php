@@ -20,7 +20,7 @@ return new class extends Migration
             $table->bigInteger('laporan_id');
             $table->bigInteger('layanan_id');
             $table->string('deskripsi')->nullable();
-            $table->date('tanggal_gangguan')->nullable();
+            $table->datetime('waktu');
             $table->bigInteger('created_by')->nullable();
             $table->bigInteger('updated_by')->nullable();
             $table->timestamps();

@@ -93,12 +93,14 @@
                       <td><center>{{ strtoupper($satu->peralatan->model) }}</center></td>
                       <td><center>{{ strtoupper($satu->peralatan->serial_number) }}</center></td>
                       <td><center>{{ strtoupper($satu->ip_address) }}</center></td>
-  @if($satu->kondisi === null)
+  @if($satu->peralatan->kondisi === null)
                       <td></td>
-  @elseif($satu->kondisi == config('constants.kondisi_peralatan_layanan.beroperasi'))
-                      <td class="text-center"><span class="badge bg-success">BEROPERASI</span></td>
-  @elseif($satu->kondisi == config('constants.kondisi_peralatan_layanan.gangguan'))
-                      <td class="text-center"><span class="badge bg-danger">GANGGUAN</span></td>
+  @elseif($satu->peralatan->kondisi == config('constants.kondisi_peralatan.normal'))
+                      <td class="text-center"><span class="badge bg-success">NORMAL</span></td>
+  @elseif($satu->peralatan->kondisi == config('constants.kondisi_peralatan.normal_sebagian'))
+                      <td class="text-center"><span class="badge bg-warning">NORMAL SEBAGIAN</span></td>                      
+  @elseif($satu->peralatan->kondisi == config('constants.kondisi_peralatan.rusak'))
+                      <td class="text-center"><span class="badge bg-danger">RUSAK</span></td>
   @else
                       <td></td>
   @endif

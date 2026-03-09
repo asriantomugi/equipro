@@ -31,7 +31,7 @@
         <!-- pesan error validasi -->
 @if($errors->any())
         <div class="row">
-          <div class="col-lg-6">
+          <div class="col-lg-12">
             <div class="alert alert-danger alert-dismissible">
                   <button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
                   <h5><b></b>Kesalahan !</b></h5>
@@ -113,12 +113,14 @@
                       <td><center>{{ strtoupper($satu->peralatan->merk) }}</center></td>
                       <td><center>{{ strtoupper($satu->peralatan->jenis->nama) }}</center></td>
                       <td><center>{{ strtoupper($satu->ip_address) }}</center></td>
-  @if($satu->kondisi === null)
+  @if($satu->peralatan->kondisi === null)
                       <td></td>
-  @elseif($satu->kondisi == config('constants.kondisi_peralatan_layanan.beroperasi'))
-                      <td class="text-center"><span class="badge bg-success">BEROPERASI</span></td>
-  @elseif($satu->kondisi == config('constants.kondisi_peralatan_layanan.gangguan'))
-                      <td class="text-center"><span class="badge bg-danger">GANGGUAN</span></td>
+  @elseif($satu->peralatan->kondisi == config('constants.kondisi_peralatan.normal'))
+                      <td class="text-center"><span class="badge bg-success">NORMAL</span></td>
+    @elseif($satu->peralatan->kondisi == config('constants.kondisi_peralatan.normal_sebagian'))
+                      <td class="text-center"><span class="badge bg-warning">NORMAL SEBAGIAN</span></td>
+  @elseif($satu->peralatan->kondisi == config('constants.kondisi_peralatan.rusak'))
+                      <td class="text-center"><span class="badge bg-danger">RUSAK</span></td>
   @else
                       <td></td>
   @endif
@@ -174,7 +176,7 @@
                                 <option value="1">GANGGUAN PERALATAN</option>
                                 <option value="2">GANGGUAN NON PERALATAN</option>
                             </select>
-                            <div class="invalid-feedback">Jenis Laporan wajib dipilih.</div>
+                            <div class="invalid-feedback">Wajib dipilih</div>
                         </div>
                     </div>
 
@@ -236,11 +238,11 @@
 <!-- javascript untuk pop up notifikasi -->
 <script type="text/javascript">
   @if (session()->has('notif'))
-    @if (session()->get('notif') == 'simpan_gagal')
+    @if (session()->get('notif') == 'tambah_gagal')
       $(document).Toasts('create', {
           class: 'bg-danger',
           title: 'Error!',
-          body: 'Gagal menyimpan laporan.',
+          body: 'Gagal menambahkan laporan baru.',
           autohide: true,
           delay: 3000
         })
@@ -259,30 +261,141 @@
 <!-- Javascript untuk menampilkan pilihan form berdasarkan jenis laporan -->
 <script type="text/javascript">
     document.addEventListener('DOMContentLoaded', function () {
+
         const formJenis = document.getElementById('formJenis');
         const formGangguan = document.getElementById('formGangguan');
-        // ambil variable daftar peralatan
+        // ambil variable dari controller
         const daftarPeralatan = @json($daftar_peralatan);
         // ambil variable dari constants.php
-        const JENIS_GANGGUAN_PERALATAN = {{ config('constants.jenis_laporan.gangguan_peralatan') }};
-        const JENIS_GANGGUAN_NON_PERALATAN = {{ config('constants.jenis_laporan.gangguan_non_peralatan') }};
-        const KONDISI_GANGGUAN = @json(config('constants.kondisi_gangguan'));
-        const KONDISI_TINDAKLANJUT = @json(config('constants.kondisi_tindaklanjut'));
-        const JENIS_TINDAKLANJUT_PERALATAN = @json(config('constants.jenis_tindaklanjut_gangguan_peralatan'));
-        const JENIS_TINDAKLANJUT_NONPERALATAN = @json(config('constants.jenis_tindaklanjut_gangguan_non_peralatan'));
-        const KONDISI_LAYANAN = @json(config('constants.kondisi_layanan'));
+        const JENIS = {
+            PERALATAN: {{ config('constants.jenis_laporan.gangguan_peralatan') }},
+            NON: {{ config('constants.jenis_laporan.gangguan_non_peralatan') }}
+        };
 
-        // proses ketika terjadi perubahan value di dropdown jenis laporan
+        const KONDISI_PERALATAN = @json(config('constants.kondisi_peralatan'));
+        const KONDISI_LAYANAN = @json(config('constants.kondisi_layanan'));
+        const STATUS_LAPORAN = @json(config('constants.status_laporan'));
+        const JENIS_TINDAKLANJUT_PERALATAN = @json(config('constants.jenis_tindaklanjut_gangguan_peralatan'));
+        const JENIS_TINDAKLANJUT_NON = @json(config('constants.jenis_tindaklanjut_gangguan_non_peralatan'));
+       
+        // ==============================================================
+        //                        FUNCTION UMUM
+        // ==============================================================
+        function show(el, status) {
+            if (!el) return;
+            el.style.display = status ? 'block' : 'none';
+        }
+
+        function toggleRequired(container, status, className) {
+            if (!container) return;
+
+            container.querySelectorAll('.' + className).forEach(el => {
+                el.disabled = !status;
+                el.required = status;
+
+                if (!status){
+                    el.value = '';
+                    el.classList.remove('is-invalid');
+                }
+            });
+        }
+
+        function showKondisiLayanan(status) {
+            const dropdown = document.getElementById('dropdown_kondisi');
+            if (!dropdown) return;
+
+            dropdown.style.display = status ? 'block' : 'none';
+
+            dropdown.querySelectorAll('select').forEach(el => {
+                el.required = status;
+                el.disabled = !status;
+
+                if (!status) {
+                    el.value = '';
+                    el.classList.remove('is-invalid');
+                }
+            });
+        }
+
+        function initDateTimePeralatan(id) {
+            if (!$('#datetime_gangguan_' + id).data('datetimepicker')) {
+                $('#datetime_gangguan_' + id).datetimepicker({
+                    format: 'DD-MM-YYYY HH:mm',
+                    icons: { time: 'far fa-clock' }
+                });
+            }
+
+            if (!$('#datetime_mulai_perbaikan_' + id).data('datetimepicker')) {
+                $('#datetime_mulai_perbaikan_' + id).datetimepicker({
+                    format: 'DD-MM-YYYY HH:mm',
+                    icons: { time: 'far fa-clock' }
+                });
+            }
+
+            if (!$('#datetime_selesai_perbaikan_' + id).data('datetimepicker')) {
+                $('#datetime_selesai_perbaikan_' + id).datetimepicker({
+                    format: 'DD-MM-YYYY HH:mm',
+                    icons: { time: 'far fa-clock' }
+                });
+            }
+
+            if (!$('#datetime_mulai_penggantian_' + id).data('datetimepicker')) {
+                $('#datetime_mulai_penggantian_' + id).datetimepicker({
+                    format: 'DD-MM-YYYY HH:mm',
+                    icons: { time: 'far fa-clock' }
+                });
+            }
+
+            if (!$('#datetime_selesai_penggantian_' + id).data('datetimepicker')) {
+                $('#datetime_selesai_penggantian_' + id).datetimepicker({
+                    format: 'DD-MM-YYYY HH:mm',
+                    icons: { time: 'far fa-clock' }
+                });
+            }
+        }
+
+        function initDateTimeNonPeralatan() {
+            if (!$('#datetime_nonperalatan').data('datetimepicker')) {
+                $('#datetime_nonperalatan').datetimepicker({
+                    format: 'DD-MM-YYYY HH:mm',
+                    icons: { time: 'far fa-clock' }
+                });
+            }
+
+            if (!$('#datetime_mulai_perbaikan').data('datetimepicker')) {
+                $('#datetime_mulai_perbaikan').datetimepicker({
+                    format: 'DD-MM-YYYY HH:mm',
+                    icons: { time: 'far fa-clock' }
+                });
+            }
+
+            if (!$('#datetime_selesai_perbaikan').data('datetimepicker')) {
+                $('#datetime_selesai_perbaikan').datetimepicker({
+                    format: 'DD-MM-YYYY HH:mm',
+                    icons: { time: 'far fa-clock' }
+                });
+            }
+        }
+        // ===============================================================
+        //                       END OF FUNCTION UMUM
+        // ===============================================================
+
+        // ===============================================================
+        // FUNCTION UNTUK MENAMPILKAN FORM INPUT GANGGUAN DAN TINDAKLANJUT
+        // ===============================================================
+        /** 
+         * Javascript untuk menampilkan form input gangguan berdasarkan jenis laporan.
+         * Saat jenis laporan dipilih GANGGUAN PERALATAN, maka akan tampil form input gangguan peralatan.
+         * Saat jenis laporan dipilih GANGGUAN NON PERALATAN, maka akan tampil form input gangguan non peralatan.
+         */
+
         formJenis.addEventListener('change', function () {
             // ambil value dari dropdown jenis laporan
-            const jenis = formJenis.value;
+            const jenis = this.value;
             let html = '';
 
             // jika jenis laporan = 1 (gangguan peralatan)
-            if (jenis == JENIS_GANGGUAN_PERALATAN) {
-
-                // input jenis laporan gangguan peralatan
-                html += '<input type="hidden" name="jenis"  value="'+ jenis +'">';
+            if (jenis == JENIS.PERALATAN) {
 
                 // LOOP daftar peralatan
                 daftarPeralatan.forEach(function (alat, index) {
@@ -293,60 +406,74 @@
                     const mulaiPenggantianPickerId = 'datetime_mulai_penggantian_' + index;
                     const selesaiPenggantianPickerId = 'datetime_selesai_penggantian_' + index;
 
-                    // form input gangguan non peralatan
-                    html += '<input type="hidden" name="peralatan_id[]"  value="'+ alat.id +'">';
-                    
+                    // =========================== FORM DATA PERALATAN ======================================
+                    html += '<input type="hidden" name="peralatan['+ index +'][peralatan_id]" value="'+ alat.peralatan.id +'">';
+                    html += '<input type="hidden" name="peralatan['+ index +'][kondisi_awal]" value="'+ alat.peralatan.kondisi +'">';
+
                     html += '<div class="form-group row">';
                     html += '<label class="col-sm-3 col-form-label">Kode</label>';
                     html += '<div class="col-sm-6">';
-                    html += '<input type="text" name="kode" class="form-control" value="'+ alat.peralatan.kode +'" readonly>';
+                    html += '<input type="text" name="" class="form-control" value="'+ alat.peralatan.kode +'" readonly>';
                     html += '</div></div>';
 
                     html += '<div class="form-group row">';
                     html += '<label class="col-sm-3 col-form-label">Nama</label>';
                     html += '<div class="col-sm-6">';
-                    html += '<input type="text" name="nama" class="form-control" value="'+ alat.peralatan.nama +'" readonly>';
+                    html += '<input type="text" name="" class="form-control" value="'+ alat.peralatan.nama +'" readonly>';
                     html += '</div></div>';
 
                     html += '<div class="form-group row">';
                     html += '<label class="col-sm-3 col-form-label">Merk</label>';
                     html += '<div class="col-sm-6">';
-                    html += '<input type="text" name="merk" class="form-control" value="'+ alat.peralatan.merk +'" readonly>';
+                    html += '<input type="text" name="" class="form-control" value="'+ alat.peralatan.merk +'" readonly>';
                     html += '</div></div>';
 
                     html += '<div class="form-group row">';
                     html += '<label class="col-sm-3 col-form-label">Jenis Alat</label>';
                     html += '<div class="col-sm-6">';
-                    html += '<input type="text" name="jenis_alat" class="form-control" value="'+ alat.peralatan.jenis.nama +'" readonly>';
+                    html += '<input type="text" name="" class="form-control" value="'+ alat.peralatan.jenis.nama +'" readonly>';
                     html += '</div></div>';
 
                     html += '<div class="form-group row">';
                     html += '<label class="col-sm-3 col-form-label">IP Address</label>';
                     html += '<div class="col-sm-6">';
                     if(alat.ip_address != null){
-                        html += '<input type="text" name="ip_address" class="form-control" value="'+ alat.ip_address +'" readonly>';
+                        html += '<input type="text" name="" class="form-control" value="'+ alat.ip_address +'" readonly>';
                     }else{
-                        html += '<input type="text" name="ip_address" class="form-control" value="" readonly>';
+                        html += '<input type="text" name="" class="form-control" value="" readonly>';
                     }
                     html += '</div></div>';
 
-                    html += '<div class="form-group row">';
-                    html += '<label class="col-sm-3 col-form-label required">Kondisi Peralatan</label>';
-                    html += '<div class="col-sm-6">';
-                    html += '<select name="kondisi[]" class="form-control kondisi-peralatan" data-index="'+ index +'">';
-                    html += `<option value="${ KONDISI_GANGGUAN.beroperasi }">BEROPERASI</option>`;
-                    html += `<option value="${ KONDISI_GANGGUAN.gangguan }">GANGGUAN</option>`;
-                    html += '</select>';
-                    html += '</div></div>';
+                    // tampilkan tombol input gangguan hanya saja jika peralatan normal atau normal sebagian
+                    if(alat.peralatan.kondisi == KONDISI_PERALATAN.rusak){
+                        html += '<div class="form-group row">';
+                        html += '<div class="col-sm-3"></div>';
+                        html += '<div class="col-sm-6">';
+                        html += '<span class="badge bg-danger">RUSAK</span>';
+                        html += '</div></div>';
+                    }else{
+                        html += '<div class="form-group row">';
+                        html += '<div class="col-sm-3"></div>';
+                        html += '<div class="col-sm-6">';
+                        html += '<button type="button" class="btn btn-success btn-sm btn-input-gangguan" data-index="'+index+'">';
+                        html += 'Input Gangguan &nbsp;&nbsp;&nbsp;<i class="fas fa-angle-down"></i>';
+                        html += '</button>';
+                        html += '</div></div>';
+                    }
 
-                    // form untuk menampilkan waktu gangguan dan deskripsi gangguan
+                    // =========================== END OF FORM DATA PERALATAN =================================
+
+                    // ============================= FORM INPUT GANGGUAN ======================================
                     html += '<div class="form-gangguan-peralatan" id="gangguan_'+ index +'" style="display:none">';
+                    
+                    // kirim penanda bahwa gangguan diisi di peralatan ini, nilai akan berubah jadi 1 saat tombol Input Gangguan diklik
+                    html += '<input type="hidden" id="flag_gangguan_'+ index +'" name="peralatan['+ index +'][flag_gangguan]" value="0">';
 
                     html += '<div class="form-group row">';
                     html += '<label class="col-sm-3 col-form-label required">Waktu Gangguan</label>';
                     html += '<div class="col-sm-6">';
                     html += '<div class="input-group date" id="'+ gangguanPickerId +'" data-target-input="nearest">';
-                    html += '<input type="text" name="waktu_gangguan[]" class="form-control datetimepicker-input gangguan-required" data-target="#'+gangguanPickerId+'"/>';
+                    html += '<input type="text" name="peralatan['+ index +'][waktu_gangguan]" class="form-control datetimepicker-input gangguan-required" data-target="#'+gangguanPickerId+'" disabled/>';
                     html += '<div class="input-group-append" data-target="#'+ gangguanPickerId +'" data-toggle="datetimepicker">';
                     html += '<div class="input-group-text"><i class="fa fa-calendar"></i></div>';
                     html += '</div></div></div></div>';
@@ -354,43 +481,62 @@
                     html += '<div class="form-group row">';
                     html += '<label class="col-sm-3 col-form-label required">Deskripsi Gangguan</label>';
                     html += '<div class="col-sm-6">';
-                    html += '<textarea class="form-control gangguan-required" rows="5" name="deskripsi_gangguan[]" placeholder=""></textarea>';
+                    html += '<textarea class="form-control gangguan-required" rows="5" name="peralatan['+ index +'][deskripsi_gangguan]" placeholder="" disabled></textarea>';
                     html += '</div></div>';
 
                     html += '<div class="form-group row">';
-                    html += '<label class="col-sm-3 col-form-label">Jenis Tindaklanjut</label>';
+                    html += '<label class="col-sm-3 col-form-label required">Kondisi Saat Gangguan</label>';
                     html += '<div class="col-sm-6">';
-                    html += '<select name="jenis_tindaklanjut[]" class="form-control jenis-tindaklanjut" data-index="'+ index +'">';
+                    html += '<select name="peralatan['+ index +'][kondisi_gangguan]" class="form-control kondisi-peralatan gangguan-required" data-index="'+ index +'" disabled>';
+                    html += '<option value="">- Pilih -</option>';
+                    // hanya tampilkan pilihan kondisi peralatan sesuai kondisi terakhir
+                    if(alat.peralatan.kondisi == KONDISI_PERALATAN.normal){
+                        html += `<option value="${ KONDISI_PERALATAN.normal }">NORMAL</option>`;
+                        html += `<option value="${ KONDISI_PERALATAN.normal_sebagian }">NORMAL SEBAGIAN</option>`;
+                        html += `<option value="${ KONDISI_PERALATAN.rusak }">RUSAK</option>`;
+                    }else{
+                        html += `<option value="${ KONDISI_PERALATAN.normal_sebagian }">NORMAL SEBAGIAN</option>`;
+                        html += `<option value="${ KONDISI_PERALATAN.rusak }">RUSAK</option>`;
+                    }
+                    
+                    html += '</select>';
+                    html += '</div></div>';
+
+                    html += '<div class="form-group row">';
+                    html += '<label class="col-sm-3 col-form-label">Jenis Tindak Lanjut</label>';
+                    html += '<div class="col-sm-6">';
+                    html += '<select name="peralatan['+ index +'][jenis_tindaklanjut]" class="form-control jenis-tindaklanjut" data-index="'+ index +'">';
                     html += '<option value="">- Pilih -</option>';
                     html += `<option value="${ JENIS_TINDAKLANJUT_PERALATAN.perbaikan }">PERBAIKAN</option>`;
                     html += `<option value="${ JENIS_TINDAKLANJUT_PERALATAN.penggantian }">PENGGANTIAN</option>`;
                     html += '</select>';
                     html += '</div></div>';
 
+                    // ============================= FORM INPUT PERBAIKAN ======================================
                     // jika dipilih PERBAIKAN maka muncul form input perbaikan 
                     // Codingan berada di dalam div class form-gangguan-peralatan
-                    html += '<div class="form-perbaikan" id="perbaikan_'+ index +'" style="display:none">';
+                    html += '<div class="form-perbaikan-peralatan" id="perbaikan_'+ index +'" style="display:none">';
 
                     html += '<div class="form-group row">';
                     html += '<label class="col-sm-3 col-form-label required">Waktu Mulai Perbaikan</label>';
                     html += '<div class="col-sm-6">';
                     html += '<div class="input-group date" id="'+ mulaiPerbaikanPickerId +'" data-target-input="nearest">';
-                    html += '<input type="text" name="waktu_mulai_tindaklanjut[]" class="form-control datetimepicker-input perbaikan-required" data-target="#'+ mulaiPerbaikanPickerId +'"/>';
+                    html += '<input type="text" name="peralatan['+ index +'][tindaklanjut]['+ JENIS_TINDAKLANJUT_PERALATAN.perbaikan +'][waktu_mulai_tindaklanjut]" class="form-control datetimepicker-input perbaikan-required" data-target="#'+ mulaiPerbaikanPickerId +'" disabled/>';
                     html += '<div class="input-group-append" data-target="#'+ mulaiPerbaikanPickerId +'" data-toggle="datetimepicker">';
                     html += '<div class="input-group-text"><i class="fa fa-calendar"></i></div>';
                     html += '</div></div></div></div>';
 
                     html += '<div class="form-group row">';
-                    html += '<label class="col-sm-3 col-form-label required">Deskripsi Tindaklanjut</label>';
+                    html += '<label class="col-sm-3 col-form-label required">Deskripsi Perbaikan</label>';
                     html += '<div class="col-sm-6">';
-                    html += '<textarea class="form-control perbaikan-required" rows="5" name="deskripsi_tindaklanjut[]" placeholder=""></textarea>';
+                    html += '<textarea class="form-control perbaikan-required" rows="5" name="peralatan['+ index +'][tindaklanjut]['+ JENIS_TINDAKLANJUT_PERALATAN.perbaikan +'][deskripsi_tindaklanjut]" placeholder="" disabled></textarea>';
                     html += '</div></div>';
 
                     html += '<div class="form-group row">';
                     html += '<label class="col-sm-3 col-form-label required">Waktu Selesai Perbaikan</label>';
                     html += '<div class="col-sm-6">';
                     html += '<div class="input-group date" id="'+ selesaiPerbaikanPickerId +'" data-target-input="nearest">';
-                    html += '<input type="text" name="waktu_selesai_tindaklanjut[]" class="form-control datetimepicker-input perbaikan-required" data-target="#'+ selesaiPerbaikanPickerId +'"/>';
+                    html += '<input type="text" name="peralatan['+ index +'][tindaklanjut]['+ JENIS_TINDAKLANJUT_PERALATAN.perbaikan +'][waktu_selesai_tindaklanjut]" class="form-control datetimepicker-input perbaikan-required" data-target="#'+ selesaiPerbaikanPickerId +'" disabled/>';
                     html += '<div class="input-group-append" data-target="#'+ selesaiPerbaikanPickerId +'" data-toggle="datetimepicker">';
                     html += '<div class="input-group-text"><i class="fa fa-calendar"></i></div>';
                     html += '</div></div></div></div>';
@@ -398,73 +544,77 @@
                     html += '<div class="form-group row">';
                     html += '<label class="col-sm-3 col-form-label required">Kondisi Setelah Perbaikan</label>';
                     html += '<div class="col-sm-6">';
-                    html += '<select name="kondisi_tindaklanjut[]" class="form-control perbaikan-required" data-index="'+ index +'">';
+                    html += '<select name="peralatan['+ index +'][tindaklanjut]['+ JENIS_TINDAKLANJUT_PERALATAN.perbaikan +'][kondisi_tindaklanjut]" class="form-control perbaikan-required" data-index="'+ index +'" disabled>';
                     html += '<option value="">- Pilih -</option>';
-                    html += `<option value="${ KONDISI_TINDAKLANJUT.beroperasi }">BEROPERASI</option>`;
-                    html += `<option value="${ KONDISI_TINDAKLANJUT.gangguan }">GANGGUAN</option>`;
+                    // hanya tampilkan pilihan kondisi peralatan sesuai kondisi terakhir
+                    if(alat.peralatan.kondisi == KONDISI_PERALATAN.normal){
+                        html += `<option value="${ KONDISI_PERALATAN.normal }">NORMAL</option>`;
+                        html += `<option value="${ KONDISI_PERALATAN.normal_sebagian }">NORMAL SEBAGIAN</option>`;
+                        html += `<option value="${ KONDISI_PERALATAN.rusak }">RUSAK</option>`;
+                    }else{
+                        html += `<option value="${ KONDISI_PERALATAN.normal_sebagian }">NORMAL SEBAGIAN</option>`;
+                        html += `<option value="${ KONDISI_PERALATAN.rusak }">RUSAK</option>`;
+                    }
                     html += '</select>';
                     html += '</div></div>';
 
                     html += '</div>';
-                    // end of form input perbaikan
+                    // ======================= END OF FORM INPUT PERBAIKAN ==================================
 
-
+                    // ============================= INPUT PENGGANTIAN ======================================
                     // jika dipilih PENGGANTIAN maka muncul form input penggantian 
                     // Codingan berada di dalam div class form-gangguan-peralatan
-                    html += '<div class="form-penggantian" id="penggantian_'+ index +'" style="display:none">';
+                    html += '<div class="form-penggantian-peralatan" id="penggantian_'+ index +'" style="display:none">';
 
                     html += '<div class="form-group row">';
                     html += '<label class="col-sm-3 col-form-label required">Waktu Mulai Penggantian</label>';
                     html += '<div class="col-sm-6">';
                     html += '<div class="input-group date" id="'+ mulaiPenggantianPickerId +'" data-target-input="nearest">';
-                    html += '<input type="text" name="waktu_mulai_tindaklanjut[]" class="form-control datetimepicker-input penggantian-required" data-target="#'+ mulaiPenggantianPickerId +'"/>';
+                    html += '<input type="text" name="peralatan['+ index +'][tindaklanjut]['+ JENIS_TINDAKLANJUT_PERALATAN.penggantian +'][waktu_mulai_tindaklanjut]" class="form-control datetimepicker-input penggantian-required" data-target="#'+ mulaiPenggantianPickerId +'" disabled/>';
                     html += '<div class="input-group-append" data-target="#'+ mulaiPenggantianPickerId +'" data-toggle="datetimepicker">';
                     html += '<div class="input-group-text"><i class="fa fa-calendar"></i></div>';
                     html += '</div></div></div></div>';
 
                     html += '<div class="form-group row">';
-                    html += '<label class="col-sm-3 col-form-label required">Deskripsi Tindaklanjut</label>';
+                    html += '<label class="col-sm-3 col-form-label required">Deskripsi Penggantian</label>';
                     html += '<div class="col-sm-6">';
-                    html += '<textarea class="form-control penggantian-required" rows="5" name="deskripsi_tindaklanjut[]" placeholder=""></textarea>';
+                    html += '<textarea class="form-control penggantian-required" rows="5" name="peralatan['+ index +'][tindaklanjut]['+ JENIS_TINDAKLANJUT_PERALATAN.penggantian +'][deskripsi_tindaklanjut]" placeholder="" disabled></textarea>';
                     html += '</div></div>';
 
                     html += '<div class="form-group row">';
                     html += '<label class="col-sm-3 col-form-label required">Waktu Selesai Penggantian</label>';
                     html += '<div class="col-sm-6">';
                     html += '<div class="input-group date" id="'+ selesaiPenggantianPickerId +'" data-target-input="nearest">';
-                    html += '<input type="text" name="waktu_selesai_tindaklanjut[]" class="form-control datetimepicker-input penggantian-required" data-target="#'+ selesaiPenggantianPickerId +'"/>';
+                    html += '<input type="text" name="peralatan['+ index +'][tindaklanjut]['+ JENIS_TINDAKLANJUT_PERALATAN.penggantian +'][waktu_selesai_tindaklanjut]" class="form-control datetimepicker-input penggantian-required" data-target="#'+ selesaiPenggantianPickerId +'" disabled/>';
                     html += '<div class="input-group-append" data-target="#'+ selesaiPenggantianPickerId +'" data-toggle="datetimepicker">';
                     html += '<div class="input-group-text"><i class="fa fa-calendar"></i></div>';
                     html += '</div></div></div></div>';
 
+                    html += '</div>';
+                    // =========================== END OF FORM INPUT PENGGANTIAN ======================================
+
                     html += '<div class="form-group row">';
-                    html += '<label class="col-sm-3 col-form-label required">Kondisi Setelah Penggantian</label>';
+                    html += '<div class="col-sm-3"></div>';
                     html += '<div class="col-sm-6">';
-                    html += '<select name="kondisi_tindaklanjut[]" class="form-control penggantian-required" data-index="'+ index +'">';
-                    html += '<option value="">- Pilih -</option>';
-                    html += `<option value="${ KONDISI_TINDAKLANJUT.beroperasi }">BEROPERASI</option>`;
-                    html += `<option value="${ KONDISI_TINDAKLANJUT.gangguan }">GANGGUAN</option>`;
-                    html += '</select>';
+                    html += '<button type="button" class="btn btn-danger btn-sm float-right btn-close-input-gangguan" data-index="'+index+'">';
+                    html += '<i class="fas fa-times"></i>&nbsp;&nbsp;&nbsp; Batal';
+                    html += '</button>';
                     html += '</div></div>';
 
                     html += '</div>';
-                    // end of form input penggantian
+                    // ============================= END OF FORM INPUT GANGGUAN ======================================
 
-                    html += '</div>';
-                    // end of div form-gangguan-peralatan
-
-                    html += '<hr class="my-4">';
+                    // html += '<hr class="my-4">';
+                    html += '<hr class="my-4" style="border-top: 3px solid #a8a5a5;">';
                 });
                 // END OF LOOP   
             }
 
             // jika jenis laporan = 2 (gangguan non peralatan)
-            else if (jenis == JENIS_GANGGUAN_NON_PERALATAN) {
+            else if (jenis == JENIS.NON) {
 
-                // input jenis laporan gangguan non peralatan
-                html += '<input type="hidden" name="jenis"  value="'+ jenis +'">';
-
-                // form input gangguan non peralatan
+                // ============================= FORM INPUT GANGGUAN ======================================
+                html += '<div class="form-gangguan-nonperalatan" id="gangguan_non">';
 
                 html += '<div class="form-group row">';
                 html += '<label class="col-sm-3 col-form-label required">Waktu Gangguan</label>';
@@ -485,253 +635,207 @@
                 html += '</div></div>';
 
                 html += '<div class="form-group row">';
-                html += '<label class="col-sm-3 col-form-label">Jenis Tindaklanjut</label>';
+                html += '<div class="col-sm-3"></div>';
                 html += '<div class="col-sm-6">';
-                html += '<select name="jenis_tindaklanjut[]" class="form-control jenis-tindaklanjut-nonperalatan">';
-                html += '<option value="">- Pilih -</option>';
-                html += `<option value="${ JENIS_TINDAKLANJUT_NONPERALATAN.perbaikan }">PERBAIKAN</option>`;
-                html += '</select>';
+                html += '<button type="button" class="btn btn-success btn-sm btn-input-tindaklanjut">';
+                html += 'Input Tindaklanjut &nbsp;&nbsp;&nbsp;<i class="fas fa-angle-down"></i>';
+                html += '</button>';
                 html += '</div></div>';
 
+                // ============================= FORM INPUT TINDAKLANJUT ======================================
                 // form untuk menampilkan waktu mulai perbaikan, deskripsi perbaikan, dan waktu selesai perbaikan
                 // muncul setelah dropdown PERBAIKAN dipilih
-                html += '<div class="form-perbaikan" id="perbaikan" style="display:none">';
+                html += '<div class="form-tindaklanjut-nonperalatan" id="tindaklanjut_non" style="display:none">';
+
+                // kirim penanda bahwa tindaklanjut diisi, nilai akan berubah jadi 1 saat tombol Input Tindaklanjut diklik
+                html += '<input type="hidden" id="flag_tindaklanjut" name="flag_tindaklanjut" value="0">';
 
                 html += '<div class="form-group row">';
-                html += '<label class="col-sm-3 col-form-label required">Waktu Mulai Perbaikan</label>';
+                html += '<label class="col-sm-3 col-form-label required">Waktu Mulai Tindak Lanjut</label>';
                 html += '<div class="col-sm-6">';
                 html += '<div class="input-group date" id="datetime_mulai_perbaikan" data-target-input="nearest">';
-                html += '<input type="text" name="waktu_mulai_tindaklanjut" class="form-control datetimepicker-input perbaikan-required" data-target="#datetime_mulai_perbaikan"/>';
+                html += '<input type="text" name="waktu_mulai_tindaklanjut" class="form-control datetimepicker-input tindaklanjut-required" data-target="#datetime_mulai_perbaikan" disabled/>';
                 html += '<div class="input-group-append" data-target="#datetime_mulai_perbaikan" data-toggle="datetimepicker">';
                 html += '<div class="input-group-text"><i class="fa fa-calendar"></i></div>';
                 html += '</div></div></div></div>';
 
                 html += '<div class="form-group row">';
-                html += '<label class="col-sm-3 col-form-label required">Deskripsi Tindaklanjut</label>';
+                html += '<label class="col-sm-3 col-form-label required">Deskripsi Tindak Lanjut</label>';
                 html += '<div class="col-sm-6">';
-                html += '<textarea class="form-control perbaikan-required" rows="5" name="deskripsi_tindaklanjut" placeholder=""></textarea>';
+                html += '<textarea class="form-control tindaklanjut-required" rows="5" name="deskripsi_tindaklanjut" placeholder="" disabled></textarea>';
                 html += '</div></div>';
 
                 html += '<div class="form-group row">';
-                html += '<label class="col-sm-3 col-form-label required">Waktu Selesai Perbaikan</label>';
+                html += '<label class="col-sm-3 col-form-label required">Waktu Selesai Tindak Lanjut</label>';
                 html += '<div class="col-sm-6">';
                 html += '<div class="input-group date" id="datetime_selesai_perbaikan" data-target-input="nearest">';
-                html += '<input type="text" name="waktu_selesai_tindaklanjut" class="form-control datetimepicker-input perbaikan-required" data-target="#datetime_selesai_perbaikan"/>';
+                html += '<input type="text" name="waktu_selesai_tindaklanjut" class="form-control datetimepicker-input tindaklanjut-required" data-target="#datetime_selesai_perbaikan" disabled/>';
                 html += '<div class="input-group-append" data-target="#datetime_selesai_perbaikan" data-toggle="datetimepicker">';
                 html += '<div class="input-group-text"><i class="fa fa-calendar"></i></div>';
                 html += '</div></div></div></div>';
 
                 html += '<div class="form-group row">';
-                html += '<label class="col-sm-3 col-form-label required">Kondisi Setelah Perbaikan</label>';
+                html += '<div class="col-sm-3"></div>';
                 html += '<div class="col-sm-6">';
-                html += '<select name="kondisi_tindaklanjut" class="form-control perbaikan-required">';
-                html += '<option value="">- Pilih -</option>';
-                html += `<option value="${ KONDISI_TINDAKLANJUT.beroperasi }">BEROPERASI</option>`;
-                html += `<option value="${ KONDISI_TINDAKLANJUT.gangguan }">GANGGUAN</option>`;
-                html += '</select>';
+                html += '<button type="button" class="btn btn-danger btn-sm float-right btn-close-input-tindaklanjut">';
+                html += '<i class="fas fa-times"></i>&nbsp;&nbsp;&nbsp; Batal';
+                html += '</button>';
                 html += '</div></div>';
 
                 html += '</div>';
                 // end of form untuk menampilkan waktu perbaikan dan deskripsi perbaikan
+                // ============================= END OF FORM INPUT TINDAKLANJUT ======================================
+
+                html += '</div>';
+                // end of div form-gangguan-nonperalatan
 
                 html += '<hr class="my-4">';
             }
+            // ============================= END OF FORM INPUT GANGGUAN ======================================
 
             html += '<div class="form-group row">';
-            html += '<label class="col-sm-3 col-form-label required">Kondisi Layanan Saat Ini</label>';
+            html += '<label class="col-sm-3 col-form-label required">Kondisi Layanan Saat Gangguan</label>';
             html += '<div class="col-sm-6">';
-            html += '<select name="kondisi_layanan" class="form-control" required>';
+            html += '<select name="kondisi_layanan_open" class="form-control" required>';
             html += '<option value="">- Pilih -</option>';
             html += `<option value="${ KONDISI_LAYANAN.serviceable }">SERVICEABLE</option>`;
-            html += `<option value="${ KONDISI_LAYANAN.conditional_serviceable }">CONDITIONAL SERVICEABLE</option>`;
             html += `<option value="${ KONDISI_LAYANAN.unserviceable }">UNSERVICEABLE</option>`;
             html += '</select>';
-            html += '<div class="invalid-feedback">Kondisi Layanan Saat Ini wajib dipilih.</div>';
+            html += '<div class="invalid-feedback">Wajib dipilih</div>';
             html += '</div></div>';
+
+            // div form kondisi layanan setelah dilakukan tindaklanjut
+            html += '<div class="form-kondisi-tindaklanjut" id="dropdown_kondisi" style="display:none">';
+
+            html += '<div class="form-group row">';
+            html += '<label class="col-sm-3 col-form-label required">Kondisi Layanan Setelah Tindak Lanjut</label>';
+            html += '<div class="col-sm-6">';
+            html += '<select name="kondisi_layanan_close" class="form-control">';
+            html += '<option value="">- Pilih -</option>';
+            html += `<option value="${ KONDISI_LAYANAN.serviceable }">SERVICEABLE</option>`;
+            html += `<option value="${ KONDISI_LAYANAN.unserviceable }">UNSERVICEABLE</option>`;
+            html += '</select>';
+            html += '<div class="invalid-feedback">Wajib dipilih.</div>';
+            html += '</div></div>';
+
+            html += '</div>';
+            // end of div form kondisi layanan setelah dilakukan tindaklanjut
 
             formGangguan.innerHTML = html; // menampilkan variabel html ke halaman blade
 
-            // javascript untuk mengaktifkan form validation jika dropdown jenis laporan dipilih GANGGUAN NON PERALATAN
-            if (jenis == JENIS_GANGGUAN_NON_PERALATAN) {
-                // set required & enable field
-                document.querySelectorAll('.nonperalatan-required').forEach(el => {
-                    el.disabled = false;
-                    el.required = true;
-                });
+            // aktifkan required pada form input gangguan pada jenis laporan GANGGUAN NON PERALATAN 
+            if (jenis == JENIS.NON) {
+                const formGangguanNon = document.getElementById('gangguan_non');
 
-                // init datetimepicker khusus non peralatan
-                if (!$('#datetime_nonperalatan').data('datetimepicker')) {
-                    $('#datetime_nonperalatan').datetimepicker({
-                        format: 'DD-MM-YYYY HH:mm',
-                        icons: { time: 'far fa-clock' }
-                    });
-                }
-            } 
-            else {
-                // reset jika pindah jenis laporan
-                document.querySelectorAll('.nonperalatan-required').forEach(el => {
-                    el.disabled = true;
-                    el.required = false;
-                    el.value = '';
-                });
+                toggleRequired(formGangguanNon, true, 'nonperalatan-required');
+                initDateTimeNonPeralatan();
             }
-            // akhir javascript proses aktivasi form validasi GANGGUAN NON PERALATAN
-
         });
+        // ===============================================================
+        //                     END OF FUNCTION FORM JENIS
+        // ===============================================================
 
+        // =================================================================
+        //                            EVEN GLOBAL
+        // =================================================================
+        document.addEventListener('click', function (e) {
+            // ketika tombol Input Gangguan diklik, tampilkan form input gangguan (Jenis Laporan Gangguan Peralatan)
+            if (e.target.closest('.btn-input-gangguan')) {
 
-        /** 
-         * javascript untuk menampilkan field waktu gangguan dan deskripsi gangguan
-         * saat field kondisi peralatan dipilih GANGGUAN pada form input gangguan peralatan
-         */
+                const btn = e.target.closest('.btn-input-gangguan');
+                const index = btn.dataset.index;
+
+                const gangguan = document.getElementById('gangguan_' + index);
+            
+                // ubah nilai flag_gangguan menjadi 1
+                const flag = document.getElementById('flag_gangguan_' + index);
+                if (flag) flag.value = 1;
+
+                show(gangguan, true);
+                initDateTimePeralatan(index);
+                toggleRequired(gangguan, true, 'gangguan-required');
+            }
+
+            // ketika tombol Batal diklik, sembunyikan form input gangguan (Jenis Laporan Gangguan Peralatan)
+            if (e.target.closest('.btn-close-input-gangguan')) {
+
+                const btn = e.target.closest('.btn-close-input-gangguan');
+                const index = btn.dataset.index;
+
+                const gangguan = document.getElementById('gangguan_' + index);
+
+                // ubah nilai flag_gangguan menjadi 0
+                const flag = document.getElementById('flag_gangguan_' + index);
+                if (flag) flag.value = 0;
+
+                show(gangguan, false);
+                toggleRequired(gangguan, false, 'gangguan-required');
+            }
+
+            // jika tombol tombol Input Tindaklanjut diklik (Jenis Laporan Gangguan Non Peralatan)
+            if (e.target.closest('.btn-input-tindaklanjut')) {
+
+                const btn = e.target.closest('.btn-input-tindaklanjut');
+                const isPerbaikan = true;
+                const perbaikan = document.getElementById('tindaklanjut_non');
+
+                // ubah nilai flag_tindaklanjut menjadi 1
+                const flag = document.getElementById('flag_tindaklanjut');
+                if (flag) flag.value = 1;
+
+                show(perbaikan, isPerbaikan);
+                initDateTimeNonPeralatan();
+                toggleRequired(perbaikan, isPerbaikan, 'tindaklanjut-required');
+
+                showKondisiLayanan(isPerbaikan);
+            }
+
+            // ketika tombol Batal diklik, sembunyikan form input tindaklanjut (Jenis Laporan Gangguan Non Peralatan)
+            if (e.target.closest('.btn-close-input-tindaklanjut')) {
+
+                const btn = e.target.closest('.btn-close-input-tindaklanjut');
+                const isPerbaikan = false;
+                const perbaikan = document.getElementById('tindaklanjut_non');
+
+                // ubah nilai flag_tindaklanjut menjadi 0
+                const flag = document.getElementById('flag_tindaklanjut');
+                if (flag) flag.value = 0;
+
+                show(perbaikan, isPerbaikan);
+                toggleRequired(perbaikan, isPerbaikan, 'tindaklanjut-required');
+                showKondisiLayanan(isPerbaikan);
+            }
+        });
+        
+
         document.addEventListener('change', function (e) {
-            // cek bahwa hanya dropdown kondisi peralatan saja yang berubah
-            if (!e.target.classList.contains('kondisi-peralatan')) return;
 
-            // ambil nilai index dari dropdown kondisi peralatan
-            const index = e.target.dataset.index;
-            const gangguanForm = document.getElementById('gangguan_' + index);
-            // jika form tidak ada, hentikan javascript, jaga-jaga kalau form terhapus di blade
-            if (!gangguanForm) return;
-            // ambil value dari dropdown kondisi peralatan, jika nilainya 0 maka TRUE
-            const isGangguan = e.target.value === '0';
-            // jika nilai isGangguan adalah TRUE, maka tampilkan field waktu gangguan dan deskripsi gangguan
-            gangguanForm.style.display = isGangguan ? 'block' : 'none';
-            // ambil semua field dengan class gangguan-required (waktu gangguan dan deskripsi gangguan)
-            gangguanForm.querySelectorAll('.gangguan-required').forEach(el => {
-                // jika pilihan kondisi peralatan = beroperasi, field waktu gangguan dan deskripsi gangguan ter-disable
-                // sehingga field tidak aktif
-                el.disabled = !isGangguan;
-                // jika pilihan kondisi peralatan = gangguan, maka field waktu gangguan dan deskripsi gangguan ter-required
-                // sehingga menjadi field mandatory
-                el.required = isGangguan;
-                // jika kondisi peralatan = beroperasi, maka paksa agar nilai di field waktu gangguan dan deskripsi gangguan menjadi kosong
-                if (!isGangguan) el.value = '';
-            });
+            // jika dropdown jenis tindaklanjut dipilih (Jenis Laporan Gangguan Peralatan)
+            if (e.target.classList.contains('jenis-tindaklanjut')) {
 
-            // init datetimepicker saat dibutuhkan
-            if (isGangguan && !$('#datetime_gangguan_' + index).data('datetimepicker')) {
-                $('#datetime_gangguan_' + index).datetimepicker({
-                    format: 'DD-MM-YYYY HH:mm',
-                    icons: { time: 'far fa-clock' }
-                });
+                const index = e.target.dataset.index;
+
+                const isPerbaikan = e.target.value == JENIS_TINDAKLANJUT_PERALATAN.perbaikan;
+
+                const isPenggantian = e.target.value == JENIS_TINDAKLANJUT_PERALATAN.penggantian;
+
+                const perbaikan = document.getElementById('perbaikan_' + index);
+                const penggantian = document.getElementById('penggantian_' + index);
+
+                show(perbaikan, isPerbaikan);
+                show(penggantian, isPenggantian);
+
+                initDateTimePeralatan(index);
+
+                toggleRequired(perbaikan, isPerbaikan, 'perbaikan-required');
+                toggleRequired(penggantian, isPenggantian, 'penggantian-required');
+
+                showKondisiLayanan(isPerbaikan || isPenggantian);
             }
         });
-
-
-        /** 
-         * javascript untuk menampilkan form input perbaikan atau penggantian pada form GANGGUAN PERALATAN
-         */
-        document.addEventListener('change', function (e) {
-            // cek bahwa hanya dropdown jenis tindaklanjut saja yang berubah
-            if (!e.target.classList.contains('jenis-tindaklanjut')) return;
-
-            // ambil nilai index dari dropdown jenis tindaklanjut
-            const index = e.target.dataset.index;
-            const perbaikanForm = document.getElementById('perbaikan_' + index);
-            const penggantianForm = document.getElementById('penggantian_' + index);
-
-            // mengambil dan mengecek nilai dropdown jenis tindaklanjut
-            const isPerbaikan = e.target.value === '1';
-            const isPenggantian = e.target.value === '2';
-
-            // jika form input perbaikan ada, cek apakah pilihan dropdown adalah perbaikan 
-            if (perbaikanForm) perbaikanForm.style.display = isPerbaikan ? 'block' : 'none';
-            // jika form input penggantian ada, cek apakah pilihan dropdown adalah penggantian 
-            if (penggantianForm) penggantianForm.style.display = isPenggantian ? 'block' : 'none';
-
-            // jika PERBAIKAN dipilih, aktifkan field mandatory pada form input perbaikan
-            if (perbaikanForm) {
-                perbaikanForm.querySelectorAll('.perbaikan-required').forEach(el => {
-                    el.disabled = !isPerbaikan;
-                    el.required = isPerbaikan;
-                    if (!isPerbaikan) el.value = '';
-                });
-
-                // init datetime picker di form input waktu mulai perbaikan
-                if (isPerbaikan && !$('#datetime_mulai_perbaikan_' + index).data('datetimepicker')) {
-                    $('#datetime_mulai_perbaikan_' + index).datetimepicker({
-                        format: 'DD-MM-YYYY HH:mm',
-                        icons: { time: 'far fa-clock' }
-                    });
-                }
-
-                // init datetime picker di form input waktu selesai perbaikan
-                if (isPerbaikan && !$('#datetime_selesai_perbaikan_' + index).data('datetimepicker')) {
-                    $('#datetime_selesai_perbaikan_' + index).datetimepicker({
-                        format: 'DD-MM-YYYY HH:mm',
-                        icons: { time: 'far fa-clock' }
-                    });
-                }
-            }
-
-            // jika PENGGANTIAN dipilih, aktifkan field mandatory pada form input penggantian
-            if (penggantianForm) {
-                penggantianForm.querySelectorAll('.penggantian-required').forEach(el => {
-                    el.disabled = !isPenggantian;
-                    el.required = isPenggantian;
-                    if (!isPenggantian) el.value = '';
-                });
-
-                // init datetime picker di form input waktu mulai penggantian
-                if (isPenggantian && !$('#datetime_mulai_penggantian_' + index).data('datetimepicker')) {
-                    $('#datetime_mulai_penggantian_' + index).datetimepicker({
-                        format: 'DD-MM-YYYY HH:mm',
-                        icons: { time: 'far fa-clock' }
-                    });
-                }
-
-                // init datetime picker di form input waktu selesai penggantian
-                if (isPenggantian && !$('#datetime_selesai_penggantian_' + index).data('datetimepicker')) {
-                    $('#datetime_selesai_penggantian_' + index).datetimepicker({
-                        format: 'DD-MM-YYYY HH:mm',
-                        icons: { time: 'far fa-clock' }
-                    });
-                }
-            }
-        });
-
-        /** 
-         * javascript untuk menampilkan form input perbaikan pada form GANGGUAN NON PERALATAN
-         */
-        document.addEventListener('change', function (e) {
-            // cek bahwa hanya dropdown jenis tindaklanjut saja yang berubah
-            if (!e.target.classList.contains('jenis-tindaklanjut-nonperalatan')) return;
-
-            // ambil nilai dari dropdown jenis tindaklanjut
-            const perbaikanForm = document.getElementById('perbaikan');
-
-            // mengambil dan mengecek nilai dropdown jenis tindaklanjut
-            const isPerbaikan = e.target.value === '1';
-
-            // jika form input perbaikan ada, cek apakah pilihan dropdown adalah perbaikan 
-            if (perbaikanForm) perbaikanForm.style.display = isPerbaikan ? 'block' : 'none';
-
-            // jika PERBAIKAN dipilih, aktifkan field mandatory pada form input perbaikan
-            if (perbaikanForm) {
-                perbaikanForm.querySelectorAll('.perbaikan-required').forEach(el => {
-                    el.disabled = !isPerbaikan;
-                    el.required = isPerbaikan;
-                    if (!isPerbaikan) el.value = '';
-                });
-
-                // init datetime picker di form input waktu mulai perbaikan
-                if (isPerbaikan && !$('#datetime_mulai_perbaikan').data('datetimepicker')) {
-                    $('#datetime_mulai_perbaikan').datetimepicker({
-                        format: 'DD-MM-YYYY HH:mm',
-                        icons: { time: 'far fa-clock' }
-                    });
-                }
-
-                // init datetime picker di form input waktu selesai perbaikan
-                if (isPerbaikan && !$('#datetime_selesai_perbaikan').data('datetimepicker')) {
-                    $('#datetime_selesai_perbaikan').datetimepicker({
-                        format: 'DD-MM-YYYY HH:mm',
-                        icons: { time: 'far fa-clock' }
-                    });
-                }
-            }
-        });
+        // =================================================================
+        //                        END OF EVEN GLOBAL
+        // =================================================================
     });
 </script>
 

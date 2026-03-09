@@ -55,11 +55,11 @@
                             @endif
                                         </center></td>
                                         
-  @if($satu->status == 1)
+  @if($satu->status == config('constants.status_laporan.draft'))
                                         <td><center><span class="badge bg-warning">DRAFT</span></center></td>
-  @elseif($satu->status == 2)
+  @elseif($satu->status == config('constants.status_laporan.open'))
                                         <td><center><span class="badge bg-danger">OPEN</span></center></td>
-  @elseif($satu->status == 3)
+  @elseif($satu->status == config('constants.status_laporan.close'))
                                         <td><center><span class="badge bg-success">CLOSE</span></center></td>
   @endif
                       

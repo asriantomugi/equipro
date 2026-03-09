@@ -95,7 +95,7 @@ class LayananController extends Controller
         $lokasi_tk_1_id = $request->lokasi_tk_1;
         $lokasi_tk_2_id = $request->lokasi_tk_2;
         $lokasi_tk_3_id = $request->lokasi_tk_3;
-        $kondisi = $request->kondisi;
+        $kondisi = (bool) $request->kondisi;
         $status = $request->status;
 
         // buat query untuk mengambil daftar layanan
@@ -586,8 +586,10 @@ class LayananController extends Controller
             ]);
 
             // update data peralatan dari yang baru ditambahkan
+            /*
             $daftar_peralatan_id = DaftarPeralatanLayanan::where('layanan_id', $request->id)
-                ->update(['kondisi' => config('constants.kondisi_peralatan_layanan.beroperasi')]); // kondisi beroperasi
+                ->update(['kondisi' => config('constants.kondisi_peralatan.normal')]); // kondisi normal
+            */
             
             // simpan transaksi ke database
             DB::commit();
@@ -1055,7 +1057,8 @@ class LayananController extends Controller
         $query = Peralatan::query();
         // ambil peralatan dengan status aktif dan belum ditambahkan ke Layanan manapun
         $query->where('status', 1)
-              ->where('kondisi', config('constants.kondisi_peralatan.normal')) // kondisi peralatan normal
+              ->whereIn('kondisi', [config('constants.kondisi_peralatan.normal'), // kondisi peralatan normal
+                                    config('constants.kondisi_peralatan.normal_sebagian')]) // kondisi peralatan normal sebagian
               ->where('flag_layanan', 0);
 
         // jika field jenis alat terpilih
@@ -1185,7 +1188,7 @@ class LayananController extends Controller
             DaftarPeralatanLayanan::create([
                 'layanan_id' => strtoupper($request->layanan_id),
                 'peralatan_id' => strtoupper($request->peralatan_id),
-                'kondisi' => config('constants.kondisi_peralatan_layanan.beroperasi'),
+                //'kondisi' => config('constants.kondisi_peralatan.beroperasi'),
                 'created_by' => session()->get('id')
             ]);
 

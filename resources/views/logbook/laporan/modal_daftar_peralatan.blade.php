@@ -32,7 +32,7 @@
         @endif
             <td>
                 <center>
-                    <button class="btn btn-sm btn-success btn-tambah-peralatan" data-id="{{ $satu->id }}">Tambah</button>
+                    <button class="btn btn-sm btn-success btn-tambah-peralatan" data-id="{{ $satu->id }}">Pilih</button>
                 </center>
             </td>
         </tr>

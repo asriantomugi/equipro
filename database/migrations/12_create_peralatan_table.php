@@ -30,7 +30,7 @@ return new class extends Migration
             $table->bigInteger('perusahaan_id');
             $table->boolean('sewa');
             $table->boolean('status')->default(true);
-            $table->boolean('kondisi')->default(true);
+            $table->integer('kondisi');
             $table->string('keterangan')->nullable();
             $table->tinyInteger('flag_layanan')->default(0);
             $table->bigInteger('created_by')->nullable();

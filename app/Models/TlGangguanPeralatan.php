@@ -56,6 +56,14 @@ class TlGangguanPeralatan extends Model
     }
 
     /**
+     * Relasi ke tindaklanjut gangguan peralatan
+     */
+    public function tlPenggantianPeralatan()
+    {
+        return $this->hasOne(TlPenggantianPeralatan::class, 'tl_gangguan_id');
+    }
+
+    /**
      * Function untuk memanggil user created_by.
      */
     public function getCreatedName()

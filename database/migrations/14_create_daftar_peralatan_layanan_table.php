@@ -20,7 +20,6 @@ return new class extends Migration
             $table->bigInteger('layanan_id');
             $table->bigInteger('peralatan_id');
             $table->string('ip_address')->nullable();
-            $table->boolean('kondisi')->nullable();
             $table->bigInteger('created_by')->nullable();
             $table->bigInteger('updated_by')->nullable();
             $table->timestamps();

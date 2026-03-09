@@ -85,7 +85,7 @@
             <div class="card-footer">
               <button type="submit"
                       class="btn btn-primary btn-sm float-right">
-                      <i class="fas fa-filter"></i> Filter
+                      <i class="fas fa-filter"></i>&nbsp;&nbsp;&nbsp; Filter
               </button>
             </div> <!-- card footer -->
 
@@ -177,6 +177,8 @@
   @endif
 </script>
 
+
+<!-- javascript untuk menampilkan daftar layanan berdasarkan filter -->
 <script>
   $(document).ready(function () {
     let table = $('#layananTable').DataTable();
@@ -198,6 +200,7 @@
     });
   });
 </script>
+
 
 <!-- javascript untuk menampilkan modal detail -->
 <script type="text/javascript">

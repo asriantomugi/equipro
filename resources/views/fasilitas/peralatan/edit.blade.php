@@ -217,7 +217,8 @@
                             required>
                       <option value="">- Pilih -</option>
                       <option value="1" {{ old('kondisi', $peralatan->kondisi ?? '') == '1' ? 'selected' : '' }}>NORMAL</option>
-                      <option value="0" {{ old('kondisi', $peralatan->kondisi ?? '') == '0' ? 'selected' : '' }}>RUSAK</option>
+                      <option value="2" {{ old('kondisi', $peralatan->kondisi ?? '') == '2' ? 'selected' : '' }}>NORMAL SEBAGIAN</option>
+                      <option value="3" {{ old('kondisi', $peralatan->kondisi ?? '') == '3' ? 'selected' : '' }}>RUSAK</option>
                     </select>
                     <div class="invalid-feedback">Kondisi wajib dipilih.</div>
                   </div>

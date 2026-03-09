@@ -54,6 +54,8 @@
 
   @if($satu->kondisi == config('constants.kondisi_peralatan.normal'))
                       <td><center><span class="badge bg-success">NORMAL</span></center></td>
+  @elseif($satu->kondisi == config('constants.kondisi_peralatan.normal_sebagian'))
+                      <td><center><span class="badge bg-warning">NORMAL SEBAGIAN</span></center></td>
   @else
                       <td><center><span class="badge bg-danger">RUSAK</span></center></td>
   @endif
@@ -253,6 +255,15 @@
 
               row += "<tr><th>Perusahaan Pemilik</th><td>:</td><td>"+ data.perusahaan.nama.toUpperCase(); +"</td></tr>";
 
+          if(data.peralatan.kondisi == 1){
+              row += "<tr><th>Status</th><td>:</td><td><span class='badge bg-success'>NORMAL</span></td></tr>";
+          }
+          else if(data.peralatan.kondisi == 2){
+              row += "<tr><th>Status</th><td>:</td><td><span class='badge bg-warning'>NORMAL SEBAGIAN</span></td></tr>";
+          }else{
+              row += "<tr><th>Status</th><td>:</td><td><span class='badge bg-danger'>TIDAK AKTIF</span></td></tr>";
+          }
+          
           if(data.peralatan.keterangan != null){
               row += "<tr><th>Keterangan</th><td>:</td><td>"+ data.peralatan.keterangan.toUpperCase(); +"</td></tr>";
           }else{

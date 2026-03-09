@@ -146,7 +146,7 @@
                             disabled>
                       <option value="">- Pilih -</option>
                       <option value="1" {{ old('kondisi', $layanan->kondisi ?? '') == 1 ? 'selected' : '' }}>SERVICEABLE</option>
-                      <option value="0" {{ old('kondisi', $layanan->kondisi ?? '') == 0 ? 'selected' : '' }}>UNSERVICEABLE</option>
+                      <option value="3" {{ old('kondisi', $layanan->kondisi ?? '') == 0 ? 'selected' : '' }}>UNSERVICEABLE</option>
                     </select>
                     <div class="invalid-feedback">Kondisi wajib dipilih.</div>
                   </div>
@@ -162,7 +162,7 @@
                       <option value="1" {{ old('status', $layanan->status ?? '') == 1 ? 'selected' : '' }}>AKTIF</option>
                       <option value="0" {{ old('status', $layanan->status ?? '') == 0 ? 'selected' : '' }}>TIDAK AKTIF</option>
                     </select>
-                    <div class="invalid-feedback">Kondisi wajib dipilih.</div>
+                    <div class="invalid-feedback">Status wajib dipilih.</div>
                   </div>
                 </div>
 

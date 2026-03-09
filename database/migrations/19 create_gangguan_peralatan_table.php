@@ -20,9 +20,10 @@ return new class extends Migration
             $table->bigInteger('laporan_id');
             $table->bigInteger('layanan_id');
             $table->bigInteger('peralatan_id');
-            $table->boolean('kondisi');
+            $table->integer('kondisi');
+            $table->integer('kondisi_awal');
             $table->string('deskripsi')->nullable();
-            $table->date('waktu_gangguan')->nullable();
+            $table->datetime('waktu');
             $table->bigInteger('created_by')->nullable();
             $table->bigInteger('updated_by')->nullable();
             $table->timestamps();

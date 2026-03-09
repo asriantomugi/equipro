@@ -22,15 +22,13 @@
                 <td><center>{{ strtoupper($alat->tipe ?? '-') }}</center></td>
                 <td><center>{{ strtoupper($alat->model ?? '-') }}</center></td>
                 <td><center>{{ strtoupper($alat->serial_number ?? '-') }}</center></td>
-                <td>
-                    <center>
-                        @if($alat->kondisi ?? '-' == 1)
-                            <span class="badge bg-success">NORMAL</span>
-                        @else
-                            <span class="badge bg-danger">RUSAK</span>
-                        @endif
-                    </center>
-                </td>
+        @if($alat->kondisi == config('constants.kondisi_peralatan.normal'))
+            <td><center><span class="badge bg-success">NORMAL</span></center></td>
+        @elseif($alat->kondisi == config('constants.kondisi_peralatan.normal_sebagian'))
+            <td><center><span class="badge bg-warning">NORMAL SEBAGIAN</span></center></td>
+        @else
+            <td><center><span class="badge bg-danger">RUSAK</span></center></td>
+        @endif
                 <td>
                     <center>
                         <button type="button" class="btn btn-sm btn-success btn-pilih-peralatan"

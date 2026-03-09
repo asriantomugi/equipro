@@ -98,6 +98,8 @@
                       <td></td>
   @elseif($satu->kondisi == config('constants.kondisi_peralatan_layanan.beroperasi'))
                       <td class="text-center"><span class="badge bg-success">BEROPERASI</span></td>
+  @elseif($satu->kondisi == config('constants.kondisi_peralatan_layanan.beroperasi_sebagian'))
+                      <td class="text-center"><span class="badge bg-warning">BEROPERASI SEBAGIAN</span></td>
   @elseif($satu->kondisi == config('constants.kondisi_peralatan_layanan.gangguan'))
                       <td class="text-center"><span class="badge bg-danger">GANGGUAN</span></td>
   @else

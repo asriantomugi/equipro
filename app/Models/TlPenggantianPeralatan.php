@@ -63,11 +63,6 @@ class TlPenggantianPeralatan extends Model
         return $this->belongsTo(Peralatan::class, 'peralatan_baru_id');
     }
 
-    public function tindaklanjut()
-    {
-        return $this->belongsTo(TlGangguanPeralatan::class, 'tl_gangguan_id', 'id');
-    }
-
     /**
      * Function untuk memanggil user created_by.
      */

@@ -17,10 +17,11 @@ return new class extends Migration
 
             // membuat field-field
             $table->bigIncrements('id');
-            $table->bigInteger('gangguan_non_peralatan_id');
+            $table->bigInteger('gangguan_id');
             $table->bigInteger('laporan_id');
             $table->bigInteger('layanan_id');
-            $table->datetime('waktu');
+            $table->datetime('waktu_mulai');
+            $table->datetime('waktu_selesai');
             $table->string('deskripsi');
             $table->boolean('kondisi');
             $table->integer('jenis');

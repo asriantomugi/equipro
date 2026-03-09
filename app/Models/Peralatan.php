@@ -39,6 +39,27 @@ class Peralatan extends Model
     }
 
     /**
+     * Function untuk memanggil nama sewa (ASET/SEWA).
+     */
+    public function sewa()
+    {
+        if ($this->sewa === 1) return 'SEWA';
+        if ($this->sewa === 0) return 'ASET';
+        return '-';
+    }
+
+    /**
+     * Function untuk memanggil kondisi.
+     */
+    public function kondisi()
+    {
+        if ($this->kondisi === 0) return 'RUSAK';
+        if ($this->kondisi === 1) return 'NORMAL';
+        if ($this->kondisi === 2) return 'NORMAL SEBAGIAN';
+        return '-';
+    }
+
+    /**
      * Function untuk memanggil user created_by.
      */
     public function getCreatedName()

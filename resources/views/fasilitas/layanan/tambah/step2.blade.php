@@ -80,12 +80,14 @@
                       <td><center>{{ strtoupper($satu->peralatan->merk) }}</center></td>
                       <td><center>{{ strtoupper($satu->peralatan->jenis->nama) }}</center></td>
                       <td><center>{{ strtoupper($satu->ip_address) }}</center></td>
-  @if($satu->kondisi === null)
+  @if($satu->peralatan->kondisi === null)
                       <td></td>
-  @elseif($satu->kondisi == config('constants.kondisi_peralatan_layanan.beroperasi'))
-                      <td class="text-center"><span class="badge bg-success">BEROPERASI</span></td>
-  @elseif($satu->kondisi == config('constants.kondisi_peralatan_layanan.gangguan'))
-                      <td class="text-center"><span class="badge bg-danger">GANGGUAN</span></td>
+  @elseif($satu->peralatan->kondisi == config('constants.kondisi_peralatan.normal'))
+                      <td class="text-center"><span class="badge bg-success">NORMAL</span></td>
+  @elseif($satu->peralatan->kondisi == config('constants.kondisi_peralatan.normal_sebagian'))
+                      <td class="text-center"><span class="badge bg-warning">NORMAL SEBAGIAN</span></td>
+  @elseif($satu->peralatan->kondisi == config('constants.kondisi_peralatan.rusak'))
+                      <td class="text-center"><span class="badge bg-danger">RUSAK</span></td>
   @else
                       <td></td>
   @endif
@@ -179,90 +181,95 @@
 
     <!-- Modal untuk tambah peralatan -->
     <div class="modal fade" 
-         id="modalPeralatan" 
-         tabindex="-1" 
-         role="dialog" 
-         aria-labelledby="modalPeralatanLabel" 
-         aria-hidden="true">
+        id="modalPeralatan" 
+        tabindex="-1" 
+        role="dialog" 
+        aria-labelledby="modalPeralatanLabel" 
+        aria-hidden="true">
 
-      <div class="modal-dialog modal-xl" role="document">
-        <div class="modal-content">
+        <div class="modal-dialog modal-xl" role="document">
+            <div class="modal-content">
 
-          <div class="modal-header">
-            <h5 class="modal-title">Daftar Peralatan Tersedia</h5>
-            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-              <span aria-hidden="true">&times;</span>
-            </button>
-          </div>
+                <div class="modal-header">
+                    <h5 class="modal-title">Daftar Peralatan Tersedia</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div><!-- modal-header -->
 
-          <div class="modal-body">
+                <div class="modal-body">
 
-            <form id="filter-form">
-              @csrf
+    <form id="filter-form">
+        @csrf
 
-            <input type="hidden" name="layanan_id" value="{{ $layanan->id }}">
-            
-            <div class="row">
+                    <input type="hidden" name="layanan_id" value="{{ $layanan->id }}">
 
-              <div class="col-lg-3">
-                <label for="jenis" class="form-label">Jenis Alat</label>
-                <select name="jenis" class="form-control">
-                    <option value="">- ALL -</option>
-                    @foreach($jenis as $satu)
-                    <option value="{{ $satu->id }}">{{ $satu->kode }} - {{ $satu->nama }}</option>
-                    @endforeach
-                </select>
-              </div>
+                    <div class="row">
 
-              <div class="col-lg-3">
-                <label for="sewa" class="form-label">Status Kepemilikan</label>
-                <select name="sewa" class="form-control">
-                    <option value="">- ALL -</option>
-                    <option value="1">SEWA</option>
-                    <option value="0">ASET</option>
-                </select>
-              </div>
+                        <div class="col-lg-4">
+                            <label for="jenis" class="form-label">Jenis Alat</label>
+                            <select name="jenis" class="form-control">
+                                <option value="">- ALL -</option>
+                                @foreach($jenis as $satu)
+                                <option value="{{ $satu->id }}">{{ $satu->kode }} - {{ $satu->nama }}</option>
+                                @endforeach
+                            </select>
+                        </div>
 
-              <div class="col-lg-3">
-                <label for="perusahaan" class="form-label">Perusahaan Pemilik</label>
-                <select name="perusahaan" class="form-control">
-                    <option value="">- ALL -</option>
-                    @foreach($perusahaan as $satu)
-                    <option value="{{ $satu->id }}">{{ $satu->kode }} - {{ $satu->nama }}</option>
-                    @endforeach
-                </select>
-              </div>
+                        <div class="col-lg-4">
+                            <label for="sewa" class="form-label">Status Kepemilikan</label>
+                            <select name="sewa" class="form-control">
+                                <option value="">- ALL -</option>
+                                <option value="1">SEWA</option>
+                                <option value="0">ASET</option>
+                            </select>
+                        </div>
 
-            </div>
-            <!-- row -->
-            <br>
-            <div class="row">
-              <div class="col-lg-12">
-                  <button type="submit" 
-                          class="btn btn-primary btn-sm float-right">
-                          <i class="fas fa-filter"></i>&nbsp;&nbsp;&nbsp;Filter Data</button>
-              </div>
-            </div>
-            <!-- row -->
-            </form>
-            <!-- form -->
+                        <div class="col-lg-4">
+                            <label for="perusahaan" class="form-label">Perusahaan Pemilik</label>
+                            <select name="perusahaan" class="form-control">
+                                <option value="">- ALL -</option>
+                                @foreach($perusahaan as $satu)
+                                <option value="{{ $satu->id }}">{{ $satu->kode }} - {{ $satu->nama }}</option>
+                                @endforeach
+                            </select>
+                        </div>
 
-            <br>
-            <div class="row">
-              <div class="col-lg-12">
-                <div id="daftar-peralatan-tabel">
-                  <!-- AJAX content will be inserted here -->
+                    </div>
+                    <!-- row -->
+                    <br>
+                    <div class="row">
+                        <div class="col-lg-4"></div>
+                        <div class="col-lg-4"></div>
+                        <div class="col-lg-4">
+                            <button type="submit" 
+                                    class="btn btn-primary btn-sm float-right">
+                                    <i class="fas fa-filter"></i>&nbsp;&nbsp;&nbsp;Filter Data</button>
+                        </div>
+                    </div>
+                    <!-- row -->
+    </form>
+    <!-- form -->
 
+                    <br>
+                    <div class="row">
+                        <div class="col-lg-12">
+                        <div id="daftar-peralatan-tabel">
+                            <!-- AJAX content will be inserted here -->
+
+                        </div>
+                    </div><!-- row -->
+                    
                 </div>
-              </div>
-              <!-- col-lg-12 -->
-            </div>
-            <!-- row -->
+                <!-- modal-body -->
 
-          </div>
+            </div>
+            <!-- modal-content -->
         </div>
-      </div>
+        <!-- modal-dialog -->
     </div>
+    <!-- modal fade -->
+
     <!-- Akhir dari Modal untuk tambah peralatan -->
 
     @endsection
