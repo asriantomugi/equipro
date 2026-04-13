@@ -205,26 +205,12 @@
                                 <div class="form-group row">
                                     <label class="col-sm-4 col-form-label">Kondisi</label>
                                     <div class="col-sm-8">
-                                @if($satu->peralatan->kondisi == 1)
                                         <input type="text" 
-                                                name="kondisi" 
+                                                name="perusahaan" 
                                                 class="form-control" 
-                                                value="NORMAL" 
+                                                value="{{ strtoupper($satu->peralatan->kondisi() ?? '-') }}" 
                                                 readonly>
-                                @elseif($satu->peralatan->kondisi == 2)
-                                        <input type="text" 
-                                                name="kondisi" 
-                                                class="form-control" 
-                                                value="NORMAL SEBAGIAN" 
-                                                readonly>
-                                @elseif($satu->peralatan->kondisi == 0)
-                                        <input type="text" 
-                                                name="kondisi" 
-                                                class="form-control" 
-                                                value="RUSAK" 
-                                                readonly>
-                                @endif
-                                    </div>
+                                    </div> 
                                 </div>
 
                             </div>
@@ -375,7 +361,7 @@
                                         <input type="text" 
                                                 name="perusahaan" 
                                                 class="form-control" 
-                                                value="{{ strtoupper($satu->tlPenggantianPeralatan->peralatanBaru->kondisi ?? '-') }}" 
+                                                value="{{ strtoupper($satu->tlPenggantianPeralatan->peralatanBaru->kondisi() ?? '-') }}" 
                                                 readonly>
                                     </div>
                                 </div>
@@ -391,7 +377,7 @@
                                             data-peralatan-lama-id="{{ $satu->peralatan_id }}">
                                             <i class="fas fa-plus"></i>&nbsp;&nbsp;&nbsp;Pilih</button>
 
-                                        <a href="{{ route('tambah.step2.back', ['laporan_id' => $laporan->id]) }}"
+                                        <a href=""
                                             class="btn btn-danger btn-sm float-right">
                                             <i class="fas fa-trash-alt"></i>&nbsp;&nbsp;&nbsp;Hapus
                                         </a>
@@ -408,11 +394,11 @@
                         
 
                         <div class="card-footer">
-                            <a href="{{ route('tambah.step2.back', ['laporan_id' => $laporan->id]) }}"
+                            <a href=""
                                 class="btn btn-success btn-sm">
                                 <i class="fas fa-angle-left"></i>&nbsp;&nbsp;&nbsp;Kembali
                             </a>
-                            <a href="{{ route('tambah.step2.back', ['laporan_id' => $laporan->id]) }}"
+                            <a href="{{ route('logbook.laporan.tambah.step4.form', ['id' => $laporan->id]) }}"
                                 class="btn btn-success btn-sm float-right">
                                 Lanjut&nbsp;&nbsp;&nbsp;<i class="fas fa-angle-right"></i>
                             </a>
@@ -453,10 +439,10 @@
 <form id="filter-form">
     @csrf
 
-                <input type="text" name="laporan_id" value="{{ $laporan->id }}">
-                <input type="text" id="tl_gangguan_id" name="tl_gangguan_id">
-                <input type="text" id="peralatan_lama_id" name="peralatan_lama_id">
-                <input type="text" name="layanan_id" value="{{ $laporan->layanan->id }}">
+                <input type="hidden" name="laporan_id" value="{{ $laporan->id }}">
+                <input type="hidden" id="tl_gangguan_id" name="tl_gangguan_id">
+                <input type="hidden" id="peralatan_lama_id" name="peralatan_lama_id">
+                <input type="hidden" name="layanan_id" value="{{ $laporan->layanan->id }}">
 
                 <div class="row">
 
@@ -559,7 +545,7 @@
     @elseif (session()->get('notif') == 'tambah_sukses')
       $(document).Toasts('create', {
           class: 'bg-success',
-          title: 'Error!',
+          title: 'Sukses!',
           body: 'Peralatan baru telah berhasil ditambahkan.',
           autohide: true,
           delay: 3000
@@ -567,8 +553,16 @@
     @elseif (session()->get('notif') == 'hapus_sukses')
       $(document).Toasts('create', {
           class: 'bg-success',
-          title: 'Error!',
+          title: 'Sukses!',
           body: 'Peralatan baru telah berhasil dihapus.',
+          autohide: true,
+          delay: 3000
+        })
+    @elseif (session()->get('notif') == 'ganti_null')
+      $(document).Toasts('create', {
+          class: 'bg-danger',
+          title: 'Error!',
+          body: 'Peralatan baru belum diisi.',
           autohide: true,
           delay: 3000
         })
@@ -608,7 +602,7 @@ $(document).ready(function(){
 
         // isi hidden input
         $('#gangguan_id').val(gangguanId);
-         $('#tl_gangguan_id').val(tlGangguanId);
+        $('#tl_gangguan_id').val(tlGangguanId);
         $('#peralatan_lama_id').val(peralatanLamaId);
 
     });

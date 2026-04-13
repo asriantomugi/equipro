@@ -113,13 +113,12 @@
                       <td><center>{{ strtoupper($satu->peralatan->merk) }}</center></td>
                       <td><center>{{ strtoupper($satu->peralatan->jenis->nama) }}</center></td>
                       <td><center>{{ strtoupper($satu->ip_address) }}</center></td>
-  @if($satu->peralatan->kondisi === null)
-                      <td></td>
-  @elseif($satu->peralatan->kondisi == config('constants.kondisi_peralatan.normal'))
+
+  @if($satu->peralatan->kondisi === config('constants.kondisi_peralatan.normal'))
                       <td class="text-center"><span class="badge bg-success">NORMAL</span></td>
-    @elseif($satu->peralatan->kondisi == config('constants.kondisi_peralatan.normal_sebagian'))
+  @elseif($satu->peralatan->kondisi === config('constants.kondisi_peralatan.normal_sebagian'))
                       <td class="text-center"><span class="badge bg-warning">NORMAL SEBAGIAN</span></td>
-  @elseif($satu->peralatan->kondisi == config('constants.kondisi_peralatan.rusak'))
+  @elseif($satu->peralatan->kondisi === config('constants.kondisi_peralatan.rusak'))
                       <td class="text-center"><span class="badge bg-danger">RUSAK</span></td>
   @else
                       <td></td>
@@ -140,13 +139,11 @@
 
               </div>
               <!-- /.card-body -->
-              
             </div>
             <!-- /.card -->
 
           </div>
           <!-- ./col -->
-
         </div>
         <!-- /.row -->
 

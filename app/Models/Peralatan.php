@@ -60,6 +60,47 @@ class Peralatan extends Model
     }
 
     /**
+     * Function untuk memanggil object gangguan peralatan.
+     */
+    public function gangguanPeralatan()
+    {
+        return $this->hasMany(GangguanPeralatan::class, 'peralatan_id');
+    }
+
+    /**
+     * Function untuk memanggil kondisi gangguan peralatan.
+     */
+    public function kondisiGangguan($laporan_id)
+    {
+        $gangguan = $this->gangguanPeralatan()
+            ->where('laporan_id', $laporan_id)
+            ->first();
+
+        return $gangguan->kondisi ?? null;
+    }
+
+    /**
+     * Function untuk memanggil object tindaklanjut gangguan peralatan.
+     */
+    public function tlGangguanPeralatan()
+    {
+        return $this->hasMany(TlGangguanPeralatan::class, 'peralatan_id');
+    }
+
+    /**
+     * Function untuk memanggil kondisi tindaklanjut gangguan peralatan.
+     */
+    public function kondisiTlGangguan($laporan_id)
+    {
+        $tlGangguan = $this->tlGangguanPeralatan()
+            ->where('laporan_id', $laporan_id)
+            ->orderBy('created_at', 'desc') // urut berdasarkan created_at DESC
+            ->first(); 
+
+        return $tlGangguan->kondisi ?? null;
+    }
+
+    /**
      * Function untuk memanggil user created_by.
      */
     public function getCreatedName()

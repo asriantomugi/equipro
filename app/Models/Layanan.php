@@ -63,6 +63,16 @@ class Layanan extends Model
     }
 
     /**
+     * Function untuk memanggil kondisi.
+     */
+    public function kondisi()
+    {
+        if ($this->kondisi === 0) return 'UNSERVICEABLE';
+        if ($this->kondisi === 1) return 'SERVICEABLE';
+        return '-';
+    }
+
+    /**
      * Function untuk memanggil user created_by.
      */
     public function getCreatedName()

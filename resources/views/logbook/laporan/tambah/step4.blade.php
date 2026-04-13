@@ -1,165 +1,167 @@
 @extends('logbook.main')
 
 @section('content')
+
 <section class="content">
   <div class="container-fluid">
 
-    {{-- STEP NAVIGATION --}}
+    {{-- Step Navigation --}}
     <div class="row mb-2">
-      <div class="col-lg-12">
-        <div class="card"><div class="card-body py-2">
-          <ul class="step d-flex flex-nowrap">
-            <li class="step-item completed"><a href="{{ route('tambah.step1') }}">Pilih Layanan</a></li>
-            <li class="step-item completed"><a href="{{ route('tambah.step2.back',['laporan_id'=>$laporan->id]) }}">Input Gangguan</a></li>
-            <li class="step-item completed"><a href="{{ route('tambah.step3.back',['laporan_id'=>$laporan->id]) }}">Tindaklanjut</a></li>
-            <li class="step-item active"><a href="#">Penggantian</a></li>
-            <li class="step-item"><a href="#">Review</a></li>
-          </ul>
-        </div></div>
-      </div>
+        <div class="col-lg-12">
+            <div class="card">
+                <div class="card-body py-2">
+                    <ul class="step d-flex flex-nowrap">
+                        <li class="step-item completed"><a href="{{ route('logbook.laporan.tambah.step1.form') }}">Pilih Layanan</a></li>
+                        <li class="step-item completed"><a href="#">Input Gangguan & Tindaklanjut</a></li>
+@if($jenis_tindaklanjut != null)
+    @if($jenis_tindaklanjut == 2)
+                        <li class="step-item completed"><a href="#">Penggantian Alat</a></li>
+    @endif
+@endif
+                        <li class="step-item active"><a href="#">Review</a></li>
+                    </ul>
+                </div>
+            </div>
+        </div>
     </div>
 
-    {{-- FORM --}}
-    <div class="card">
-      <div class="card-header"><h3 class="card-title">FORM PENGGANTIAN</h3></div>
+    {{-- Data Layanan --}}
+    <div class="row">
+      <div class="col-lg-12 col-6">
+        <div class="card">
+          <div class="card-header">
+            <h3 class="card-title">DATA LAYANAN GANGGUAN</h3>
+          </div>
+          <!-- /.card-header -->
 
-      <form action="{{ route('tambah.simpanStep4',['laporan_id'=>$laporan->id]) }}" method="POST">
-        @csrf
-        <input type="hidden" name="laporan_id" value="{{ $laporan->id }}">
-        <input type="hidden" name="layanan_id" value="{{ $laporan->layanan_id }}">
-        <input type="hidden" name="jenis_laporan" value="{{ $laporan->jenis }}">
-        <input type="hidden" name="jenis_tindaklanjut" value="{{ $jenis_tindaklanjut }}">
+          <div class="card-body">
 
-        <div class="card-body">
-          @if ($laporan->jenis == 1 && $jenis_tindaklanjut === 0) {{-- 0 = penggantian --}}
+            <table border='0' cellpadding='5px'>          
+            <tr><th>Fasilitas</th><td>:</td><td>{{ $layanan->fasilitas->kode }} - {{ $layanan->fasilitas->nama }}</td></tr>
+            <tr><th>Kode</th><td>:</td><td>{{ $layanan->kode }}</td></tr>
+            <tr><th>Nama</th><td>:</td><td>{{ $layanan->nama }}</td></tr>
+            <tr><th>Lokasi Tingkat I</th><td>:</td><td>{{ $layanan->lokasiTk1->kode }} - {{ $layanan->LokasiTk1->nama }}</td></tr>
+            <tr><th>Lokasi Tingkat II</th><td>:</td><td>{{ $layanan->lokasiTk2->kode }} - {{ $layanan->LokasiTk2->nama }}</td></tr>
+            <tr><th>Lokasi Tingkat III</th><td>:</td><td>{{ $layanan->lokasiTk3->kode }} - {{ $layanan->LokasiTk3->nama }}</td></tr>
+@if($laporan->kondisi_layanan_open == config('constants.kondisi_layanan.serviceable'))
+            <tr><th>Kondisi Layanan Saat Gangguan</th><td>:</td><td><span class="badge bg-success">SERVICEABLE</span></td></tr>
+@else
+            <tr><th>Kondisi Layanan Saat Gangguan</th><td>:</td><td><span class="badge bg-danger">UNSERVICEABLE</span></td></tr>
+@endif
 
-            @foreach ($peralatanLama as $idx => $peralatan)
-             @if ($loop->iteration > 1) <hr> @endif
-  @php
-    $statusText  = $peralatan->status == 1 ? 'Aktif' : 'Tidak Aktif';
-  @endphp
+@if($laporan->kondisi_layanan_temp == config('constants.kondisi_layanan.serviceable'))
+            <tr><th>Kondisi Layanan Saat Ini</th><td>:</td><td><span class="badge bg-success">SERVICEABLE</span></td></tr>
+@else
+            <tr><th>Kondisi Layanan Saat Ini</th><td>:</td><td><span class="badge bg-danger">UNSERVICEABLE</span></td></tr>
+@endif
+            </table>
 
+          </div>
+          <!-- /.card-body -->
+          
+        </div>
+        <!-- /.card -->
+      </div> <!-- col-lg-12 col-6 -->
+    </div> <!-- row -->
+
+    {{-- Daftar Peralatan --}}
+    <div class="row">
+      <div class="col-lg-12 col-6">
+        
+        <div class="card">
+          <div class="card-header">
+            <h3 class="card-title">DAFTAR PERALATAN</h3>
+          </div>
+          <!-- /.card-header -->
+
+          <div class="card-body">
+
+            <table id="example" class="table table-bordered table-striped">
+              <thead>
+                <tr class="table-condensed">
+                  <th style="width: 10px"><center>NO.</center></th>
+                  <th><center>KODE</center></th>
+                  <th><center>NAMA</center></th>
+                  <th><center>MERK</center></th>
+                  <th><center>JENIS ALAT</center></th>
+                  <th><center>IP ADDRESS</center></th>
+                  <th><center>KONDISI SEBELUM</center></th>
+                  <th><center>KONDISI GANGGUAN</center></th>
+                  <th><center>KONDISI TINDAKLANJUT</center></th>
+                  <th style="width: 100px"></th>
+                </tr>
+              </thead>
+              <tbody>
+              {{-- Looping Data Peralatan --}}
+@foreach ($layanan->daftarPeralatanLayanan as $index => $satu)
+                <tr class="table-condensed">
+                  <td></td>
+                  <td><center>{{ strtoupper($satu->peralatan->kode) }}</center></td>
+                  <td><center>{{ strtoupper($satu->peralatan->nama) }}</center></td>
+                  <td><center>{{ strtoupper($satu->peralatan->merk) }}</center></td>
+                  <td><center>{{ strtoupper($satu->peralatan->jenis->nama) }}</center></td>
+                  <td><center>{{ strtoupper($satu->ip_address) }}</center></td>
   
+                  {{-- Kondisi Peralatan Sebelum Gangguan --}}
+  @if($satu->peralatan->kondisi === config('constants.kondisi_peralatan.normal'))
+                  <td class="text-center"><span class="badge bg-success">NORMAL</span></td>
+  @elseif($satu->peralatan->kondisi === config('constants.kondisi_peralatan.normal_sebagian'))
+                  <td class="text-center"><span class="badge bg-warning">NORMAL SEBAGIAN</span></td>
+  @elseif($satu->peralatan->kondisi === config('constants.kondisi_peralatan.rusak'))
+                  <td class="text-center"><span class="badge bg-danger">RUSAK</span></td>
+  @else
+                  <td></td>
+  @endif
 
-  <div class="row">
-    {{-- PERALATAN LAMA --}}
-    <div class="col-md-6 mb-3">
-      <div class="form-group row mb-2">
-        <div class="col-sm-12">
-          <div class="mb-3">
-            <strong>Peralatan {{ $loop->iteration }}:
-                <span class="badge bg-primary">{{ $peralatan->nama }}</span>
-             </strong>
+                  {{-- Kondisi Peralatan Saat Gangguan --}}
+  @if($satu->peralatan?->kondisiGangguan($laporan->id) === config('constants.kondisi_peralatan.normal'))
+                  <td class="text-center"><span class="badge bg-success">NORMAL</span></td>
+  @elseif($satu->peralatan?->kondisiGangguan($laporan->id) === config('constants.kondisi_peralatan.normal_sebagian'))
+                  <td class="text-center"><span class="badge bg-warning">NORMAL SEBAGIAN</span></td>
+  @elseif($satu->peralatan?->kondisiGangguan($laporan->id) === config('constants.kondisi_peralatan.rusak'))
+                  <td class="text-center"><span class="badge bg-danger">RUSAK</span></td>
+  @else
+                  <td></td>
+  @endif
+
+                  {{-- Kondisi Peralatan Setelah Tindaklanjut --}}
+  @if($satu->peralatan?->kondisiTlGangguan($laporan->id) === config('constants.kondisi_peralatan.normal'))
+                  <td class="text-center"><span class="badge bg-success">NORMAL</span></td>
+  @elseif($satu->peralatan?->kondisiTlGangguan($laporan->id) === config('constants.kondisi_peralatan.normal_sebagian'))
+                  <td class="text-center"><span class="badge bg-warning">NORMAL SEBAGIAN</span></td>
+  @elseif($satu->peralatan?->kondisiTlGangguan($laporan->id) === config('constants.kondisi_peralatan.rusak'))
+                  <td class="text-center"><span class="badge bg-danger">RUSAK </span></td>
+  @else
+                  <td></td>
+  @endif
+                  <td>
+                    <center>
+                      <button class="btn btn-secondary btn-sm" 
+                              onclick="detail('{{ $satu->peralatan->id }}')"
+                              title="Detail Peralatan">
+                              <i class="fas fa-angle-double-right"></i>
+                      </button>
+                    </center>
+                  </td>
+                </tr>
+@endforeach                   
+              </tbody>
+            </table>
+
           </div>
+          <!-- /.card-body -->
         </div>
+        <!-- /.card -->
+
       </div>
-
-      {{-- Data peralatan lama --}}
-      @foreach (['kode','nama','merk','tipe','model','serial_number'] as $f)
-        <div class="form-group row mb-2">
-          <label class="col-sm-4 col-form-label">{{ ucwords(str_replace('_',' ',$f)) }}</label>
-          <div class="col-sm-8">
-            <input type="text" class="form-control" value="{{ $peralatan->$f }}" readonly>
-          </div>
-        </div>
-      @endforeach
-
-      <div class="form-group row mb-2">
-        <label class="col-sm-4 col-form-label">Status</label>
-        <div class="col-sm-8">
-          <input type="text" class="form-control" value="{{ $statusText }}" readonly>
-        </div>
-      </div>
-      
+      <!-- ./col -->
     </div>
+    <!-- /.row -->
 
-    {{-- PERALATAN BARU --}}
-    <div class="col-md-6 mb-3">
-      <div class="form-group row mb-2">
-        <div class="col-sm-8 offset-sm-2 d-flex justify-content-end align-items-center">
-          <button type="button" class="btn btn-success btn-sm btn-ganti-peralatan"
-                  data-toggle="modal"
-                  data-target="#modalPilihPeralatanGanti"
-                  data-index="{{ $idx }}"
-                  data-nama="{{ $peralatan->nama }}">
-            Pilih
-          </button>
-        </div>
-      </div>
 
-      {{-- Input pengiriman ke controller --}}
-      <input type="hidden" name="penggantian[{{ $idx }}][peralatan_lama_id]" value="{{ $peralatan->id }}">
-      <input type="hidden" name="penggantian[{{ $idx }}][peralatan_baru_id]" id="pg_peralatan_baru_id_{{ $idx }}">
 
-      {{-- Tampilan detail peralatan baru (readonly display) --}}
-      @foreach (['kode','nama','merk','tipe','model','serial_number','status'] as $f)
-        <div class="form-group row mb-2">
-          <label class="col-sm-2"></label>
-          <div class="col-sm-8">
-            <input type="text" class="form-control"
-                   name="peralatan_baru[{{ $idx }}][{{ $f }}]"
-                   id="pb_{{ $f }}_{{ $idx }}" readonly>
-          </div>
-        </div>
-      @endforeach
-    </div>
-  </div>
-@endforeach
+  </div> <!-- container-fluid -->
+</section> <!-- content -->
 
-          @endif
-        </div>
-
-        {{-- FOOTER --}}
-        <div class="card-footer">
-          <a href="{{ route('tambah.step3.back',['laporan_id'=>$laporan->id]) }}" class="btn btn-success btn-sm">
-            <i class="fas fa-angle-left"></i>&nbsp;Kembali
-          </a>
-          <button type="submit" class="btn btn-success btn-sm float-right">
-            Lanjut&nbsp;<i class="fas fa-angle-right"></i>
-          </button>
-        </div>
-      </form>
-    </div>
-
-    {{-- MODAL PILIH PERALATAN --}}
-    @include('logbook.laporan.modal_pilih_peralatan')
-  </div>
-</section>
 @endsection
 
-@push('scripts')
-<script>
-$(function(){
-  let selectedIndex = null;
-
-  $('#modalPilihPeralatanGanti').on('show.bs.modal', function(e) {
-    const btn = $(e.relatedTarget);
-    selectedIndex = btn.data('index');
-    const namaPeralatan = btn.data('nama');
-    $('#info-nama-peralatan').text(namaPeralatan || '(data nama peralatan)');
-  });
-
-  $('#filter-ganti-peralatan-form').on('submit', function(e){
-    e.preventDefault();
-    $.post('{{ route("laporan.filterPeralatan") }}', $(this).serialize(), function(data){
-      $('#tabel-peralatan-ganti').html(data);
-    }).fail(xhr => {
-      alert('Gagal memuat data: ' + xhr.responseText);
-    });
-  });
-
-  $('#tabel-peralatan-ganti').on('click', '.btn-pilih-peralatan', function(){
-    const alat = $(this).data('detail');
-    if(selectedIndex !== null){
-      $('#pg_peralatan_baru_id_' + selectedIndex).val(alat.id);
-      ['kode','nama','merk','tipe','model','serial_number'].forEach(f => {
-        $('#pb_' + f + '_' + selectedIndex).val(alat[f]);
-      });
-      $('#pb_status_' + selectedIndex).val(alat.status == 1 ? 'Aktif' : 'Tidak Aktif');
-      $('#pb_kondisi_' + selectedIndex).val(alat.kondisi == 1 ? 'Normal' : 'Rusak');
-    }
-    $('#modalPilihPeralatanGanti').modal('hide');
-  });
-});
-</script>
-@endpush
