@@ -48,6 +48,28 @@ class GangguanPeralatan extends Model
     }
 
     /**
+     * Function untuk memanggil kondisi peralatan saat gangguan.
+     */
+    public function kondisiText()
+    {
+        if ($this->kondisi === 0) return 'RUSAK';
+        if ($this->kondisi === 1) return 'NORMAL';
+        if ($this->kondisi === 2) return 'NORMAL SEBAGIAN';
+        return '-';
+    }
+
+    /**
+     * Function untuk memanggil kondisi peralatan sebelum gangguan.
+     */
+    public function kondisiAwalText()
+    {
+        if ($this->kondisi === 0) return 'RUSAK';
+        if ($this->kondisi === 1) return 'NORMAL';
+        if ($this->kondisi === 2) return 'NORMAL SEBAGIAN';
+        return '-';
+    }
+
+    /**
      * Relasi ke tindaklanjut gangguan peralatan
      */
     public function tlGangguanPeralatan()
@@ -61,6 +83,14 @@ class GangguanPeralatan extends Model
     public function tlPenggantianPeralatan()
     {
         return $this->hasOne(TlGangguanPeralatan::class, 'gangguan_id');
+    }
+
+    /**
+     * Function untuk memanggil waktu gangguan format tertentu.
+     */
+    public function getWaktuAttribute($value)
+    {
+        return Carbon::parse($value)->format('d-m-Y H:i');
     }
 
     /**
@@ -85,7 +115,7 @@ class GangguanPeralatan extends Model
      */
     public function getCreatedAtAttribute($value)
     {
-        return Carbon::parse($value)->format('d-m-Y H:i:s');
+        return Carbon::parse($value)->format('d-m-Y H:i');
     }
 
     /**
@@ -93,6 +123,6 @@ class GangguanPeralatan extends Model
      */
     public function getUpdatedAtAttribute($value)
     {
-        return Carbon::parse($value)->format('d-m-Y H:i:s');
+        return Carbon::parse($value)->format('d-m-Y H:i');
     }
 }

@@ -113,7 +113,7 @@ class Laporan extends Model
      */
     public function getCreatedAtFormattedAttribute()
     {
-        return $this->created_at ? $this->created_at->format('d-m-Y H:i:s') : null;
+        return $this->created_at ? $this->created_at->format('d-m-Y H:i') : null;
     }
 
     /**
@@ -121,6 +121,6 @@ class Laporan extends Model
      */
     public function getUpdatedAtFormattedAttribute()
     {
-        return $this->updated_at ? $this->updated_at->format('d-m-Y H:i:s') : null;
+        return $this->updated_at ? $this->updated_at->format('d-m-Y H:i') : null;
     }
 }

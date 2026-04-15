@@ -81,7 +81,7 @@ class User extends Authenticatable
      */
     public function getCreatedAtAttribute($value)
     {
-        return Carbon::parse($value)->format('d-m-Y H:i:s');
+        return Carbon::parse($value)->format('d-m-Y H:i');
     }
 
     /**
@@ -89,6 +89,6 @@ class User extends Authenticatable
      */
     public function getUpdatedAtAttribute($value)
     {
-        return Carbon::parse($value)->format('d-m-Y H:i:s');
+        return Carbon::parse($value)->format('d-m-Y H:i');
     }
 }

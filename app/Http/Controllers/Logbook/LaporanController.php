@@ -1293,6 +1293,7 @@ public function tambahStep3Back(Request $request)
         if($penggantian){
             // cek apakah peralatan pengganti sudah diisi
             $sudahGantiAlat = $laporan->tlPenggantianPeralatan->isNotEmpty();
+            // jika belum
             if(! $sudahGantiAlat){
                 // kembali ke halaman form tambah step 3 dan tampilkan pesan error
                 return redirect()

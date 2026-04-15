@@ -44,7 +44,7 @@ class LokasiTk1 extends Model
      */
     public function getCreatedAtAttribute($value)
     {
-        return Carbon::parse($value)->format('d-m-Y H:i:s');
+        return Carbon::parse($value)->format('d-m-Y H:i');
     }
 
     /**
@@ -52,6 +52,6 @@ class LokasiTk1 extends Model
      */
     public function getUpdatedAtAttribute($value)
     {
-        return Carbon::parse($value)->format('d-m-Y H:i:s');
+        return Carbon::parse($value)->format('d-m-Y H:i');
     }
 }

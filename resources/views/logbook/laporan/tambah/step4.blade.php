@@ -87,7 +87,7 @@
                   <th><center>IP ADDRESS</center></th>
                   <th><center>KONDISI SEBELUM</center></th>
                   <th><center>KONDISI GANGGUAN</center></th>
-                  <th><center>KONDISI TINDAKLANJUT</center></th>
+                  <th><center>KONDISI TINDAK LANJUT</center></th>
                   <th style="width: 100px"></th>
                 </tr>
               </thead>
@@ -121,7 +121,7 @@
   @elseif($satu->peralatan?->kondisiGangguan($laporan->id) === config('constants.kondisi_peralatan.rusak'))
                   <td class="text-center"><span class="badge bg-danger">RUSAK</span></td>
   @else
-                  <td></td>
+                  <td class="text-center">-</td>
   @endif
 
                   {{-- Kondisi Peralatan Setelah Tindaklanjut --}}
@@ -132,7 +132,7 @@
   @elseif($satu->peralatan?->kondisiTlGangguan($laporan->id) === config('constants.kondisi_peralatan.rusak'))
                   <td class="text-center"><span class="badge bg-danger">RUSAK </span></td>
   @else
-                  <td></td>
+                  <td class="text-center">-</td>
   @endif
                   <td>
                     <center>
@@ -147,6 +147,54 @@
 @endforeach                   
               </tbody>
             </table>
+
+          </div>
+          <!-- /.card-body -->
+        </div>
+        <!-- /.card -->
+
+      </div>
+      <!-- ./col -->
+    </div>
+    <!-- /.row -->
+
+    {{-- Data Gangguan --}}
+    <div class="row">
+      <div class="col-lg-12 col-6">
+        
+        <div class="card">
+          <div class="card-header">
+            <h3 class="card-title">DATA GANGGUAN - TINDAKLANJUT PERALATAN</h3>
+          </div>
+          <!-- /.card-header -->
+
+          <div class="card-body">
+          
+{{-- Looping Data Peralatan --}}
+@foreach ($laporan->gangguanPeralatan as $index => $satu)
+            <table border='0' cellpadding='5px'>        
+              <tr><th>Kode</th><td>:</td><td>{{ strtoupper($satu->peralatan?->kode) }}</td></tr>
+              <tr><th>Nama</th><td>:</td><td>{{ strtoupper($satu->peralatan?->nama) }}</td></tr>
+              <tr></tr>
+              <tr><th>Waktu Gangguan</th><td>:</td><td>{{ strtoupper($satu->waktu) }}</td></tr>
+              
+  @if($satu->kondisi === config('constants.kondisi_peralatan.normal'))
+              <tr><th>Kondisi Saat Gangguan</th><td>:</td><td><span class="badge bg-success">NORMAL</span></td></tr>
+  @elseif($satu->kondisi === config('constants.kondisi_peralatan.normal_sebagian'))
+              <tr><th>Kondisi Saat Gangguan</th><td>:</td><td><span class="badge bg-warning">NORMAL SEBAGIAN</span></td></tr>      
+  @elseif($satu->kondisi === config('constants.kondisi_peralatan.rusak'))
+              <tr><th>Kondisi Saat Gangguan</th><td>:</td><td><span class="badge bg-danger">RUSAK</span></td></tr>
+  @else
+              <tr><th>Kondisi Saat Gangguan</th><td>:</td><td>-</td></tr>
+  @endif
+              <tr><th>Deskripsi Gangguan</th><td>:</td><td>{{ strtoupper($satu->deskripsi) }}</td></tr>
+              
+              <tr><th>Jenis Tindak Lanjut</th><td>:</td><td>{{ strtoupper($satu->peralatan?->nama) }}</td></tr>
+            </table>
+
+            <hr class="my-4" style="border-top: 3px solid #a8a5a5;">
+@endforeach
+          
 
           </div>
           <!-- /.card-body -->
