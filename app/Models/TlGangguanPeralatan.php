@@ -63,6 +63,24 @@ class TlGangguanPeralatan extends Model
         return $this->hasOne(TlPenggantianPeralatan::class, 'tl_gangguan_id');
     }
 
+   /**
+     * Function untuk mendapatkan waktu open dalam format yang diinginkan
+     * function: waktu_mulai_formatted
+     */
+    public function getWaktuMulaiFormattedAttribute()
+    {
+        return $this->waktu_mulai ? Carbon::parse($this->waktu_mulai)->format('d/m/Y') : null;
+    }
+
+    /**
+     * Function untuk mendapatkan waktu close dalam format yang diinginkan
+     * unction: waktu_selesai_formatted
+     */
+    public function getWaktuSelesaiFormattedAttribute()
+    {
+        return $this->waktu_selesai ? Carbon::parse($this->waktu_selesai)->format('d/m/Y') : null;
+    }
+
     /**
      * Function untuk memanggil user created_by.
      */
@@ -85,7 +103,7 @@ class TlGangguanPeralatan extends Model
      */
     public function getCreatedAtAttribute($value)
     {
-        return Carbon::parse($value)->format('d-m-Y H:i');
+        return Carbon::parse($value)->format('d/m/Y H:i');
     }
 
     /**
@@ -93,7 +111,7 @@ class TlGangguanPeralatan extends Model
      */
     public function getUpdatedAtAttribute($value)
     {
-        return Carbon::parse($value)->format('d-m-Y H:i');
+        return Carbon::parse($value)->format('d/m/Y H:i');
     }
 
     protected $casts = [

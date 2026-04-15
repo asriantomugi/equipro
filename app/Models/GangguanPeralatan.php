@@ -88,10 +88,11 @@ class GangguanPeralatan extends Model
     /**
      * Function untuk memanggil waktu gangguan format tertentu.
      */
-    public function getWaktuAttribute($value)
+    public function getWaktuFormattedAttribute()
     {
-        return Carbon::parse($value)->format('d-m-Y H:i');
+        return $this->waktu ? Carbon::parse($this->waktu)->format('d/m/Y - H:i') : null;
     }
+
 
     /**
      * Function untuk memanggil user created_by.
@@ -115,7 +116,7 @@ class GangguanPeralatan extends Model
      */
     public function getCreatedAtAttribute($value)
     {
-        return Carbon::parse($value)->format('d-m-Y H:i');
+        return Carbon::parse($value)->format('d/m/Y H:i');
     }
 
     /**
@@ -123,6 +124,6 @@ class GangguanPeralatan extends Model
      */
     public function getUpdatedAtAttribute($value)
     {
-        return Carbon::parse($value)->format('d-m-Y H:i');
+        return Carbon::parse($value)->format('d/m/Y H:i');
     }
 }
