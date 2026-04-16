@@ -19,7 +19,7 @@ class TlGangguanPeralatan extends Model
      * @var array<int, string>
      */
     protected $guarded = [
-        'id'
+        'id'    
     ];
 
     /**
@@ -113,9 +113,4 @@ class TlGangguanPeralatan extends Model
     {
         return Carbon::parse($value)->format('d/m/Y H:i');
     }
-
-    protected $casts = [
-        'kondisi' => 'string',
-        'waktu' => 'datetime',
-    ];
 }

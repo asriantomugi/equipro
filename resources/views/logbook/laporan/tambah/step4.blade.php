@@ -79,15 +79,15 @@
             <table id="example" class="table table-bordered table-striped">
               <thead>
                 <tr class="table-condensed">
-                  <th style="width: 10px"><center>NO.</center></th>
-                  <th><center>KODE</center></th>
-                  <th><center>NAMA</center></th>
-                  <th><center>MERK</center></th>
-                  <th><center>JENIS ALAT</center></th>
-                  <th><center>IP ADDRESS</center></th>
-                  <th><center>KONDISI SEBELUM</center></th>
-                  <th><center>KONDISI GANGGUAN</center></th>
-                  <th><center>KONDISI TINDAK LANJUT</center></th>
+                  <th class="text-center" style="width: 10px">NO.</th>
+                  <th class="text-center">KODE</th>
+                  <th class="text-center">NAMA</th>
+                  <th class="text-center">MERK</th>
+                  <th class="text-center">JENIS ALAT</th>
+                  <th class="text-center">IP ADDRESS</th>
+                  <th class="text-center">KONDISI SEBELUM</th>
+                  <th class="text-center">KONDISI GANGGUAN</th>
+                  <th class="text-center">KONDISI TINDAK LANJUT</th>
                   <th style="width: 100px"></th>
                 </tr>
               </thead>
@@ -95,12 +95,12 @@
               {{-- Looping Data Peralatan --}}
 @foreach ($layanan->daftarPeralatanLayanan as $index => $satu)
                 <tr class="table-condensed">
-                  <td></td>
-                  <td><center>{{ strtoupper($satu->peralatan->kode) }}</center></td>
-                  <td><center>{{ strtoupper($satu->peralatan->nama) }}</center></td>
-                  <td><center>{{ strtoupper($satu->peralatan->merk) }}</center></td>
-                  <td><center>{{ strtoupper($satu->peralatan->jenis->nama) }}</center></td>
-                  <td><center>{{ strtoupper($satu->ip_address) }}</center></td>
+                  <td class="text-center">{{ $index + 1 }}</td>
+                  <td class="text-center">{{ strtoupper($satu->peralatan->kode) }}</td>
+                  <td class="text-center">{{ strtoupper($satu->peralatan->nama) }}</td>
+                  <td class="text-center">{{ strtoupper($satu->peralatan->merk) }}</td>
+                  <td class="text-center">{{ strtoupper($satu->peralatan->jenis->nama) }}</td>
+                  <td class="text-center">{{ strtoupper($satu->ip_address) }}</td>
   
                   {{-- Kondisi Peralatan Sebelum Gangguan --}}
   @if($satu->peralatan->kondisi === config('constants.kondisi_peralatan.normal'))
@@ -134,14 +134,12 @@
   @else
                   <td class="text-center">-</td>
   @endif
-                  <td>
-                    <center>
+                  <td class="text-center">
                       <button class="btn btn-secondary btn-sm" 
                               onclick="detail('{{ $satu->peralatan->id }}')"
                               title="Detail Peralatan">
                               <i class="fas fa-angle-double-right"></i>
                       </button>
-                    </center>
                   </td>
                 </tr>
 @endforeach                   
@@ -198,67 +196,42 @@
             <table id="example" class="table table-bordered table-striped">
               <thead>
                 <tr class="table-condensed">
-                  <th style="width: 10px"><center>NO.</center></th>
-                  <th><center>WAKTU MULAI</center></th>
-                  <th><center>WAKTU SELESAI</center></th>
-                  <th><center>JENIS</center></th>
-                  <th><center>DESKRIPSI</center></th>
-                  <th><center>KONDISI</center></th>
-                  <th style="width: 100px"></th>
+                  <th class="text-center" style="width: 10px">NO.</th>
+                  <th class="text-center">WAKTU MULAI</th>
+                  <th class="text-center">WAKTU SELESAI</th>
+                  <th class="text-center">JENIS</th>
+                  <th class="text-center" style="width: 600px">DESKRIPSI</th>
+                  <th class="text-center">KONDISI TERAKHIR</th>
                 </tr>
               </thead>
               <tbody>
               {{-- Looping Data Peralatan --}}
   @foreach ($laporan->TlgangguanPeralatan as $index => $satu)
                 <tr class="table-condensed">
-                  <td></td>
-                  <td><center>{{ strtoupper($satu->kode) }}</center></td>
-                  <td><center>{{ strtoupper($satu->peralatan->nama) }}</center></td>
-                  <td><center>{{ strtoupper($satu->peralatan->merk) }}</center></td>
-                  <td><center>{{ strtoupper($satu->peralatan->jenis->nama) }}</center></td>
-                  <td><center>{{ strtoupper($satu->ip_address) }}</center></td>
+                  <td class="text-center">{{ $index + 1 }}</td>
+                  <td class="text-center">{{ strtoupper($satu->waktu_mulai_formatted) }}</td>
+                  <td class="text-center">{{ strtoupper($satu->waktu_selesai_formatted) }}</td>
+
+    @if($satu->jenis === config('constants.jenis_tindaklanjut_gangguan_peralatan.perbaikan'))
+                  <td class="text-center"><span class="badge bg-warning">PERBAIKAN</span></td>
+    @elseif($satu->jenis === config('constants.jenis_tindaklanjut_gangguan_peralatan.penggantian'))
+                  <td class="text-center"><span class="badge bg-warning">PENGGANTIAN</span></td>
+    @else
+                  <td class="text-center">-</td>
+    @endif
+
+                  <td class="text-center">{{ strtoupper($satu->deskripsi) }}</td>
   
-                  {{-- Kondisi Peralatan Sebelum Gangguan --}}
-    @if($satu->peralatan->kondisi === config('constants.kondisi_peralatan.normal'))
-                  <td class="text-center"><span class="badge bg-success">NORMAL</span></td>
-    @elseif($satu->peralatan->kondisi === config('constants.kondisi_peralatan.normal_sebagian'))
-                  <td class="text-center"><span class="badge bg-warning">NORMAL SEBAGIAN</span></td>
-    @elseif($satu->peralatan->kondisi === config('constants.kondisi_peralatan.rusak'))
-                  <td class="text-center"><span class="badge bg-danger">RUSAK</span></td>
-    @else
-                  <td></td>
-    @endif
-
-                  {{-- Kondisi Peralatan Saat Gangguan --}}
-    @if($satu->peralatan?->kondisiGangguan($laporan->id) === config('constants.kondisi_peralatan.normal'))
-                  <td class="text-center"><span class="badge bg-success">NORMAL</span></td>
-    @elseif($satu->peralatan?->kondisiGangguan($laporan->id) === config('constants.kondisi_peralatan.normal_sebagian'))
-                  <td class="text-center"><span class="badge bg-warning">NORMAL SEBAGIAN</span></td>
-    @elseif($satu->peralatan?->kondisiGangguan($laporan->id) === config('constants.kondisi_peralatan.rusak'))
-                  <td class="text-center"><span class="badge bg-danger">RUSAK</span></td>
-    @else
-                  <td class="text-center">-</td>
-    @endif
-
                   {{-- Kondisi Peralatan Setelah Tindaklanjut --}}
-    @if($satu->peralatan?->kondisiTlGangguan($laporan->id) === config('constants.kondisi_peralatan.normal'))
+    @if($satu->kondisi === config('constants.kondisi_peralatan.normal'))
                   <td class="text-center"><span class="badge bg-success">NORMAL</span></td>
-    @elseif($satu->peralatan?->kondisiTlGangguan($laporan->id) === config('constants.kondisi_peralatan.normal_sebagian'))
+    @elseif($satu->kondisi === config('constants.kondisi_peralatan.normal_sebagian'))
                   <td class="text-center"><span class="badge bg-warning">NORMAL SEBAGIAN</span></td>
-    @elseif($satu->peralatan?->kondisiTlGangguan($laporan->id) === config('constants.kondisi_peralatan.rusak'))
-                  <td class="text-center"><span class="badge bg-danger">RUSAK </span></td>
+    @elseif($satu->kondisi === config('constants.kondisi_peralatan.rusak'))
+                  <td class="text-center"><span class="badge bg-danger">RUSAK</span></td>
     @else
                   <td class="text-center">-</td>
     @endif
-                  <td>
-                    <center>
-                      <button class="btn btn-secondary btn-sm" 
-                              onclick="detail('{{ $satu->peralatan->id }}')"
-                              title="Detail Peralatan">
-                              <i class="fas fa-angle-double-right"></i>
-                      </button>
-                    </center>
-                  </td>
                 </tr>
   @endforeach                   
               </tbody>
