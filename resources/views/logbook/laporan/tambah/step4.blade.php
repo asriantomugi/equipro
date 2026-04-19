@@ -54,6 +54,12 @@
 @else
             <tr><th>Kondisi Layanan Saat Ini</th><td>:</td><td><span class="badge bg-danger">UNSERVICEABLE</span></td></tr>
 @endif
+
+@if($laporan->jenis == config('constants.jenis_laporan.gangguan_peralatan'))
+            <tr><th>Jenis Laporan</th><td>:</td><td><span class="badge bg-warning">GANGGUAN PERALATAN</span></td></tr>
+@elseif($laporan->jenis == config('constants.jenis_laporan.gangguan_non_peralatan'))
+            <tr><th>Jenis Laporan</th><td>:</td><td><span class="badge bg-warning">GANGGUAN NON PERALATAN</span></td></tr>
+@endif
             </table>
 
           </div>
@@ -85,9 +91,13 @@
                   <th class="text-center">MERK</th>
                   <th class="text-center">JENIS ALAT</th>
                   <th class="text-center">IP ADDRESS</th>
+  @if($laporan->jenis == config('constants.jenis_laporan.gangguan_peralatan'))
                   <th class="text-center">KONDISI SEBELUM</th>
                   <th class="text-center">KONDISI GANGGUAN</th>
                   <th class="text-center">KONDISI TINDAK LANJUT</th>
+  @elseif($laporan->jenis == config('constants.jenis_laporan.gangguan_non_peralatan'))
+                  <th class="text-center">KONDISI</th>
+  @endif
                   <th style="width: 100px"></th>
                 </tr>
               </thead>
@@ -101,39 +111,56 @@
                   <td class="text-center">{{ strtoupper($satu->peralatan->merk) }}</td>
                   <td class="text-center">{{ strtoupper($satu->peralatan->jenis->nama) }}</td>
                   <td class="text-center">{{ strtoupper($satu->ip_address) }}</td>
+
+  @if($laporan->jenis == config('constants.jenis_laporan.gangguan_peralatan'))
   
                   {{-- Kondisi Peralatan Sebelum Gangguan --}}
-  @if($satu->peralatan->kondisi === config('constants.kondisi_peralatan.normal'))
+              @if($satu->peralatan->kondisi === config('constants.kondisi_peralatan.normal'))
                   <td class="text-center"><span class="badge bg-success">NORMAL</span></td>
-  @elseif($satu->peralatan->kondisi === config('constants.kondisi_peralatan.normal_sebagian'))
+              @elseif($satu->peralatan->kondisi === config('constants.kondisi_peralatan.normal_sebagian'))
                   <td class="text-center"><span class="badge bg-warning">NORMAL SEBAGIAN</span></td>
-  @elseif($satu->peralatan->kondisi === config('constants.kondisi_peralatan.rusak'))
+              @elseif($satu->peralatan->kondisi === config('constants.kondisi_peralatan.rusak'))
                   <td class="text-center"><span class="badge bg-danger">RUSAK</span></td>
-  @else
-                  <td></td>
-  @endif
+              @else
+                  <td class="text-center">-</td>
+              @endif
 
                   {{-- Kondisi Peralatan Saat Gangguan --}}
-  @if($satu->peralatan?->kondisiGangguan($laporan->id) === config('constants.kondisi_peralatan.normal'))
+              @if($satu->peralatan?->kondisiGangguan($laporan->id) === config('constants.kondisi_peralatan.normal'))
                   <td class="text-center"><span class="badge bg-success">NORMAL</span></td>
-  @elseif($satu->peralatan?->kondisiGangguan($laporan->id) === config('constants.kondisi_peralatan.normal_sebagian'))
+              @elseif($satu->peralatan?->kondisiGangguan($laporan->id) === config('constants.kondisi_peralatan.normal_sebagian'))
                   <td class="text-center"><span class="badge bg-warning">NORMAL SEBAGIAN</span></td>
-  @elseif($satu->peralatan?->kondisiGangguan($laporan->id) === config('constants.kondisi_peralatan.rusak'))
+              @elseif($satu->peralatan?->kondisiGangguan($laporan->id) === config('constants.kondisi_peralatan.rusak'))
                   <td class="text-center"><span class="badge bg-danger">RUSAK</span></td>
-  @else
+              @else
                   <td class="text-center">-</td>
-  @endif
+              @endif
 
                   {{-- Kondisi Peralatan Setelah Tindaklanjut --}}
-  @if($satu->peralatan?->kondisiTlGangguan($laporan->id) === config('constants.kondisi_peralatan.normal'))
+              @if($satu->peralatan?->kondisiTlGangguan($laporan->id) === config('constants.kondisi_peralatan.normal'))
                   <td class="text-center"><span class="badge bg-success">NORMAL</span></td>
-  @elseif($satu->peralatan?->kondisiTlGangguan($laporan->id) === config('constants.kondisi_peralatan.normal_sebagian'))
+              @elseif($satu->peralatan?->kondisiTlGangguan($laporan->id) === config('constants.kondisi_peralatan.normal_sebagian'))
                   <td class="text-center"><span class="badge bg-warning">NORMAL SEBAGIAN</span></td>
-  @elseif($satu->peralatan?->kondisiTlGangguan($laporan->id) === config('constants.kondisi_peralatan.rusak'))
+              @elseif($satu->peralatan?->kondisiTlGangguan($laporan->id) === config('constants.kondisi_peralatan.rusak'))
                   <td class="text-center"><span class="badge bg-danger">RUSAK </span></td>
-  @else
+              @else
                   <td class="text-center">-</td>
+              @endif
+
+  @elseif($laporan->jenis == config('constants.jenis_laporan.gangguan_non_peralatan'))
+
+              {{-- Kondisi Peralatan --}}
+              @if($satu->peralatan->kondisi === config('constants.kondisi_peralatan.normal'))
+                  <td class="text-center"><span class="badge bg-success">NORMAL</span></td>
+              @elseif($satu->peralatan->kondisi === config('constants.kondisi_peralatan.normal_sebagian'))
+                  <td class="text-center"><span class="badge bg-warning">NORMAL SEBAGIAN</span></td>
+              @elseif($satu->peralatan->kondisi === config('constants.kondisi_peralatan.rusak'))
+                  <td class="text-center"><span class="badge bg-danger">RUSAK</span></td>
+              @else
+                  <td class="text-center">-</td>
+              @endif
   @endif
+
                   <td class="text-center">
                       <button class="btn btn-secondary btn-sm" 
                               onclick="detail('{{ $satu->peralatan->id }}')"

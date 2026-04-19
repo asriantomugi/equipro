@@ -417,17 +417,17 @@ class LaporanController extends Controller
     {
         // validasi umum
         $request->validate([
-                'layanan_id' => 'required|exists:layanan,id',
-                'jenis' => 'required|in:1,2', // 1 = peralatan, 2 = non peralatan
-                'kondisi_layanan_open' => 'required|in:1,2',
-                'kondisi_layanan_close' => 'nullable|in:1,2',
-            ],[
-                // pesan error
-                'layanan_id.required' => 'Layanan kosong.',
-                'layanan_id.exists' => 'Layanan tidak valid.',
-                'jenis.required' => 'Jenis Laporan kosong.',
-                'jenis.in' => 'Jenis Laporan tidak valid.',
-            ]);
+            'layanan_id' => 'required|exists:layanan,id',
+            'jenis' => 'required|in:1,2', // 1 = peralatan, 2 = non peralatan
+            'kondisi_layanan_open' => 'required|in:1,2',
+            'kondisi_layanan_close' => 'nullable|in:1,2',
+        ],[
+            // pesan error
+            'layanan_id.required' => 'Layanan kosong.',
+            'layanan_id.exists' => 'Layanan tidak valid.',
+            'jenis.required' => 'Jenis Laporan kosong.',
+            'jenis.in' => 'Jenis Laporan tidak valid.',
+        ]);
 
         // ambil data layanan aktif berdasarkan ID layanan dari form tambah laporan step 2
         $layanan = Layanan::where('id', $request->layanan_id)
@@ -495,7 +495,7 @@ class LaporanController extends Controller
                 // -------------------------------------------------------------------------
                 foreach ($peralatan as $satu) {
 
-                    // jika peralatan tsb ada diinput gangguan
+                    // jika peralatan tsb ada di-input gangguan
                     if($satu['flag_gangguan'] == 1){
 
                         $gangguan = GangguanPeralatan::create([
@@ -557,13 +557,13 @@ class LaporanController extends Controller
                             }
                         } 
                     }
-                }// End of Loop
+                }
                 // -------------------------------------------------------------------------
                 //                             END OF LOOPING
                 // -------------------------------------------------------------------------
             }
             // jika jenis laporan = gangguan non peralatan, maka insert data ke tabel Gangguan Non Peralatan
-            elseif($jenis == config('constants.jenis_laporan.gangguan_non_peralatan')){
+            else if($jenis == config('constants.jenis_laporan.gangguan_non_peralatan')){
 
                 // insert data ke tabel Gangguan Peralatan
                 $gangguan = GangguanNonPeralatan::create([
@@ -605,7 +605,7 @@ class LaporanController extends Controller
                 ->with('notif', 'tambah_gagal');
         }
 
-        // jika ada tindaklanjut penggantian alat, lanjutkan ke form tambah step 3
+        // jika ada tindaklanjut penggantian alat , lanjutkan ke form tambah step 3
         if($jenis == config('constants.jenis_laporan.gangguan_peralatan')){
             // cek apakah ada penggantian
             $adaPenggantian = collect($request->peralatan)
@@ -620,7 +620,7 @@ class LaporanController extends Controller
             }
         }
         
-        // lanjut ke halaman form tambah step 4 (review)
+        // selain dari itu, lanjut ke halaman form tambah step 4 (review)
         return redirect()
             ->route('logbook.laporan.tambah.step4.form', $laporan->id)
             ->with('notif', 'draft_sukses');
@@ -1254,7 +1254,12 @@ public function tambahStep3Back(Request $request)
     public function formTambahStep4($laporan_id)
     {
         // ambil laporan dengan status DRAFT berdasarkan id
-        $laporan = Laporan::with(['gangguanPeralatan','tlGangguanPeralatan', 'tlPenggantianPeralatan'])
+        $laporan = Laporan::with([
+            'gangguanPeralatan',
+            'tlGangguanPeralatan', 
+            'tlPenggantianPeralatan',
+            'gangguanNonPeralatan',
+            'tlGangguanNonPeralatan'])
             ->where('id', $laporan_id)
             ->where('status', config('constants.status_laporan.draft'))
             ->first();
@@ -1284,25 +1289,44 @@ public function tambahStep3Back(Request $request)
                 ->with('notif', 'laporan_null');
         }
 
-        // cek apakah di penggantian peralatan
+        // buat variable awal
         $jenis_tindaklanjut = null;
-        $penggantian = $laporan->tlGangguanPeralatan
-            ->contains('jenis', 2);
 
-        // jika ada penggantian alat
-        if($penggantian){
-            // cek apakah peralatan pengganti sudah diisi
-            $sudahGantiAlat = $laporan->tlPenggantianPeralatan->isNotEmpty();
-            // jika belum
-            if(! $sudahGantiAlat){
-                // kembali ke halaman form tambah step 3 dan tampilkan pesan error
-                return redirect()
-                    ->route('logbook.laporan.tambah.step3', ['laporan_id' => $laporan->id])
-                    ->with('notif', 'ganti_null');
+        // cek jenis gangguan
+        // apabila jenis gangguan = Gangguan Peralatan
+        if($laporan->jenis == config('constants.jenis_laporan.gangguan_peralatan')){
+
+            // cek apakah di penggantian peralatan
+            $penggantian = $laporan->tlGangguanPeralatan
+                ->contains('jenis', 2);
+
+            // jika ada penggantian alat
+            if($penggantian){
+                // cek apakah peralatan pengganti sudah diisi
+                $sudahGantiAlat = $laporan->tlPenggantianPeralatan->isNotEmpty();
+                // jika belum
+                if(! $sudahGantiAlat){
+                    // kembali ke halaman form tambah step 3 dan tampilkan pesan error
+                    return redirect()
+                        ->route('logbook.laporan.tambah.step3', ['laporan_id' => $laporan->id])
+                        ->with('notif', 'ganti_null');
+                }
+                // isi variabel jenis tindaklanjut
+                $jenis_tindaklanjut = config('constants.jenis_tindaklanjut_gangguan_peralatan.penggantian');
             }
-            // isi variabel jenis tindaklanjut
-            $jenis_tindaklanjut = config('constants.jenis_tindaklanjut_gangguan_peralatan.penggantian');
         }
+        // apabila jenis gangguan = Gangguan Non Peralatan
+        else if($laporan->jenis == config('constants.jenis_laporan.gangguan_non_peralatan')){
+            
+        }
+        // jika tidak keduanya
+        else{
+
+        }
+
+        
+
+        
 
         // Data tambahan untuk view
         $judul = "Laporan";
