@@ -18,6 +18,14 @@ class Laporan extends Model
         'id'
     ];
 
+    /**
+     * Atribut yang ditambahkan ke JSON.
+     */
+    protected $appends = [
+        'created_at_formatted',
+        'updated_at_formatted',
+    ];
+
      /**
      * Function untuk memanggil layanan dari laporan.
      */
@@ -113,7 +121,7 @@ class Laporan extends Model
      */
     public function getCreatedAtFormattedAttribute()
     {
-        return $this->created_at ? $this->created_at->format('d-m-Y H:i') : null;
+        return $this->created_at ? $this->created_at->format('d/m/Y H:i') : null;
     }
 
     /**
@@ -121,6 +129,6 @@ class Laporan extends Model
      */
     public function getUpdatedAtFormattedAttribute()
     {
-        return $this->updated_at ? $this->updated_at->format('d-m-Y H:i') : null;
+        return $this->updated_at ? $this->updated_at->format('d/m/Y H:i') : null;
     }
 }

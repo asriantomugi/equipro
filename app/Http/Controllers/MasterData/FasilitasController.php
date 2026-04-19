@@ -171,7 +171,7 @@ class FasilitasController extends Controller
         $created_by = User::find($fasilitas->created_by);
         $updated_by = User::find($fasilitas->updated_by);
 
-        //dd($perusahaan->nama);
+        //dd($fasilitas);
 
         //return response()->json($user);
         return response()->json([

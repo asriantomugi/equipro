@@ -21,6 +21,14 @@ class Fasilitas extends Model
     ];
 
     /**
+     * Atribut yang ditambahkan ke JSON.
+     */
+    protected $appends = [
+        'created_at_formatted',
+        'updated_at_formatted',
+    ];
+
+    /**
      * Relasi: Fasilitas memiliki banyak layanan.
      */
     public function getLayanan()
@@ -67,23 +75,23 @@ class Fasilitas extends Model
     }
 
     /**
-     * Format custom untuk created_at.
+     * Function untuk mendapatkan created_at dalam format yang diinginkan untuk tampilan
      */
-    public function getCreatedAtAttribute($value)
+    public function getCreatedAtFormattedAttribute()
     {
-        return Carbon::parse($value)->format('d-m-Y H:i');
+        return $this->created_at ? $this->created_at->format('d/m/Y H:i') : null;
     }
 
     /**
-     * Format custom untuk updated_at.
+     * Function untuk mendapatkan updated_at dalam format yang diinginkan untuk tampilan
      */
-    public function getUpdatedAtAttribute($value)
+    public function getUpdatedAtFormattedAttribute()
     {
-        return Carbon::parse($value)->format('d-m-Y H:i');
+        return $this->updated_at ? $this->updated_at->format('d/m/Y H:i') : null;
     }
 
     /**
-     * ✅ Relasi: Fasilitas memiliki banyak laporan.
+     * Relasi: Fasilitas memiliki banyak laporan.
      */
    public function laporan()
 {

@@ -23,6 +23,14 @@ class LokasiTk3 extends Model
     ];
 
     /**
+     * Atribut yang ditambahkan ke JSON.
+     */
+    protected $appends = [
+        'created_at_formatted',
+        'updated_at_formatted',
+    ];
+
+    /**
      * Function untuk memanggil data lokasi tingkat I.
      */
     public function getLokasiTk1()
@@ -56,18 +64,18 @@ class LokasiTk3 extends Model
 
 
     /**
-     * Function untuk memanggil created_at dengan format tertentu.
+     * Function untuk mendapatkan created_at dalam format yang diinginkan untuk tampilan
      */
-    public function getCreatedAtAttribute($value)
+    public function getCreatedAtFormattedAttribute()
     {
-        return Carbon::parse($value)->format('d-m-Y H:i:s');
+        return $this->created_at ? $this->created_at->format('d/m/Y H:i') : null;
     }
 
     /**
-     * Function untuk memanggil updated_at dengan format tertentu.
+     * Function untuk mendapatkan updated_at dalam format yang diinginkan untuk tampilan
      */
-    public function getUpdatedAtAttribute($value)
+    public function getUpdatedAtFormattedAttribute()
     {
-        return Carbon::parse($value)->format('d-m-Y H:i:s');
+        return $this->updated_at ? $this->updated_at->format('d/m/Y H:i') : null;
     }
 }

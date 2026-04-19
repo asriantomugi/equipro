@@ -49,7 +49,7 @@
   @endif
                       <td>
 <!--
-<form action="{{url('/user/detail')}}"
+<form action="{{route('master_data.fasilitas.detail')}}"
       method="post">
 @csrf
 
@@ -171,7 +171,7 @@
         data : {id: id},
         success: function(data){
 
-          //alert(data.fasilitas.detail);
+          //alert(data.fasilitas.created_at_formatted);
 
           $('#detail').empty();
 
@@ -192,16 +192,16 @@
           }
 
           if(data.created_by != null){
-              row += "<tr><th>Dibuat Oleh</th><td>:</td><td>"+ data.created_by.name.toUpperCase(); +"</td></tr>";
-              row += "<tr><th>Dibuat Pada</th><td>:</td><td>"+ data.fasilitas.created_at +"</td></tr>";
+              row += "<tr><th>Dibuat Oleh</th><td>:</td><td>"+ data.created_by.name.toUpperCase() +"</td></tr>";
+              row += "<tr><th>Dibuat Pada</th><td>:</td><td>"+ data.fasilitas.created_at_formatted +"</td></tr>";
           }else{
               row += "<tr><th>Dibuat Oleh</th><td>:</td><td></td></tr>";
               row += "<tr><th>Dibuat Pada</th><td>:</td><td></td></tr>";
           } 
 
           if(data.updated_by != null){
-              row += "<tr><th>Update Terakhir Oleh</th><td>:</td><td>"+ data.updated_by.name.toUpperCase(); +"</td></tr>";
-              row += "<tr><th>Update Terakhir Pada</th><td>:</td><td>"+ data.fasilitas.updated_at +"</td></tr>";
+              row += "<tr><th>Update Terakhir Oleh</th><td>:</td><td>"+ data.updated_by.name.toUpperCase() +"</td></tr>";
+              row += "<tr><th>Update Terakhir Pada</th><td>:</td><td>"+ data.fasilitas.updated_at_formatted +"</td></tr>";
           }else{
               row += "<tr><th>Update Terakhir Oleh</th><td>:</td><td></td></tr>";
               row += "<tr><th>Update Terakhir Pada</th><td>:</td><td></td></tr>";

@@ -177,13 +177,13 @@
               <tr><th>Waktu Gangguan</th><td>:</td><td>{{ strtoupper($satu->waktu_formatted ?? '-') }}</td></tr>
               
   @if($satu->kondisi === config('constants.kondisi_peralatan.normal'))
-              <tr><th>Kondisi Saat Gangguan</th><td>:</td><td><span class="badge bg-success">NORMAL</span></td></tr>
+              <tr><th>Kondisi Peralatan Saat Gangguan</th><td>:</td><td><span class="badge bg-success">NORMAL</span></td></tr>
   @elseif($satu->kondisi === config('constants.kondisi_peralatan.normal_sebagian'))
-              <tr><th>Kondisi Saat Gangguan</th><td>:</td><td><span class="badge bg-warning">NORMAL SEBAGIAN</span></td></tr>      
+              <tr><th>Kondisi Peralatan Saat Gangguan</th><td>:</td><td><span class="badge bg-warning">NORMAL SEBAGIAN</span></td></tr>      
   @elseif($satu->kondisi === config('constants.kondisi_peralatan.rusak'))
-              <tr><th>Kondisi Saat Gangguan</th><td>:</td><td><span class="badge bg-danger">RUSAK</span></td></tr>
+              <tr><th>Kondisi Peralatan Saat Gangguan</th><td>:</td><td><span class="badge bg-danger">RUSAK</span></td></tr>
   @else
-              <tr><th>Kondisi Saat Gangguan</th><td>:</td><td>-</td></tr>
+              <tr><th>Kondisi Peralatan Saat Gangguan</th><td>:</td><td>-</td></tr>
   @endif
               <tr><th>Deskripsi Gangguan</th><td>:</td><td>{{ strtoupper($satu->deskripsi) }}</td></tr>
               
@@ -201,7 +201,7 @@
                   <th class="text-center">WAKTU SELESAI</th>
                   <th class="text-center">JENIS</th>
                   <th class="text-center" style="width: 600px">DESKRIPSI</th>
-                  <th class="text-center">KONDISI TERAKHIR</th>
+                  <th class="text-center">KONDISI AKHIR</th>
                 </tr>
               </thead>
               <tbody>

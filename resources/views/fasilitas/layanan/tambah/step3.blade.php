@@ -295,7 +295,7 @@
 
             if(data.created_by != null){
                 row += "<tr><th>Dibuat Oleh</th><td>:</td><td>"+ data.created_by.name.toUpperCase(); +"</td></tr>";
-                row += "<tr><th>Dibuat Pada</th><td>:</td><td>"+ data.peralatan.created_at +"</td></tr>";
+                row += "<tr><th>Dibuat Pada</th><td>:</td><td>"+ data.peralatan.created_at_formatted +"</td></tr>";
             }else{
                 row += "<tr><th>Dibuat Oleh</th><td>:</td><td></td></tr>";
                 row += "<tr><th>Dibuat Pada</th><td>:</td><td></td></tr>";
@@ -303,7 +303,7 @@
 
             if(data.updated_by != null){
                 row += "<tr><th>Update Terakhir Oleh</th><td>:</td><td>"+ data.updated_by.name.toUpperCase(); +"</td></tr>";
-                row += "<tr><th>Update Terakhir Pada</th><td>:</td><td>"+ data.peralatan.updated_at +"</td></tr>";
+                row += "<tr><th>Update Terakhir Pada</th><td>:</td><td>"+ data.peralatan.updated_at_formatted +"</td></tr>";
             }else{
                 row += "<tr><th>Update Terakhir Oleh</th><td>:</td><td></td></tr>";
                 row += "<tr><th>Update Terakhir Pada</th><td>:</td><td></td></tr>";

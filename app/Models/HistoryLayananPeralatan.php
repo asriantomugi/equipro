@@ -27,6 +27,14 @@ class HistoriLayananPerperalatanan extends Model
         'waktu_lepas' => 'datetime'
     ];
 
+    /**
+     * Atribut yang ditambahkan ke JSON.
+     */
+    protected $appends = [
+        'created_at_formatted',
+        'updated_at_formatted',
+    ];
+
     public function layanan()
     {
         return $this->belongsTo(Layanan::class);
@@ -60,18 +68,18 @@ class HistoriLayananPerperalatanan extends Model
 
 
     /**
-     * Function untuk memanggil created_at dengan format tertentu.
+     * Function untuk mendapatkan created_at dalam format yang diinginkan untuk tampilan
      */
-    public function getCreatedAtAttribute($value)
+    public function getCreatedAtFormattedAttribute()
     {
-        return Carbon::parse($value)->format('d-m-Y H:i');
+        return $this->created_at ? $this->created_at->format('d/m/Y H:i') : null;
     }
 
     /**
-     * Function untuk memanggil updated_at dengan format tertentu.
+     * Function untuk mendapatkan updated_at dalam format yang diinginkan untuk tampilan
      */
-    public function getUpdatedAtAttribute($value)
+    public function getUpdatedAtFormattedAttribute()
     {
-        return Carbon::parse($value)->format('d-m-Y H:i');
+        return $this->updated_at ? $this->updated_at->format('d/m/Y H:i') : null;
     }
 }
