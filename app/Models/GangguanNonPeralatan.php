@@ -47,6 +47,14 @@ class GangguanNonPeralatan extends Model
     }
 
     /**
+     * Function untuk memanggil waktu gangguan format tertentu.
+     */
+    public function getWaktuFormattedAttribute()
+    {
+        return $this->waktu ? Carbon::parse($this->waktu)->format('d/m/Y - H:i') : null;
+    }
+
+    /**
      * Function untuk memanggil user created_by.
      */
     public function getCreatedName()
@@ -68,7 +76,7 @@ class GangguanNonPeralatan extends Model
      */
     public function getCreatedAtFormattedAttribute()
     {
-        return $this->created_at ? $this->created_at->format('d/m/Y H:i') : null;
+        return $this->created_at ? $this->created_at->format('d/m/Y - H:i') : null;
     }
 
     /**
@@ -76,6 +84,6 @@ class GangguanNonPeralatan extends Model
      */
     public function getUpdatedAtFormattedAttribute()
     {
-        return $this->updated_at ? $this->updated_at->format('d/m/Y H:i') : null;
+        return $this->updated_at ? $this->updated_at->format('d/m/Y - H:i') : null;
     }
 }

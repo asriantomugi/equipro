@@ -56,6 +56,24 @@ class TlGangguanNonPeralatan extends Model
     }
 
     /**
+     * Function untuk mendapatkan waktu open dalam format yang diinginkan
+     * function: waktu_mulai_formatted
+     */
+    public function getWaktuMulaiFormattedAttribute()
+    {
+        return $this->waktu_mulai ? Carbon::parse($this->waktu_mulai)->format('d/m/Y') : null;
+    }
+
+    /**
+     * Function untuk mendapatkan waktu close dalam format yang diinginkan
+     * unction: waktu_selesai_formatted
+     */
+    public function getWaktuSelesaiFormattedAttribute()
+    {
+        return $this->waktu_selesai ? Carbon::parse($this->waktu_selesai)->format('d/m/Y') : null;
+    }
+
+    /**
      * Function untuk memanggil user created_by.
      */
     public function getCreatedName()
@@ -77,7 +95,7 @@ class TlGangguanNonPeralatan extends Model
      */
     public function getCreatedAtFormattedAttribute()
     {
-        return $this->created_at ? $this->created_at->format('d/m/Y H:i') : null;
+        return $this->created_at ? $this->created_at->format('d/m/Y - H:i') : null;
     }
 
     /**
@@ -85,6 +103,6 @@ class TlGangguanNonPeralatan extends Model
      */
     public function getUpdatedAtFormattedAttribute()
     {
-        return $this->updated_at ? $this->updated_at->format('d/m/Y H:i') : null;
+        return $this->updated_at ? $this->updated_at->format('d/m/Y - H:i') : null;
     }
 }

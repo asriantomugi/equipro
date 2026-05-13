@@ -14,10 +14,16 @@
         <div class="card">
           <div class="card-body py-2">
             <ul class="step d-flex flex-nowrap">
-              <li class="step-item active"><a href="#">Pilih Layanan</a></li>
-              <li class="step-item"><a href="#">Input Gangguan</a></li>
-              <li class="step-item"><a href="#">Tindaklanjut</a></li>
-              <li class="step-item"><a href="#">Review</a></li>
+              <ul class="step d-flex flex-nowrap">
+                            <li class="step-item active"><a href="#">Pilih Layanan</a></li>
+                            <li class="step-item"><a href="#">Input Gangguan & Tindaklanjut</a></li>
+    @if($jenis_tindaklanjut != null)
+        @if($jenis_tindaklanjut == 2)
+                            <li class="step-item"><a href="#">Penggantian Alat</a></li>
+        @endif
+    @endif
+                            <li class="step-item"><a href="#">Review</a></li>
+                        </ul>
             </ul>
           </div> <!-- card-body -->
         </div> <!-- card -->

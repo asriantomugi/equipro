@@ -91,19 +91,20 @@
                   <th class="text-center">MERK</th>
                   <th class="text-center">JENIS ALAT</th>
                   <th class="text-center">IP ADDRESS</th>
-  @if($laporan->jenis == config('constants.jenis_laporan.gangguan_peralatan'))
+          @if($laporan->jenis == config('constants.jenis_laporan.gangguan_peralatan'))
                   <th class="text-center">KONDISI SEBELUM</th>
                   <th class="text-center">KONDISI GANGGUAN</th>
                   <th class="text-center">KONDISI TINDAK LANJUT</th>
-  @elseif($laporan->jenis == config('constants.jenis_laporan.gangguan_non_peralatan'))
+          @elseif($laporan->jenis == config('constants.jenis_laporan.gangguan_non_peralatan'))
                   <th class="text-center">KONDISI</th>
-  @endif
+          @endif
                   <th style="width: 100px"></th>
                 </tr>
               </thead>
               <tbody>
               {{-- Looping Data Peralatan --}}
-@foreach ($layanan->daftarPeralatanLayanan as $index => $satu)
+
+    @foreach ($layanan->daftarPeralatanLayanan as $index => $satu)
                 <tr class="table-condensed">
                   <td class="text-center">{{ $index + 1 }}</td>
                   <td class="text-center">{{ strtoupper($satu->peralatan->kode) }}</td>
@@ -112,7 +113,7 @@
                   <td class="text-center">{{ strtoupper($satu->peralatan->jenis->nama) }}</td>
                   <td class="text-center">{{ strtoupper($satu->ip_address) }}</td>
 
-  @if($laporan->jenis == config('constants.jenis_laporan.gangguan_peralatan'))
+          @if($laporan->jenis == config('constants.jenis_laporan.gangguan_peralatan'))
   
                   {{-- Kondisi Peralatan Sebelum Gangguan --}}
               @if($satu->peralatan->kondisi === config('constants.kondisi_peralatan.normal'))
@@ -147,7 +148,7 @@
                   <td class="text-center">-</td>
               @endif
 
-  @elseif($laporan->jenis == config('constants.jenis_laporan.gangguan_non_peralatan'))
+          @elseif($laporan->jenis == config('constants.jenis_laporan.gangguan_non_peralatan'))
 
               {{-- Kondisi Peralatan --}}
               @if($satu->peralatan->kondisi === config('constants.kondisi_peralatan.normal'))
@@ -159,7 +160,7 @@
               @else
                   <td class="text-center">-</td>
               @endif
-  @endif
+          @endif
 
                   <td class="text-center">
                       <button class="btn btn-secondary btn-sm" 
@@ -169,7 +170,7 @@
                       </button>
                   </td>
                 </tr>
-@endforeach                   
+    @endforeach
               </tbody>
             </table>
 
@@ -189,29 +190,30 @@
         
         <div class="card">
           <div class="card-header">
-            <h3 class="card-title">DATA GANGGUAN - TINDAKLANJUT PERALATAN</h3>
+            <h3 class="card-title">DATA GANGGUAN - TINDAKLANJUT GANGGUAN</h3>
           </div>
           <!-- /.card-header -->
 
           <div class="card-body">
           
-            {{-- Looping Data Gangguan Peralatan --}}
-@foreach ($laporan->gangguanPeralatan as $index => $satu)
+            {{-- Looping Data Gangguan Peralatan untuk Jenis Gangguan Peralatan --}}
+
+@if($laporan->jenis == config('constants.jenis_laporan.gangguan_peralatan'))
+      @foreach ($laporan->gangguanPeralatan as $index => $satu)
             <table border='0' cellpadding='5px'>        
               <tr><th>Kode</th><td>:</td><td>{{ strtoupper($satu->peralatan?->kode) }}</td></tr>
               <tr><th>Nama</th><td>:</td><td>{{ strtoupper($satu->peralatan?->nama) }}</td></tr>
-              <tr></tr>
               <tr><th>Waktu Gangguan</th><td>:</td><td>{{ strtoupper($satu->waktu_formatted ?? '-') }}</td></tr>
               
-  @if($satu->kondisi === config('constants.kondisi_peralatan.normal'))
+          @if($satu->kondisi === config('constants.kondisi_peralatan.normal'))
               <tr><th>Kondisi Peralatan Saat Gangguan</th><td>:</td><td><span class="badge bg-success">NORMAL</span></td></tr>
-  @elseif($satu->kondisi === config('constants.kondisi_peralatan.normal_sebagian'))
+          @elseif($satu->kondisi === config('constants.kondisi_peralatan.normal_sebagian'))
               <tr><th>Kondisi Peralatan Saat Gangguan</th><td>:</td><td><span class="badge bg-warning">NORMAL SEBAGIAN</span></td></tr>      
-  @elseif($satu->kondisi === config('constants.kondisi_peralatan.rusak'))
+          @elseif($satu->kondisi === config('constants.kondisi_peralatan.rusak'))
               <tr><th>Kondisi Peralatan Saat Gangguan</th><td>:</td><td><span class="badge bg-danger">RUSAK</span></td></tr>
-  @else
+          @else
               <tr><th>Kondisi Peralatan Saat Gangguan</th><td>:</td><td>-</td></tr>
-  @endif
+          @endif
               <tr><th>Deskripsi Gangguan</th><td>:</td><td>{{ strtoupper($satu->deskripsi) }}</td></tr>
               
               <tr><th>Tindak Lanjut</th><td>:</td><td></td></tr>
@@ -233,38 +235,85 @@
               </thead>
               <tbody>
               {{-- Looping Data Peralatan --}}
-  @foreach ($laporan->TlgangguanPeralatan as $index => $satu)
+          @foreach ($laporan->TlgangguanPeralatan as $index => $satu)
                 <tr class="table-condensed">
                   <td class="text-center">{{ $index + 1 }}</td>
                   <td class="text-center">{{ strtoupper($satu->waktu_mulai_formatted) }}</td>
                   <td class="text-center">{{ strtoupper($satu->waktu_selesai_formatted) }}</td>
 
-    @if($satu->jenis === config('constants.jenis_tindaklanjut_gangguan_peralatan.perbaikan'))
+              @if($satu->jenis === config('constants.jenis_tindaklanjut_gangguan_peralatan.perbaikan'))
                   <td class="text-center"><span class="badge bg-warning">PERBAIKAN</span></td>
-    @elseif($satu->jenis === config('constants.jenis_tindaklanjut_gangguan_peralatan.penggantian'))
+              @elseif($satu->jenis === config('constants.jenis_tindaklanjut_gangguan_peralatan.penggantian'))
                   <td class="text-center"><span class="badge bg-warning">PENGGANTIAN</span></td>
-    @else
+              @else
                   <td class="text-center">-</td>
-    @endif
+              @endif
 
                   <td class="text-center">{{ strtoupper($satu->deskripsi) }}</td>
   
                   {{-- Kondisi Peralatan Setelah Tindaklanjut --}}
-    @if($satu->kondisi === config('constants.kondisi_peralatan.normal'))
+              @if($satu->kondisi === config('constants.kondisi_peralatan.normal'))
                   <td class="text-center"><span class="badge bg-success">NORMAL</span></td>
-    @elseif($satu->kondisi === config('constants.kondisi_peralatan.normal_sebagian'))
+              @elseif($satu->kondisi === config('constants.kondisi_peralatan.normal_sebagian'))
                   <td class="text-center"><span class="badge bg-warning">NORMAL SEBAGIAN</span></td>
-    @elseif($satu->kondisi === config('constants.kondisi_peralatan.rusak'))
+              @elseif($satu->kondisi === config('constants.kondisi_peralatan.rusak'))
                   <td class="text-center"><span class="badge bg-danger">RUSAK</span></td>
-    @else
+              @else
                   <td class="text-center">-</td>
-    @endif
+              @endif
                 </tr>
-  @endforeach                   
+          @endforeach                   
               </tbody>
             </table>
             <hr class="my-4" style="border-top: 3px solid #a8a5a5;">
-@endforeach
+      @endforeach
+
+
+          {{-- Data Gangguan Peralatan untuk Jenis Gangguan Non Peralatan --}}
+
+@elseif($laporan->jenis == config('constants.jenis_laporan.gangguan_non_peralatan'))
+
+            <table border='0' cellpadding='5px'>        
+              <tr><th>Waktu Gangguan</th><td>:</td><td>{{ strtoupper($laporan->gangguanNonPeralatan->waktu_formatted ?? '-') }}</td></tr>
+              <tr><th>Deskripsi Gangguan</th><td>:</td><td>{{ strtoupper($laporan->gangguanNonPeralatan->deskripsi) }}</td></tr>
+              <tr><th>Tindak Lanjut</th><td>:</td><td></td></tr>
+            </table>
+
+            <div class="my-3">
+
+            {{-- Daftar Tindak Lanjut Gangguan --}}
+            <table id="example" class="table table-bordered table-striped">
+              <thead>
+                <tr class="table-condensed">
+                  <th class="text-center" style="width: 10px">NO.</th>
+                  <th class="text-center">WAKTU MULAI</th>
+                  <th class="text-center">WAKTU SELESAI</th>
+                  <th class="text-center" style="width: 600px">DESKRIPSI</th>
+                  <th class="text-center">KONDISI AKHIR</th>
+                </tr>
+              </thead>
+              <tbody>
+                {{-- Looping Data Peralatan --}}
+          @foreach ($laporan->TlgangguanNonPeralatan as $index => $satu)
+                <tr class="table-condensed">
+                  <td class="text-center">{{ $index + 1 }}</td>
+                  <td class="text-center">{{ strtoupper($satu->waktu_mulai_formatted) }}</td>
+                  <td class="text-center">{{ strtoupper($satu->waktu_selesai_formatted) }}</td>
+                  <td class="text-center">{{ strtoupper($satu->deskripsi) }}</td>
+  
+                  {{-- Kondisi Layanan Setelah Tindaklanjut --}}
+              @if($satu->kondisi === config('constants.kondisi_layanan.serviceable'))
+                  <td class="text-center"><span class="badge bg-success">SERVICEABLE</span></td>
+              @elseif($satu->kondisi === config('constants.kondisi_layanan.unserviceable'))
+                  <td class="text-center"><span class="badge bg-danger">UNSERVICEABLE</span></td>
+              @else
+                  <td class="text-center">-</td>
+              @endif
+                </tr>
+          @endforeach
+              </tbody>
+            </table>
+@endif
 
           </div>
           <!-- /.card-body -->
@@ -278,7 +327,7 @@
             </a> 
           @endif
       @else
-          <a href="{{ route('logbook.laporan.tambah.step2.form', ['laporan_id' => $laporan->id]) }}"
+          <a href="{{ route('logbook.laporan.tambah.step2.form', ['layanan_id' => $laporan->id]) }}"
                 class="btn btn-success btn-sm">
                 <i class="fas fa-angle-left"></i>&nbsp;&nbsp;&nbsp;Kembali
             </a>

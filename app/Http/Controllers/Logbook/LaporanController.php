@@ -133,6 +133,9 @@ class LaporanController extends Controller
 
         $layanan = $query->get();
 
+        // buat variable jenis_tindaklanjut untuk di breadcrumb
+        $jenis_tindaklanjut = null;
+
         // variabel untuk dikirim ke halaman view
         $judul = "Laporan";
         $module = "Logbook";
@@ -152,6 +155,7 @@ class LaporanController extends Controller
         ->with('lokasiTk1', $lokasi_tk_1)
         ->with('lokasiTk2', $lokasi_tk_2)
         ->with('lokasiTk3', $lokasi_tk_3)
+        ->with('jenis_tindaklanjut', $jenis_tindaklanjut)
         ;
     }
 
@@ -333,8 +337,8 @@ class LaporanController extends Controller
         $request->validate([
             'layanan_id' => 'required|exists:layanan,id',
             'jenis' => 'required|in:1,2', // 1 = peralatan, 2 = non peralatan
-            'kondisi_layanan_open' => 'required|in:1,2',
-            'kondisi_layanan_close' => 'nullable|in:1,2',
+            'kondisi_layanan_open' => 'required|in:0,1',
+            'kondisi_layanan_close' => 'nullable|in:0,1',
         ],[
             // pesan error
             'layanan_id.required' => 'Layanan kosong.',
@@ -396,7 +400,7 @@ class LaporanController extends Controller
                 'jenis' =>  $jenis,
                 'status' => config('constants.status_laporan.draft'), // draft
                 'kondisi_layanan_open' => $kondisi_layanan_open,
-                'kondisi_layanan_temp' => $kondisi_layanan_temp, // nilai ini nantinya akan diupdate ke field kondisi_layanan_close
+                'kondisi_layanan_temp' => $kondisi_layanan_temp, // ini kondisi terupdate, nilai ini nantinya akan diupdate ke field kondisi_layanan_close
                 'created_by' => session()->get('id')
             ]);
 
@@ -416,7 +420,7 @@ class LaporanController extends Controller
                             'laporan_id' => $laporan->id,
                             'layanan_id' => $layanan->id,
                             'peralatan_id' => $satu['peralatan_id'],
-                            'waktu' => Carbon::createFromFormat('d-m-Y H:i', $satu['waktu_gangguan'])->format('Y-m-d H:i:s'),
+                            'waktu' => Carbon::createFromFormat('d-m-Y H:i', $satu['waktu_gangguan'])->format('Y-m-d H:i'),
                             'deskripsi' => $satu['deskripsi_gangguan'],
                             'kondisi' => $satu['kondisi_gangguan'], // kondisi saat gangguan
                             'kondisi_awal' => $satu['kondisi_awal'], // kondisi sebelum gangguan, diambil dari kondisi di tabel Peralatan.
@@ -430,9 +434,9 @@ class LaporanController extends Controller
 
                                 // ubah format waktu ke format yang bisa disimpan oleh DB
                                 $waktu_mulai = Carbon::createFromFormat('d-m-Y H:i', $satu['tindaklanjut'][$satu['jenis_tindaklanjut']]['waktu_mulai_tindaklanjut'])
-                                    ->format('Y-m-d H:i:s');
+                                    ->format('Y-m-d H:i');
                                 $waktu_selesai = Carbon::createFromFormat('d-m-Y H:i', $satu['tindaklanjut'][$satu['jenis_tindaklanjut']]['waktu_selesai_tindaklanjut'])
-                                    ->format('Y-m-d H:i:s');
+                                    ->format('Y-m-d H:i');
 
                                 // insert data ke table Tindaklanjut Gangguan Peralatan
                                 $tl_gangguan = TlGangguanPeralatan::create([
@@ -452,9 +456,9 @@ class LaporanController extends Controller
                             else if($satu['jenis_tindaklanjut'] == config('constants.jenis_tindaklanjut_gangguan_peralatan.penggantian')){
                                 // ubah format waktu ke format yang bisa disimpan oleh DB
                                 $waktu_mulai = Carbon::createFromFormat('d-m-Y H:i', $satu['tindaklanjut'][$satu['jenis_tindaklanjut']]['waktu_mulai_tindaklanjut'])
-                                    ->format('Y-m-d H:i:s');
+                                    ->format('Y-m-d H:i');
                                 $waktu_selesai = Carbon::createFromFormat('d-m-Y H:i', $satu['tindaklanjut'][$satu['jenis_tindaklanjut']]['waktu_selesai_tindaklanjut'])
-                                    ->format('Y-m-d H:i:s');
+                                    ->format('Y-m-d H:i');
 
                                 // insert data ke table Tindaklanjut Gangguan Peralatan
                                 $tl_gangguan = TlGangguanPeralatan::create([
@@ -475,7 +479,17 @@ class LaporanController extends Controller
                 // -------------------------------------------------------------------------
                 //                             END OF LOOPING
                 // -------------------------------------------------------------------------
+
+                // ambil waktu terawal dari daftar gangguan peralatan
+                $waktuAwalGangguan = GangguanPeralatan::where('laporan_id', $laporan->id)
+                    ->min('waktu_mulai');
+                // masukkan ke variable waktu_layanan_open di tabel Laporan
+                $laporan->update([
+                        'waktu_layanan_open' => $waktuAwalGangguan,
+                        'updated_by' => session()->get('id')
+                    ]);
             }
+
             // jika jenis laporan = gangguan non peralatan, maka insert data ke tabel Gangguan Non Peralatan
             else if($jenis == config('constants.jenis_laporan.gangguan_non_peralatan')){
 
@@ -483,24 +497,33 @@ class LaporanController extends Controller
                 $gangguan = GangguanNonPeralatan::create([
                     'laporan_id' => $laporan->id,
                     'layanan_id' => $layanan->id,
-                    'waktu' => Carbon::createFromFormat('d-m-Y H:i', $request->waktu_gangguan)->format('Y-m-d H:i:s'),
+                    'waktu' => Carbon::createFromFormat('d-m-Y H:i', $request->waktu_gangguan)->format('Y-m-d H:i'),
                     'deskripsi'=> $request->deskripsi_gangguan,
                     'created_by' => session()->get('id')
                 ]);
                 
-                // jika ada tindak lanjut
+                // ambil flag tindaklanjut dari form
+                $flag_tindaklanjut = $request->flag_tindaklanjut;
+                // jika ada tindaklanjut
                 if($flag_tindaklanjut != null && $flag_tindaklanjut == 1){
                     // insert data ke table Tindaklanjut Gangguan Peralatan
                     $tl_gangguan = TlGangguanNonPeralatan::create([
                         'gangguan_id' => $gangguan->id,
                         'laporan_id' => $laporan->id,
                         'layanan_id' => $layanan->id,
-                        'waktu_mulai' => Carbon::createFromFormat('d-m-Y H:i', $request->waktu_mulai_tindaklanjut)->format('Y-m-d H:i:s'),
-                        'waktu_selesai' => Carbon::createFromFormat('d-m-Y H:i', $request->waktu_selesai_tindaklanjut)->format('Y-m-d H:i:s'),
+                        'waktu_mulai' => Carbon::createFromFormat('d-m-Y H:i', $request->waktu_mulai_tindaklanjut)->format('Y-m-d H:i'),
+                        'waktu_selesai' => Carbon::createFromFormat('d-m-Y H:i', $request->waktu_selesai_tindaklanjut)->format('Y-m-d H:i'),
                         'deskripsi'=> $request->deskripsi_tindaklanjut,
                         'kondisi' => $request->kondisi_layanan_close,
                     ]);
                 }
+
+                // masukkan waktu mulai gangguan sebagai waktu mulai layanan dalam status
+                // sesuai dengan status kondisi_layanan_open
+                $laporan->update([
+                        'waktu_layanan_open' => $gangguan->waktu,
+                        'updated_by' => session()->get('id')
+                    ]);
             }
 
             // simpan transaksi ke database
@@ -538,154 +561,6 @@ class LaporanController extends Controller
         return redirect()
             ->route('logbook.laporan.tambah.step4.form', $laporan->id)
             ->with('notif', 'draft_sukses');
-    }
-
-
-    /**
-     * Function untuk mengubah data di layanan step 2 (tombol Back).
-     *
-     * Akses:
-     * - Admin
-     * - Teknisi
-     * 
-     * Method: POST
-     * URL: /logbook/laporan/tambah/step2/back{id}
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function tambahStep2Back(Request $request)
-    {
-        // ========================= PROSES VERIFIKASI ========================
-        // cek session user
-        if (!Auth::check()) {
-            // jika tidak ada session user
-            return redirect('/login');
-        }    
-        // cek apakah status user = aktif
-        $status = User::find(session()->get('id'))->status;
-        if($status != TRUE){
-            return redirect('/logout');
-        }
-        // cek role user, hanya bisa diakses oleh super admin dan admin
-        if(session()->get('role_id') != config('constants.role.super_admin')
-        && session()->get('role_id') != config('constants.role.admin')
-        && session()->get('role_id') != config('constants.role.teknisi')){
-            // jika bukan
-            return redirect('/');
-        }
-        // ===================== AKHIR PROSES VERIFIKASI =======================
-
-        /* ------------- VALIDASI INPUT ------------- */
-        $jenisLaporan = config('constants.jenis_laporan');
-
-        $rules = [
-            'laporan_id'     => 'required|exists:laporan,id',
-            'layanan_id'     => 'required|exists:layanan,id',
-            'jenis_laporan'  => ['required', Rule::in(array_keys($jenisLaporan))],
-            'waktu_gangguan' => 'required|date',
-        ];
-
-        if ($request->jenis_laporan === 'gangguan_peralatan') {
-            $rules += [
-                'gangguan'            => 'required|array|min:1',
-                'gangguan.*.id'       => 'required|exists:peralatan,id',
-                'gangguan.*.kondisi'  => ['required', Rule::in(['0', '1'])],
-                'gangguan.*.deskripsi'=> 'nullable|string',
-            ];
-        } else {
-            $rules['deskripsi_gangguan'] = 'nullable|string';
-        }
-
-        $messages = [
-            'layanan_id.*'          => 'Layanan tidak valid.',
-            'jenis_laporan.*'       => 'Jenis laporan tidak valid.',
-            'waktu_gangguan.*'      => 'Waktu gangguan wajib diisi & valid.',
-            'gangguan.*.id.*'       => 'Peralatan wajib dipilih & valid.',
-            'gangguan.*.kondisi.*'  => 'Kondisi gangguan wajib dipilih & valid.',
-        ];
-
-        try {
-            $validated = $request->validate($rules, $messages);
-            Log::info('Validasi input Step 2 Back berhasil.', $validated);
-        } catch (\Illuminate\Validation\ValidationException $e) {
-            Log::error('Validasi Step 2 Back gagal.', $e->errors());
-            throw $e;
-        }
-        /* ----------- AKHIR VALIDASI ----------- */
-
-        /* ------------- SIMPAN PERUBAHAN ------------- */
-        DB::beginTransaction();
-        try {
-            $userId = Auth::id();
-            
-            // FORMAT WAKTU SEBELUM UPDATE
-            $waktuGangguan = Carbon::parse($request->waktu_gangguan);
-
-            $laporan = Laporan::findOrFail($request->laporan_id);
-            $laporan->update([
-                'layanan_id' => $request->layanan_id,
-                'jenis'      => $request->jenis_laporan === 'gangguan_peralatan' ? 1 : 2,
-                'waktu_open' => $waktuGangguan, // UBAH dari 'waktu' ke 'waktu_open'
-                'status'     => 1,
-                'updated_by' => $userId, // Tambahkan updated_by
-            ]);
-
-            Log::info("Laporan berhasil diupdate", ['laporan_id' => $laporan->id]);
-
-            /* hapus gangguan lama */
-            GangguanPeralatan::where('laporan_id', $laporan->id)->delete();
-            GangguanNonPeralatan::where('laporan_id', $laporan->id)->delete();
-
-            Log::info("Data gangguan lama berhasil dihapus", ['laporan_id' => $laporan->id]);
-
-            if ($request->jenis_laporan === 'gangguan_peralatan' && !empty($request->gangguan)) {
-                foreach ($request->gangguan as $g) {
-                    GangguanPeralatan::create([
-                        'laporan_id'     => $laporan->id,
-                        'layanan_id'     => $request->layanan_id,
-                        'peralatan_id'   => $g['id'],
-                        'waktu_gangguan' => $waktuGangguan, // Gunakan Carbon object yang sama
-                        'kondisi'        => $g['kondisi'],
-                        'deskripsi'      => $g['deskripsi'] ?? null,
-                        'created_by'     => $userId,
-                    ]);
-                }
-
-                Log::info('Data gangguan peralatan berhasil diupdate.', ['total' => count($request->gangguan)]);
-
-            } elseif ($request->jenis_laporan === 'gangguan_non_peralatan') {
-                GangguanNonPeralatan::create([
-                    'laporan_id'     => $laporan->id,
-                    'layanan_id'     => $request->layanan_id,
-                    'waktu_gangguan' => $waktuGangguan, // Gunakan Carbon object yang sama
-                    'deskripsi'      => $request->deskripsi_gangguan ?? null,
-                    'created_by'     => $userId,
-                ]);
-
-                Log::info('Data gangguan non-peralatan berhasil diupdate.');
-            }
-
-            DB::commit();
-
-            Log::info("Proses Step 2 Back selesai. Redirect ke Step 3.", ['laporan_id' => $laporan->id]);
-            
-            return redirect()
-                ->route('tambah.step3', ['laporan_id' => $laporan->id])
-                ->with('notif', 'perubahan_tersimpan');
-
-        } catch (\Exception $e) {
-            DB::rollBack();
-
-            Log::error('Gagal menyimpan perubahan Step 2 Back.', [
-                'error' => $e->getMessage(),
-                'trace' => $e->getTraceAsString()
-            ]);
-
-            return back()
-                ->withErrors(['msg' => 'Gagal menyimpan perubahan: ' . $e->getMessage()])
-                ->withInput()
-                ->with('notif', 'perubahan_gagal');
-        }
     }
 
 
@@ -883,6 +758,167 @@ class LaporanController extends Controller
 
 
     /**
+     * Function untuk menyimpan data jenis tindak lanjut penggantian & perbaikan (Gangguan Peralatan)
+     * dan Input kondisi Layanan setelah dilakukan perbaikan(Gangguan Non Peralatan).
+     *
+     * Akses:
+     * - Admin
+     * - Teknisi
+     * 
+     * Method: POST
+     * URL: /logbook/laporan/tambah/step4
+     *
+     * @return \Illuminate\Http\Response
+     */
+    public function simpanStep4(Request $request)
+    {
+        // ========================= PROSES VERIFIKASI ========================
+        if (!Auth::check()) {
+            return redirect('/login');
+        }    
+
+        $status = User::find(session()->get('id'))->status;
+        if($status != TRUE){
+            return redirect('/logout');
+        }
+
+        if(session()->get('role_id') != config('constants.role.super_admin')
+        && session()->get('role_id') != config('constants.role.admin')
+        && session()->get('role_id') != config('constants.role.teknisi')){
+            return redirect('/');
+        }
+        // ===================== AKHIR PROSES VERIFIKASI =======================
+
+        DB::beginTransaction();
+
+        try {
+            $validated = $request->validate([
+                'laporan_id' => 'required|exists:laporan,id',
+                'penggantian' => 'required|array|min:1',
+                'penggantian.*.peralatan_lama_id' => 'required|exists:peralatan,id',
+                'penggantian.*.peralatan_baru_id' => 'required|exists:peralatan,id|different:penggantian.*.peralatan_lama_id',
+            ]);
+
+            $laporanId = $validated['laporan_id'];
+            $dataPenggantian = $validated['penggantian'];
+
+            $laporan = Laporan::with('layanan')->findOrFail($laporanId);
+
+            // PERBAIKAN: Cek tindak lanjut dengan konstanta yang benar
+            $kodePenggantian = 0; // FALSE = 0 untuk penggantian
+
+            if ($laporan->jenis == 1) {
+                // Cek apakah ada tindak lanjut penggantian untuk laporan ini
+                $tindakLanjutPenggantian = TlGangguanPeralatan::where('laporan_id', $laporanId)
+                    ->where('jenis_tindaklanjut', $kodePenggantian) // 0 = penggantian
+                    ->get();
+
+                if ($tindakLanjutPenggantian->isEmpty()) {
+                    return redirect()->back()->with('error', 'Tidak ada tindak lanjut penggantian untuk laporan ini.');
+                }
+
+                // Hapus data penggantian lama jika ada
+                TlPenggantianPeralatan::where('laporan_id', $laporanId)->delete();
+
+                $saved = 0;
+
+                foreach ($dataPenggantian as $i => $item) {
+                    // Skip jika peralatan lama dan baru sama
+                    if ($item['peralatan_lama_id'] === $item['peralatan_baru_id']) {
+                        Log::warning("Step 4: Peralatan lama & baru sama (laporan_id: $laporanId, index: $i)");
+                        continue;
+                    }
+
+                    // Cari tindak lanjut yang sesuai dengan peralatan_lama_id
+                    $tl = $tindakLanjutPenggantian->where('peralatan_id', $item['peralatan_lama_id'])->first();
+                    
+                    if (!$tl) {
+                        Log::warning("Step 4: Tindak lanjut tidak ditemukan untuk peralatan_id: {$item['peralatan_lama_id']}");
+                        continue;
+                    }
+
+                    // Ambil gangguan terkait peralatan_lama_id
+                    $gangguan = GangguanPeralatan::where('laporan_id', $laporanId)
+                        ->where('peralatan_id', $item['peralatan_lama_id'])
+                        ->first();
+
+                    if (!$gangguan) {
+                        Log::warning("Step 4: Gangguan tidak ditemukan untuk peralatan_id: {$item['peralatan_lama_id']}");
+                        continue;
+                    }
+
+                    // Validasi peralatan baru (harus aktif dan normal)
+                    $peralatanBaru = Peralatan::find($item['peralatan_baru_id']);
+                    if (!$peralatanBaru || $peralatanBaru->status != 1 || $peralatanBaru->kondisi != 1) {
+                        Log::warning("Step 4: Peralatan baru tidak valid (ID: {$item['peralatan_baru_id']})");
+                        continue;
+                    }
+
+                    // Simpan data penggantian
+                    TlPenggantianPeralatan::create([
+                        'tl_gangguan_id'      => $tl->id,
+                        'laporan_id'          => $laporanId,
+                        'layanan_id'          => $laporan->layanan_id,
+                        'peralatan_lama_id'   => $item['peralatan_lama_id'],
+                        'peralatan_baru_id'   => $item['peralatan_baru_id'],
+                        'created_by'          => auth()->user()->id,
+                    ]);
+
+                    // OPSIONAL: Update status peralatan
+                    // Peralatan lama menjadi tidak aktif
+                    Peralatan::where('id', $item['peralatan_lama_id'])
+                        ->update([
+                            'status' => 0, // tidak aktif
+                            'kondisi' => 0, // rusak
+                        ]);
+
+                    // Peralatan baru tetap aktif (sudah aktif sebelumnya)
+                    // Atau bisa ditambahkan log penggunaan jika diperlukan
+
+                    $saved++;
+                }
+
+                DB::commit();
+
+                if ($saved === 0) {
+                    Log::info("Step 4: Tidak ada data valid disimpan untuk laporan ID {$laporanId}");
+                    return redirect()->back()
+                        ->with('warning', 'Tidak ada data yang disimpan. Periksa kembali isian Anda.')
+                        ->withInput();
+                }
+
+                Log::info("Step 4: Berhasil menyimpan {$saved} data penggantian untuk laporan ID {$laporanId}");
+
+                return redirect()->route('tambah.step5', ['laporan_id' => $laporanId])
+                                ->with('success', "Data penggantian berhasil disimpan ({$saved} item).");
+
+            } else {
+                // Jika bukan gangguan peralatan, redirect ke step 5
+                return redirect()->route('tambah.step5', ['laporan_id' => $laporanId])
+                                ->with('info', 'Laporan non-peralatan tidak memerlukan penggantian.');
+            }
+
+        } catch (\Illuminate\Validation\ValidationException $e) {
+            DB::rollBack();
+            Log::error("Validasi gagal Step 4: " . json_encode($e->errors()));
+            return redirect()->back()
+                ->withErrors($e->errors())
+                ->withInput()
+                ->with('error', 'Data yang dimasukkan tidak valid.');
+
+        } catch (\Throwable $e) {
+            DB::rollBack();
+            Log::error("Gagal simpan Step 4: " . $e->getMessage());
+            Log::error("Stack trace: " . $e->getTraceAsString());
+            
+            return redirect()->back()
+                ->with('error', 'Terjadi kesalahan saat menyimpan data: ' . $e->getMessage())
+                ->withInput();
+        }
+    }
+
+
+    /**
      * Function untuk menampilkan form tambah layanan step 2 melalui tombol Back.
      *
      * Akses:
@@ -970,118 +1006,6 @@ class LaporanController extends Controller
     }
 
 
-
-    /**
-     * Menampilkan form Step 4 (Penggantian) dengan prefill data sebelumnya.
-     *
-     * URL: /logbook/laporan/tambah/step4/back/{laporan_id}
-     * Method: GET
-     */
-    public function formStep4Back($laporan_id)
-    {
-        // ========================= PROSES VERIFIKASI ========================
-        if (!Auth::check()) {
-            return redirect('/login');
-        }
-
-        $status = User::find(session()->get('id'))->status;
-        if ($status != true) {
-            return redirect('/logout');
-        }
-
-        if (!in_array(session()->get('role_id'), [
-            config('constants.role.super_admin'),
-            config('constants.role.admin'),
-            config('constants.role.teknisi'),
-        ])) {
-            return redirect('/');
-        }
-        // ===================== AKHIR PROSES VERIFIKASI =======================
-
-        $laporan = Laporan::with('layanan')->findOrFail($laporan_id);
-        $jenisTl = null;
-        $peralatanLama = collect();
-        $peralatanTersedia = collect();
-        $dataPenggantianTersimpan = collect();
-
-        $kodePenggantian = 0; // 0 = penggantian sesuai konstanta FALSE
-        $kodeGangguan = 0;    // 0 = gangguan sesuai konstanta FALSE
-
-        /* ---------- Jika laporan jenis 1 (gangguan peralatan) ---------- */
-        if ($laporan->jenis == 1) {
-            // Ambil semua tindak lanjut yang jenisnya penggantian
-            $tindakLanjutPenggantian = TlGangguanPeralatan::where('laporan_id', $laporan->id)
-                ->where('jenis_tindaklanjut', $kodePenggantian) // 0 = penggantian
-                ->get();
-
-            if ($tindakLanjutPenggantian->isNotEmpty()) {
-                $jenisTl = $kodePenggantian;
-
-                // Ambil peralatan yang perlu diganti
-                $peralatanIds = $tindakLanjutPenggantian->pluck('peralatan_id')->unique();
-                
-                $peralatanLama = Peralatan::whereIn('id', $peralatanIds)->get()->map(function ($p) {
-                    return (object)[
-                        'id' => $p->id,
-                        'kode' => $p->kode,
-                        'nama' => $p->nama,
-                        'merk' => $p->merk,
-                        'tipe' => $p->tipe,
-                        'model' => $p->model,
-                        'serial_number' => $p->serial_number,
-                        'status' => $p->status,
-                        'kondisi' => $p->kondisi,
-                    ];
-                });
-
-                // Ambil data penggantian yang sudah tersimpan sebelumnya
-                $dataPenggantianTersimpan = TlPenggantianPeralatan::where('laporan_id', $laporan->id)
-                    ->with(['peralatanLama', 'peralatanBaru'])
-                    ->get()
-                    ->keyBy('peralatan_lama_id'); // Index by peralatan_lama_id untuk akses mudah
-
-                // Ambil peralatan aktif yang belum digunakan
-                $excludeIds = $peralatanLama->pluck('id')->toArray();
-                
-                // Jika ada data tersimpan, jangan exclude peralatan baru yang sudah dipilih
-                if ($dataPenggantianTersimpan->isNotEmpty()) {
-                    $peralatanBaruTerpilih = $dataPenggantianTersimpan->pluck('peralatan_baru_id')->toArray();
-                    $excludeIds = array_diff($excludeIds, $peralatanBaruTerpilih);
-                }
-
-                $peralatanTersedia = Peralatan::where('status', 1)
-                    ->where('kondisi', 1) // hanya kondisi Normal
-                    ->whereNotIn('id', $excludeIds)
-                    ->get();
-            }
-        } else {
-            // Untuk gangguan non-peralatan
-            $tl = TlGangguanNonPeralatan::where('laporan_id', $laporan->id)->latest()->first();
-            if ($tl) {
-                $jenisTl = (int) $tl->jenis_tindaklanjut;
-            }
-        }
-
-        // Kirim ke view step4_back
-        return view('logbook.laporan.tambah.step4_back', [
-            'judul' => 'Laporan',
-            'module' => 'Logbook',
-            'menu' => 'Laporan',
-            'menu_url' => '/logbook/laporan/tambah/step4/back',
-            'submenu' => 'Tambah',
-            'laporan' => $laporan,
-            'jenis_tindaklanjut' => $jenisTl,
-            'peralatanLama' => $peralatanLama,
-            'peralatanTersedia' => $peralatanTersedia,
-            'dataPenggantianTersimpan' => $dataPenggantianTersimpan,
-            'isBack' => true, // Flag untuk menandai ini adalah halaman back
-            'jenis' => JenisAlat::where('status', 1)->get(),
-            'perusahaan' => Perusahaan::where('status', 1)->get(),
-        ]);
-    }
-
-
-
     /**
      * Function untuk memproses filter peralatan pengganti.
      * 
@@ -1125,445 +1049,6 @@ class LaporanController extends Controller
 
         return view('logbook.laporan.modal_penggantian_peralatan', compact('peralatan'));
     }
-
-
-    /**
-     * Function untuk menyimpan data jenis tindak lanjut penggantian & perbaikan (Gangguan Peralatan)
-     * dan Input kondisi Layanan setelah dilakukan perbaikan(Gangguan Non Peralatan).
-     *
-     * Akses:
-     * - Admin
-     * - Teknisi
-     * 
-     * Method: POST
-     * URL: /logbook/laporan/tambah/step4
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function simpanStep4(Request $request)
-{
-    // ========================= PROSES VERIFIKASI ========================
-    if (!Auth::check()) {
-        return redirect('/login');
-    }    
-
-    $status = User::find(session()->get('id'))->status;
-    if($status != TRUE){
-        return redirect('/logout');
-    }
-
-    if(session()->get('role_id') != config('constants.role.super_admin')
-     && session()->get('role_id') != config('constants.role.admin')
-     && session()->get('role_id') != config('constants.role.teknisi')){
-        return redirect('/');
-    }
-    // ===================== AKHIR PROSES VERIFIKASI =======================
-
-    DB::beginTransaction();
-
-    try {
-        $validated = $request->validate([
-            'laporan_id' => 'required|exists:laporan,id',
-            'penggantian' => 'required|array|min:1',
-            'penggantian.*.peralatan_lama_id' => 'required|exists:peralatan,id',
-            'penggantian.*.peralatan_baru_id' => 'required|exists:peralatan,id|different:penggantian.*.peralatan_lama_id',
-        ]);
-
-        $laporanId = $validated['laporan_id'];
-        $dataPenggantian = $validated['penggantian'];
-
-        $laporan = Laporan::with('layanan')->findOrFail($laporanId);
-
-        // PERBAIKAN: Cek tindak lanjut dengan konstanta yang benar
-        $kodePenggantian = 0; // FALSE = 0 untuk penggantian
-
-        if ($laporan->jenis == 1) {
-            // Cek apakah ada tindak lanjut penggantian untuk laporan ini
-            $tindakLanjutPenggantian = TlGangguanPeralatan::where('laporan_id', $laporanId)
-                ->where('jenis_tindaklanjut', $kodePenggantian) // 0 = penggantian
-                ->get();
-
-            if ($tindakLanjutPenggantian->isEmpty()) {
-                return redirect()->back()->with('error', 'Tidak ada tindak lanjut penggantian untuk laporan ini.');
-            }
-
-            // Hapus data penggantian lama jika ada
-            TlPenggantianPeralatan::where('laporan_id', $laporanId)->delete();
-
-            $saved = 0;
-
-            foreach ($dataPenggantian as $i => $item) {
-                // Skip jika peralatan lama dan baru sama
-                if ($item['peralatan_lama_id'] === $item['peralatan_baru_id']) {
-                    Log::warning("Step 4: Peralatan lama & baru sama (laporan_id: $laporanId, index: $i)");
-                    continue;
-                }
-
-                // Cari tindak lanjut yang sesuai dengan peralatan_lama_id
-                $tl = $tindakLanjutPenggantian->where('peralatan_id', $item['peralatan_lama_id'])->first();
-                
-                if (!$tl) {
-                    Log::warning("Step 4: Tindak lanjut tidak ditemukan untuk peralatan_id: {$item['peralatan_lama_id']}");
-                    continue;
-                }
-
-                // Ambil gangguan terkait peralatan_lama_id
-                $gangguan = GangguanPeralatan::where('laporan_id', $laporanId)
-                    ->where('peralatan_id', $item['peralatan_lama_id'])
-                    ->first();
-
-                if (!$gangguan) {
-                    Log::warning("Step 4: Gangguan tidak ditemukan untuk peralatan_id: {$item['peralatan_lama_id']}");
-                    continue;
-                }
-
-                // Validasi peralatan baru (harus aktif dan normal)
-                $peralatanBaru = Peralatan::find($item['peralatan_baru_id']);
-                if (!$peralatanBaru || $peralatanBaru->status != 1 || $peralatanBaru->kondisi != 1) {
-                    Log::warning("Step 4: Peralatan baru tidak valid (ID: {$item['peralatan_baru_id']})");
-                    continue;
-                }
-
-                // Simpan data penggantian
-                TlPenggantianPeralatan::create([
-                    'tl_gangguan_id'      => $tl->id,
-                    'laporan_id'          => $laporanId,
-                    'layanan_id'          => $laporan->layanan_id,
-                    'peralatan_lama_id'   => $item['peralatan_lama_id'],
-                    'peralatan_baru_id'   => $item['peralatan_baru_id'],
-                    'created_by'          => auth()->user()->id,
-                ]);
-
-                // OPSIONAL: Update status peralatan
-                // Peralatan lama menjadi tidak aktif
-                Peralatan::where('id', $item['peralatan_lama_id'])
-                    ->update([
-                        'status' => 0, // tidak aktif
-                        'kondisi' => 0, // rusak
-                    ]);
-
-                // Peralatan baru tetap aktif (sudah aktif sebelumnya)
-                // Atau bisa ditambahkan log penggunaan jika diperlukan
-
-                $saved++;
-            }
-
-            DB::commit();
-
-            if ($saved === 0) {
-                Log::info("Step 4: Tidak ada data valid disimpan untuk laporan ID {$laporanId}");
-                return redirect()->back()
-                    ->with('warning', 'Tidak ada data yang disimpan. Periksa kembali isian Anda.')
-                    ->withInput();
-            }
-
-            Log::info("Step 4: Berhasil menyimpan {$saved} data penggantian untuk laporan ID {$laporanId}");
-
-            return redirect()->route('tambah.step5', ['laporan_id' => $laporanId])
-                            ->with('success', "Data penggantian berhasil disimpan ({$saved} item).");
-
-        } else {
-            // Jika bukan gangguan peralatan, redirect ke step 5
-            return redirect()->route('tambah.step5', ['laporan_id' => $laporanId])
-                            ->with('info', 'Laporan non-peralatan tidak memerlukan penggantian.');
-        }
-
-    } catch (\Illuminate\Validation\ValidationException $e) {
-        DB::rollBack();
-        Log::error("Validasi gagal Step 4: " . json_encode($e->errors()));
-        return redirect()->back()
-            ->withErrors($e->errors())
-            ->withInput()
-            ->with('error', 'Data yang dimasukkan tidak valid.');
-
-    } catch (\Throwable $e) {
-        DB::rollBack();
-        Log::error("Gagal simpan Step 4: " . $e->getMessage());
-        Log::error("Stack trace: " . $e->getTraceAsString());
-        
-        return redirect()->back()
-            ->with('error', 'Terjadi kesalahan saat menyimpan data: ' . $e->getMessage())
-            ->withInput();
-    }
-}
-
-    /**
-     * Function untuk menyimpan data penggantian peralatan dari Step 4 Back.
-     *
-     * URL: /logbook/laporan/tambah/step4/back
-     * Method: POST
-     */
-    public function tambahStep4Back(Request $request)
-    {
-        // ========================= PROSES VERIFIKASI ========================
-        // cek session user
-        if (!Auth::check()) {
-            // jika tidak ada session user
-            return redirect('/login');
-        }    
-        // cek apakah status user = aktif
-        $status = User::find(session()->get('id'))->status;
-        if($status != TRUE){
-            return redirect('/logout');
-        }
-        // cek role user, hanya bisa diakses oleh super admin dan admin
-        if(session()->get('role_id') != config('constants.role.super_admin')
-         && session()->get('role_id') != config('constants.role.admin')
-         && session()->get('role_id') != config('constants.role.teknisi')){
-            // jika bukan
-            return redirect('/');
-        }
-        // ===================== AKHIR PROSES VERIFIKASI =======================
-
-        $request->validate([
-            'laporan_id' => 'required|exists:laporan,id',
-            'jenis_tindaklanjut' => 'required|integer',
-            'peralatan_baru' => 'required|array',
-        ]);
-
-        DB::beginTransaction();
-
-        try {
-            $laporan = Laporan::findOrFail($request->laporan_id);
-
-            // Ambil data tindaklanjut peralatan terbaru
-            $tlGangguan = TlGangguanPeralatan::where('laporan_id', $laporan->id)->get()->keyBy('peralatan_id');
-
-            // Loop peralatan baru berdasarkan index
-            foreach ($request->peralatan_baru as $index => $pb) {
-                if (!empty($pb['id'])) {
-                    // Ambil peralatan lama sesuai urutan layanan
-                    $peralatanLama = $laporan->layanan->daftarPeralatanLayanan()->with('peralatan')->get()[$index] ?? null;
-
-                    if ($peralatanLama && isset($tlGangguan[$peralatanLama->peralatan_id])) {
-                        TlPenggantianPeralatan::updateOrCreate(
-                            [
-                                'laporan_id' => $laporan->id,
-                                'tl_gangguan_id' => $tlGangguan[$peralatanLama->peralatan_id]->id,
-                            ],
-                            [
-                                'layanan_id' => $laporan->layanan_id,
-                                'peralatan_lama_id' => $peralatanLama->peralatan_id,
-                                'peralatan_baru_id' => $pb['id'],
-                                'created_by' => Auth::id(),
-                                'updated_by' => Auth::id(),
-                            ]
-                        );
-                    }
-                }
-            }
-
-            DB::commit();
-
-            return redirect()->route('tambah.step5', ['laporan_id' => $laporan->id])
-                            ->with('notif', 'tambah_sukses');
-        } catch (\Exception $e) {
-            DB::rollBack();
-
-            return redirect()->back()
-                            ->with('error', 'Gagal menyimpan data: ' . $e->getMessage())
-                            ->withInput();
-        }
-    }
-
-
- /**
- * Function untuk menampilkan review data
- *
- * Akses:
- * - Admin
- * - Teknisi
- * 
- * Method: GET
- * URL: /logbook/laporan/tambah/step5
- *
- * @return \Illuminate\Http\Response
- */
-public function step5($laporan_id)
-{
-    // ========================= PROSES VERIFIKASI ========================
-    if (!Auth::check()) {
-        return redirect('/login');
-    }
-
-    $status = User::find(session()->get('id'))->status;
-    if ($status != TRUE) {
-        return redirect('/logout');
-    }
-
-    if (
-        session()->get('role_id') != config('constants.role.super_admin') &&
-        session()->get('role_id') != config('constants.role.admin') &&
-        session()->get('role_id') != config('constants.role.teknisi')
-    ) {
-        return redirect('/');
-    }
-    // ===================== AKHIR PROSES VERIFIKASI =======================
-
-    $laporan = Laporan::with([
-        'layanan.fasilitas',
-        'layanan.LokasiTk1',
-        'layanan.LokasiTk2',
-        'layanan.LokasiTk3',
-        'gangguanNonPeralatan'
-    ])->findOrFail($laporan_id);
-
-    $detailGangguanPeralatan = collect();
-    $penggantian = collect();
-    $perbaikan = collect();
-    $semuaTindakLanjut = collect(); // Untuk non-peralatan
-    $gangguanNonPeralatan = null;
-
-    if ($laporan->jenis == 1) {
-        // =============== GANGGUAN PERALATAN ===============
-        // Ambil semua gangguan peralatan
-        $detailGangguanPeralatan = GangguanPeralatan::with('peralatan')
-            ->where('laporan_id', $laporan->id)
-            ->get();
-
-        // Cek apakah ada penggantian
-        $penggantianCount = TlPenggantianPeralatan::where('laporan_id', $laporan->id)->count();
-        
-        if ($penggantianCount > 0) {
-            // Jika ada penggantian, ambil data penggantian dengan tindaklanjut
-            $penggantian = TlPenggantianPeralatan::with([
-                'peralatanLama',
-                'peralatanBaru',
-                'tindaklanjut' => function ($query) {
-                    $query->select('id', 'jenis_tindaklanjut', 'deskripsi', 'waktu', 'kondisi');
-                },
-            ])
-            ->where('laporan_id', $laporan->id)
-            ->get();
-        }
-
-        // Ambil semua data perbaikan
-        $perbaikan = TlGangguanPeralatan::with(['peralatan'])
-            ->where('laporan_id', $laporan->id)
-            ->where('jenis_tindaklanjut', config('constants.jenis_tindaklanjut.perbaikan'))
-            ->get();
-
-        // Update kondisi layanan berdasarkan peralatan
-        $kondisiLayanan = TlGangguanPeralatan::where('laporan_id', $laporan->id)
-            ->pluck('kondisi')
-            ->toArray();
-
-        // Jika ada peralatan yang masih dalam kondisi GANGGUAN (0), set kondisi layanan menjadi UNSERVICEABLE
-        $isServiceable = !in_array(0, $kondisiLayanan); // 0 = GANGGUAN
-        $laporan->kondisi_layanan_temp = $isServiceable ? 1 : 0; // 1 = SERVICEABLE, 0 = UNSERVICEABLE
-
-    } else {
-        // =============== GANGGUAN NON-PERALATAN ===============
-        // Ambil data gangguan non-peralatan
-        $gangguanNonPeralatan = GangguanNonPeralatan::where('laporan_id', $laporan->id)
-            ->latest()
-            ->first();
-
-        // Ambil semua tindak lanjut non-peralatan
-        $semuaTindakLanjut = TlGangguanNonPeralatan::where('laporan_id', $laporan->id)
-            ->orderBy('waktu', 'desc')
-            ->get();
-
-        // Update kondisi layanan berdasarkan tindak lanjut non-peralatan terbaru
-        if ($semuaTindakLanjut->isNotEmpty()) {
-            $tindakLanjutTerbaru = $semuaTindakLanjut->first();
-            $laporan->kondisi_layanan_temp = $tindakLanjutTerbaru->kondisi;
-        } else {
-            // Jika belum ada tindak lanjut, kondisi tetap unserviceable
-            $laporan->kondisi_layanan_temp = 0;
-        }
-    }
-
-    // Simpan perubahan kondisi layanan
-    $laporan->save();
-
-    return view('logbook.laporan.tambah.step5', [
-        'judul' => 'Laporan',
-        'module' => 'Logbook',
-        'menu' => 'Laporan',
-        'menu_url' => '/logbook/laporan/tambah/step5',
-        'submenu' => 'Tambah',
-        'laporan' => $laporan,
-        'detailGangguanPeralatan' => $detailGangguanPeralatan,
-        'penggantian' => $penggantian,
-        'perbaikan' => $perbaikan,
-        'semuaTindakLanjut' => $semuaTindakLanjut, // Untuk non-peralatan
-        'gangguanNonPeralatan' => $gangguanNonPeralatan, // Data gangguan non-peralatan
-    ]);
-}
-
-/**
- * Function untuk menyimpan data laporan 
- * 
- * Akses:
- * - Teknisi
- * - Admin
- * 
- * Method: POST
- * URL: /logbook/laporan/tambah/simpanStep5
- *
- * @param  \Illuminate\Http\Request  $request
- * @return \Illuminate\Http\Response
- */
-public function simpanStep5(Request $request)
-{
-    // ========================= PROSES VERIFIKASI ========================
-    if (!Auth::check()) {
-        return redirect('/login');
-    }    
-
-    $status = User::find(session()->get('id'))->status;
-    if($status != TRUE){
-        return redirect('/logout');
-    }
-
-    if(session()->get('role_id') != config('constants.role.super_admin')
-    && session()->get('role_id') != config('constants.role.admin')
-    && session()->get('role_id') != config('constants.role.teknisi')){
-        return redirect('/');
-    }
-    // ===================== AKHIR PROSES VERIFIKASI =======================
-
-    $request->validate([
-        'laporan_id' => 'required|exists:laporan,id',
-    ]);
-
-    DB::beginTransaction();
-    try {
-        $laporan = Laporan::findOrFail($request->laporan_id);
-
-        // Update kondisi layanan dan status
-        $laporan->kondisi_layanan_temp = $request->input('kondisi_layanan_temp'); // Ambil dari request
-        $laporan->status = $laporan->kondisi_layanan_temp ? config('constants.status_laporan.closed') : config('constants.status_laporan.open');
-        $laporan->waktu_close = $laporan->status == config('constants.status_laporan.closed') ? now() : null; // Set waktu_close jika ditutup
-
-        $laporan->save();
-
-        // Update kondisi layanan di tabel layanan
-        $layanan = Layanan::find($laporan->layanan_id);
-        if ($layanan) {
-            $layanan->kondisi = $laporan->kondisi_layanan_temp; // Update kondisi layanan
-            $layanan->save();
-        }
-
-        DB::commit();
-
-        // Redirect berdasarkan status laporan
-        if ($laporan->status == config('constants.status_laporan.closed')) {
-            return redirect()->route('logbook.riwayat.daftar')
-                ->with('notif', 'tambah_sukses');
-        } else {
-            return redirect()->route('logbook.laporan.daftar')
-                ->with('notif', 'tambah_sukses');
-        }
-
-    } catch (\Exception $e) {
-        DB::rollBack();
-        \Log::error('ERROR SIMPAN STEP 5: ' . $e->getMessage());
-        return back()->with('error', 'Terjadi kesalahan saat menyimpan laporan. Silakan coba lagi.');
-    }
-}
-
 
 
     /**
@@ -1924,6 +1409,8 @@ public function editStep2($id)
         'gangguanNonPeralatan' => $gangguanNonPeralatan,
     ]);
 }
+
+
 /**
  * Function untuk menyimpan/update edit step 2 (hanya status "draft").
  * 
@@ -2010,7 +1497,7 @@ public function updateStep2(Request $request, $id)
 
         Log::info("Laporan berhasil diupdate", [
             'laporan_id' => $laporan->id,
-            'waktu_open' => $waktuGangguan->format('Y-m-d H:i:s'), // Ubah log juga
+            'waktu_open' => $waktuGangguan->format('Y-m-d H:i'), // Ubah log juga
             'field_updated' => 'waktu_open' // Tambah info field yang diupdate
         ]);
 
