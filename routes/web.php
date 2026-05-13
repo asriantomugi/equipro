@@ -840,9 +840,9 @@ Route::prefix('/logbook')->name('logbook.')
      * Menampilkan form tambah laporan step 3
      * Method: GET
      * Name: logbook.laporan.tambah.step3.form
-     * URL: /logbook/laporan/tambah/step3/{id}
+     * URL: /logbook/laporan/tambah/step3/{laporan_id}
      */
-    Route::get('/laporan/tambah/step3/{id}', [LaporanController::class, 'formTambahStep3'])->name('laporan.tambah.step3.form');
+    Route::get('/laporan/tambah/step3/{laporan_id}', [LaporanController::class, 'formTambahStep3'])->name('laporan.tambah.step3.form');
 
     /**
      * Memproses form tambah laporan step 3
@@ -875,7 +875,7 @@ Route::prefix('/logbook')->name('logbook.')
      * Name: logbook.laporan.tambah.step4.form
      * URL: /logbook/laporan/tambah/step4/{id}
      */
-    Route::get('/laporan/tambah/step4/{id}', [LaporanController::class, 'formTambahStep4'])->name('laporan.tambah.step4.form');
+    Route::get('/laporan/tambah/step4/{laporan_id}', [LaporanController::class, 'formTambahStep4'])->name('laporan.tambah.step4.form');
 
     /**
      * Memproses form tambah laporan step 4
@@ -884,6 +884,22 @@ Route::prefix('/logbook')->name('logbook.')
      * URL: /logbook/laporan/tambah/step4
      */
     Route::post('/laporan/tambah/step4', [LaporanController::class, 'tambahStep4'])->name('laporan.tambah.step4');
+
+    /**
+     * Menampilkan form tambah laporan step 2 ketika ditekan tombol back
+     * Method: GET
+     * Name: logbook.laporan.tambah.step2.form.back
+     * URL: /logbook/laporan/tambah/step2/back/{layanan_id}
+     */
+    Route::get('/laporan/tambah/step2/back/{layanan_id}', [LaporanController::class, 'formTambahStep2Back'])->name('laporan.tambah.step2.form.back');
+
+    /**
+     * Menampilkan form tambah laporan step 3 ketika ditombol back
+     * Method: GET
+     * Name: logbook.laporan.tambah.step3.form.back
+     * URL: /logbook/laporan/tambah/step3/back/{laporan_id}
+     */
+    Route::get('/laporan/tambah/step3/back/{laporan_id}', [LaporanController::class, 'formTambahStep3Back'])->name('laporan.tambah.step3.form.back');
 
 });
 
@@ -944,7 +960,7 @@ Route::group(['prefix' => 'logbook', 'middleware' => ['auth']], function () {
 //Route::post('/logbook/laporan/tambah/step5/simpan', [LaporanController::class, 'simpanStep5'])->name('tambah.simpanStep5')->middleware(['role:super_admin,admin,tehnisi']);
 
 // Untuk menghapus laporan yang berstatus DRAFT
-//Route::post('/logbook/laporan/hapus', [LaporanController::class, 'hapus'])->name('logbook.laporan.hapus')->middleware(['role:super_admin,admin,teknisi']);
+Route::post('/logbook/laporan/hapus', [LaporanController::class, 'hapus'])->name('logbook.laporan.hapus')->middleware(['role:super_admin,admin,teknisi']);
 
 // Untuk menampilkan detail data laporan
 //Route::post('/logbook/laporan/detail', [LaporanController::class, 'detail'])->name('logbook.laporan.detail')->middleware(['role:super_admin,admin,teknisi']);

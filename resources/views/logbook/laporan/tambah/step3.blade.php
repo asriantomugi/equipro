@@ -398,7 +398,7 @@
                                 class="btn btn-success btn-sm">
                                 <i class="fas fa-angle-left"></i>&nbsp;&nbsp;&nbsp;Kembali
                             </a>
-                            <a href="{{ route('logbook.laporan.tambah.step4.form', ['id' => $laporan->id]) }}"
+                            <a href="{{ route('logbook.laporan.tambah.step4.form', ['laporan_id' => $laporan->id]) }}"
                                 class="btn btn-success btn-sm float-right">
                                 Lanjut&nbsp;&nbsp;&nbsp;<i class="fas fa-angle-right"></i>
                             </a>

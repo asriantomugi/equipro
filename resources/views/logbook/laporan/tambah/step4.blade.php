@@ -5,7 +5,7 @@
 <section class="content">
   <div class="container-fluid">
 
-    {{-- Step Navigation --}}
+    {{------------------------------------------- Step Navigation ---------------------------------------------}}
     <div class="row mb-2">
         <div class="col-lg-12">
             <div class="card">
@@ -25,7 +25,7 @@
         </div>
     </div>
 
-    {{-- Data Layanan --}}
+    {{--------------------------------------------- Data Layanan ---------------------------------------------------}}
     <div class="row">
       <div class="col-lg-12 col-6">
         <div class="card">
@@ -70,7 +70,7 @@
       </div> <!-- col-lg-12 col-6 -->
     </div> <!-- row -->
 
-    {{-- Daftar Peralatan --}}
+    {{-------------------------------------------------- Daftar Peralatan --------------------------------------------------}}
     <div class="row">
       <div class="col-lg-12 col-6">
         
@@ -183,7 +183,7 @@
     </div>
     <!-- /.row -->
 
-    {{-- Data Gangguan --}}
+    {{------------------------------------------- Data Gangguan -------------------------------------------}}
     <div class="row">
       <div class="col-lg-12 col-6">
         
@@ -268,6 +268,32 @@
 
           </div>
           <!-- /.card-body -->
+
+          <div class="card-footer">
+      @if($jenis_tindaklanjut != null)
+          @if($jenis_tindaklanjut == 2)
+            <a href="{{ route('logbook.laporan.tambah.step3.form', ['laporan_id' => $laporan->id]) }}"
+                class="btn btn-success btn-sm">
+                <i class="fas fa-angle-left"></i>&nbsp;&nbsp;&nbsp;Kembali
+            </a> 
+          @endif
+      @else
+          <a href="{{ route('logbook.laporan.tambah.step2.form', ['laporan_id' => $laporan->id]) }}"
+                class="btn btn-success btn-sm">
+                <i class="fas fa-angle-left"></i>&nbsp;&nbsp;&nbsp;Kembali
+            </a>
+      @endif
+            
+            <a href="{{ route('logbook.laporan.tambah.step4', ['laporan_id' => $laporan->id]) }}"
+                class="btn btn-primary btn-sm float-right">
+                Submit&nbsp;&nbsp;&nbsp;<i class="fas fa-check"></i>
+            </a>
+            <!--
+            <button type="submit" class="btn btn-success btn-sm float-right" id="btn-submit">
+                Lanjut&nbsp;<i class="fas fa-angle-right"></i>
+            </button>
+            -->
+        </div>
         </div>
         <!-- /.card -->
 
