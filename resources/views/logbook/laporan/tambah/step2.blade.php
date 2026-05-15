@@ -278,11 +278,13 @@
         // ==============================================================
         //                        FUNCTION UMUM
         // ==============================================================
+        // function untuk menampilkan blok field
         function show(el, status) {
             if (!el) return;
             el.style.display = status ? 'block' : 'none';
         }
 
+        // function untuk mengaktivasi field mandatory (required)
         function toggleRequired(container, status, className) {
             if (!container) return;
 
@@ -296,7 +298,8 @@
                 }
             });
         }
-
+        
+        // function utnuk menampilkan dropdown kondisi layanan saat field perbaikan diisi
         function showKondisiLayanan(status) {
             const dropdown = document.getElementById('dropdown_kondisi');
             if (!dropdown) return;
@@ -314,6 +317,7 @@
             });
         }
 
+        // function untuk menampilkan field datetimepicker di field-field pengisian waktu di form jenis gangguan peralatan
         function initDateTimePeralatan(id) {
             if (!$('#datetime_gangguan_' + id).data('datetimepicker')) {
                 $('#datetime_gangguan_' + id).datetimepicker({
@@ -351,6 +355,7 @@
             }
         }
 
+        // function untuk menampilkan field datetimepicker di field-field pengisian waktu di form jenis gangguan non peralatan
         function initDateTimeNonPeralatan() {
             if (!$('#datetime_nonperalatan').data('datetimepicker')) {
                 $('#datetime_nonperalatan').datetimepicker({
@@ -385,7 +390,6 @@
          * Saat jenis laporan dipilih GANGGUAN PERALATAN, maka akan tampil form input gangguan peralatan.
          * Saat jenis laporan dipilih GANGGUAN NON PERALATAN, maka akan tampil form input gangguan non peralatan.
          */
-
         formJenis.addEventListener('change', function () {
             // ambil value dari dropdown jenis laporan
             const jenis = this.value;
@@ -486,7 +490,7 @@
                     html += '<div class="col-sm-6">';
                     html += '<select name="peralatan['+ index +'][kondisi_gangguan]" class="form-control kondisi-peralatan gangguan-required" data-index="'+ index +'" disabled>';
                     html += '<option value="">- Pilih -</option>';
-                    // hanya tampilkan pilihan kondisi peralatan sesuai kondisi terakhir
+                    // hanya tampilkan pilihan kondisi peralatan sesuai kondisi terakhir dari peralatan
                     if(alat.peralatan.kondisi == KONDISI_PERALATAN.normal){
                         html += `<option value="${ KONDISI_PERALATAN.normal }">NORMAL</option>`;
                         html += `<option value="${ KONDISI_PERALATAN.normal_sebagian }">NORMAL SEBAGIAN</option>`;
@@ -499,6 +503,7 @@
                     html += '</select>';
                     html += '</div></div>';
 
+                    // dropdown jenis tindaklanjut, pilihan ini menentukan form yang akan muncul selanjutnya
                     html += '<div class="form-group row">';
                     html += '<label class="col-sm-3 col-form-label">Jenis Tindak Lanjut</label>';
                     html += '<div class="col-sm-6">';
@@ -510,7 +515,7 @@
                     html += '</div></div>';
 
                     // ============================= FORM INPUT PERBAIKAN ======================================
-                    // jika dipilih PERBAIKAN maka muncul form input perbaikan 
+                    // jika dropdown jenis tindaklanjut dipilih PERBAIKAN maka muncul form input perbaikan 
                     // Codingan berada di dalam div class form-gangguan-peralatan
                     html += '<div class="form-perbaikan-peralatan" id="perbaikan_'+ index +'" style="display:none">';
 
@@ -543,7 +548,7 @@
                     html += '<div class="col-sm-6">';
                     html += '<select name="peralatan['+ index +'][tindaklanjut]['+ JENIS_TINDAKLANJUT_PERALATAN.perbaikan +'][kondisi_tindaklanjut]" class="form-control perbaikan-required" data-index="'+ index +'" disabled>';
                     html += '<option value="">- Pilih -</option>';
-                    // hanya tampilkan pilihan kondisi peralatan sesuai kondisi terakhir
+                    // hanya tampilkan pilihan kondisi peralatan sesuai kondisi terakhir dari peralatan
                     if(alat.peralatan.kondisi == KONDISI_PERALATAN.normal){
                         html += `<option value="${ KONDISI_PERALATAN.normal }">NORMAL</option>`;
                         html += `<option value="${ KONDISI_PERALATAN.normal_sebagian }">NORMAL SEBAGIAN</option>`;
@@ -559,7 +564,7 @@
                     // ======================= END OF FORM INPUT PERBAIKAN ==================================
 
                     // ============================= INPUT PENGGANTIAN ======================================
-                    // jika dipilih PENGGANTIAN maka muncul form input penggantian 
+                    // jika dropdown jenis tindaklanjut dipilih PENGGANTIAN maka muncul form input penggantian 
                     // Codingan berada di dalam div class form-gangguan-peralatan
                     html += '<div class="form-penggantian-peralatan" id="penggantian_'+ index +'" style="display:none">';
 
@@ -590,6 +595,7 @@
                     html += '</div>';
                     // =========================== END OF FORM INPUT PENGGANTIAN ======================================
 
+                    // tombol batal untuk membatalkan pengisian form penggantian
                     html += '<div class="form-group row">';
                     html += '<div class="col-sm-3"></div>';
                     html += '<div class="col-sm-6">';
@@ -601,7 +607,7 @@
                     html += '</div>';
                     // ============================= END OF FORM INPUT GANGGUAN ======================================
 
-                    // html += '<hr class="my-4">';
+                    // garis pembatas untuk penanda form pengisian data gangguan peralatan selanjutnya
                     html += '<hr class="my-4" style="border-top: 3px solid #a8a5a5;">';
                 });
                 // END OF LOOP   
@@ -631,6 +637,7 @@
                 html += '<textarea class="form-control nonperalatan-required" rows="5" name="deskripsi_gangguan" placeholder=""></textarea>';
                 html += '</div></div>';
 
+                // tombol input tindaklanjut, untuk menampilkan form input tindaklanjut
                 html += '<div class="form-group row">';
                 html += '<div class="col-sm-3"></div>';
                 html += '<div class="col-sm-6">';
@@ -671,6 +678,7 @@
                 html += '<div class="input-group-text"><i class="fa fa-calendar"></i></div>';
                 html += '</div></div></div></div>';
 
+                // tombol batal, untuk membatalkan pengisian form tindaklanjut
                 html += '<div class="form-group row">';
                 html += '<div class="col-sm-3"></div>';
                 html += '<div class="col-sm-6">';
@@ -690,6 +698,7 @@
             }
             // ============================= END OF FORM INPUT GANGGUAN ======================================
 
+            // dropdown kondisi layanan saat mengalami gangguan
             html += '<div class="form-group row">';
             html += '<label class="col-sm-3 col-form-label required">Kondisi Layanan Saat Gangguan</label>';
             html += '<div class="col-sm-6">';
@@ -701,7 +710,8 @@
             html += '<div class="invalid-feedback">Wajib dipilih</div>';
             html += '</div></div>';
 
-            // div form kondisi layanan setelah dilakukan tindaklanjut
+            // dropdown kondisi layanan setelah dilakukan tindaklanjut
+            // dropdown ini muncul apabila dilakukan pengisian form tindaklanjut
             html += '<div class="form-kondisi-tindaklanjut" id="dropdown_kondisi" style="display:none">';
 
             html += '<div class="form-group row">';
@@ -716,11 +726,12 @@
             html += '</div></div>';
 
             html += '</div>';
-            // end of div form kondisi layanan setelah dilakukan tindaklanjut
+            // end of dropdown kondisi layanan setelah dilakukan tindaklanjut
 
             formGangguan.innerHTML = html; // menampilkan variabel html ke halaman blade
 
-            // aktifkan required pada form input gangguan pada jenis laporan GANGGUAN NON PERALATAN 
+            // aktifkan field mandatory (required) pada form input gangguan pada jenis laporan GANGGUAN NON PERALATAN
+            // fitur ini aktif hanya saat dropdown jenis laporan dipilih GANGGUAN NON PERALATAN
             if (jenis == JENIS.NON) {
                 const formGangguanNon = document.getElementById('gangguan_non');
 
@@ -728,15 +739,19 @@
                 initDateTimeNonPeralatan();
             }
         });
-        // ===============================================================
-        //                     END OF FUNCTION FORM JENIS
-        // ===============================================================
+        // =================================================================
+        //        END OF FUNCTION FORM INPUT GANGGUAN DAN TINDAKLANUT
+        // =================================================================
+
 
         // =================================================================
-        //                            EVEN GLOBAL
+        //                         GLOBAL EVENT
         // =================================================================
+
+        // function untuk mengelola event dari metode klik tombol
         document.addEventListener('click', function (e) {
-            // ketika tombol Input Gangguan diklik, tampilkan form input gangguan (Jenis Laporan Gangguan Peralatan)
+
+            // function untuk menampilkan form input gangguan saat tombol Input Gangguan di-klik (Jenis Laporan Gangguan Peralatan)
             if (e.target.closest('.btn-input-gangguan')) {
 
                 const btn = e.target.closest('.btn-input-gangguan');
@@ -753,7 +768,7 @@
                 toggleRequired(gangguan, true, 'gangguan-required');
             }
 
-            // ketika tombol Batal diklik, sembunyikan form input gangguan (Jenis Laporan Gangguan Peralatan)
+            // function untuk menutup form input gangguan saat tombol Batal di-klik (Jenis Laporan Gangguan Peralatan)
             if (e.target.closest('.btn-close-input-gangguan')) {
 
                 const btn = e.target.closest('.btn-close-input-gangguan');
@@ -769,7 +784,7 @@
                 toggleRequired(gangguan, false, 'gangguan-required');
             }
 
-            // jika tombol tombol Input Tindaklanjut diklik (Jenis Laporan Gangguan Non Peralatan)
+            // function untuk menampilkan form tindaklanjut saat tombol Input Tindaklanjut di-klik (Jenis Laporan Gangguan Non Peralatan) 
             if (e.target.closest('.btn-input-tindaklanjut')) {
 
                 const btn = e.target.closest('.btn-input-tindaklanjut');
@@ -787,7 +802,7 @@
                 showKondisiLayanan(isPerbaikan);
             }
 
-            // ketika tombol Batal diklik, sembunyikan form input tindaklanjut (Jenis Laporan Gangguan Non Peralatan)
+            // function untuk menampilkan form tindaklanjut saat tombol Batal di-klik (Jenis Laporan Gangguan Non Peralatan)
             if (e.target.closest('.btn-close-input-tindaklanjut')) {
 
                 const btn = e.target.closest('.btn-close-input-tindaklanjut');
@@ -805,9 +820,10 @@
         });
         
 
+        // function untuk mengelola event dari metode perubahan isi dropdown
         document.addEventListener('change', function (e) {
 
-            // jika dropdown jenis tindaklanjut dipilih (Jenis Laporan Gangguan Peralatan)
+            // function untuk menampilkan form perbaikan/penggantian saat dropdown jenis tindaklanjut dipilih (Jenis Laporan Gangguan Peralatan)
             if (e.target.classList.contains('jenis-tindaklanjut')) {
 
                 const index = e.target.dataset.index;
@@ -830,6 +846,7 @@
                 showKondisiLayanan(isPerbaikan || isPenggantian);
             }
         });
+        
         // =================================================================
         //                        END OF EVEN GLOBAL
         // =================================================================
@@ -848,7 +865,7 @@ function detail(id){
 
     // Ajax Load data from ajax
     $.ajax({
-        url : "{{url('/fasilitas/peralatan/detail')}}",
+        url : "{{ route('fasilitas.peralatan.detail') }}",
         type: "POST",
         data : {id: id},
         success: function(data){

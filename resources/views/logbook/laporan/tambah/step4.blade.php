@@ -1,5 +1,9 @@
 @extends('logbook.main')
 
+@section('head')
+    <meta name="csrf-token" content="{{ csrf_token() }}" />
+@endsection
+
 @section('content')
 
 <section class="content">
@@ -42,23 +46,34 @@
             <tr><th>Nama</th><td>:</td><td>{{ $layanan->nama }}</td></tr>
             <tr><th>Lokasi Tingkat I</th><td>:</td><td>{{ $layanan->lokasiTk1->kode }} - {{ $layanan->LokasiTk1->nama }}</td></tr>
             <tr><th>Lokasi Tingkat II</th><td>:</td><td>{{ $layanan->lokasiTk2->kode }} - {{ $layanan->LokasiTk2->nama }}</td></tr>
-            <tr><th>Lokasi Tingkat III</th><td>:</td><td>{{ $layanan->lokasiTk3->kode }} - {{ $layanan->LokasiTk3->nama }}</td></tr>
+            
+            <tr><th>Waktu Mulai Gangguan</th><td>:</td><td>{{ strtoupper($laporan->waktu_layanan_open_formatted ?? '-') }}</td></tr>
+        
 @if($laporan->kondisi_layanan_open == config('constants.kondisi_layanan.serviceable'))
-            <tr><th>Kondisi Layanan Saat Gangguan</th><td>:</td><td><span class="badge bg-success">SERVICEABLE</span></td></tr>
+            <tr><th>Kondisi Saat Gangguan</th><td>:</td><td><span class="badge bg-success">SERVICEABLE</span></td></tr>
 @else
-            <tr><th>Kondisi Layanan Saat Gangguan</th><td>:</td><td><span class="badge bg-danger">UNSERVICEABLE</span></td></tr>
+            <tr><th>Kondisi Saat Gangguan</th><td>:</td><td><span class="badge bg-danger">UNSERVICEABLE</span></td></tr>
 @endif
 
+            <tr><th>Waktu Selesai Gangguan</th><td>:</td><td>{{ strtoupper($laporan->waktu_layanan_close_formatted ?? '-') }}</td></tr>
 @if($laporan->kondisi_layanan_temp == config('constants.kondisi_layanan.serviceable'))
-            <tr><th>Kondisi Layanan Saat Ini</th><td>:</td><td><span class="badge bg-success">SERVICEABLE</span></td></tr>
+            <tr><th>Kondisi Saat Ini</th><td>:</td><td><span class="badge bg-success">SERVICEABLE</span></td></tr>
 @else
-            <tr><th>Kondisi Layanan Saat Ini</th><td>:</td><td><span class="badge bg-danger">UNSERVICEABLE</span></td></tr>
+            <tr><th>Kondisi Saat Ini</th><td>:</td><td><span class="badge bg-danger">UNSERVICEABLE</span></td></tr>
 @endif
 
 @if($laporan->jenis == config('constants.jenis_laporan.gangguan_peralatan'))
-            <tr><th>Jenis Laporan</th><td>:</td><td><span class="badge bg-warning">GANGGUAN PERALATAN</span></td></tr>
+            <tr><th>Jenis Laporan</th><td>:</td><td><span class="badge bg-success">GANGGUAN PERALATAN</span></td></tr>
 @elseif($laporan->jenis == config('constants.jenis_laporan.gangguan_non_peralatan'))
-            <tr><th>Jenis Laporan</th><td>:</td><td><span class="badge bg-warning">GANGGUAN NON PERALATAN</span></td></tr>
+            <tr><th>Jenis Laporan</th><td>:</td><td><span class="badge bg-success">GANGGUAN NON PERALATAN</span></td></tr>
+@endif
+
+@if($laporan->status == config('constants.status_laporan.open'))
+            <tr><th>Status Laporan</th><td>:</td><td><span class="badge bg-danger">OPEN</span></td></tr>
+@elseif($laporan->jenis == config('constants.status_laporan.close'))
+            <tr><th>Status Laporan</th><td>:</td><td><span class="badge bg-success">CLOSE</span></td></tr>
+@elseif($laporan->jenis == config('constants.status_laporan.draft'))
+            <tr><th>Status Laporan</th><td>:</td><td><span class="badge bg-warning">DRAFT</span></td></tr>
 @endif
             </table>
 
@@ -163,11 +178,11 @@
           @endif
 
                   <td class="text-center">
-                      <button class="btn btn-secondary btn-sm" 
-                              onclick="detail('{{ $satu->peralatan->id }}')"
-                              title="Detail Peralatan">
-                              <i class="fas fa-angle-double-right"></i>
-                      </button>
+                    <button class="btn btn-secondary btn-sm" 
+                            onclick="detail('{{ $satu->peralatan->id }}')"
+                            title="Detail Peralatan">
+                            <i class="fas fa-angle-double-right"></i>
+                    </button>
                   </td>
                 </tr>
     @endforeach
@@ -229,7 +244,7 @@
                   <th class="text-center">WAKTU MULAI</th>
                   <th class="text-center">WAKTU SELESAI</th>
                   <th class="text-center">JENIS</th>
-                  <th class="text-center" style="width: 600px">DESKRIPSI</th>
+                  <th class="text-center" style="width: 500px">DESKRIPSI</th>
                   <th class="text-center">KONDISI AKHIR</th>
                 </tr>
               </thead>
@@ -249,7 +264,7 @@
                   <td class="text-center">-</td>
               @endif
 
-                  <td class="text-center">{{ strtoupper($satu->deskripsi) }}</td>
+                  <td>{{ strtoupper($satu->deskripsi) }}</td>
   
                   {{-- Kondisi Peralatan Setelah Tindaklanjut --}}
               @if($satu->kondisi === config('constants.kondisi_peralatan.normal'))
@@ -299,7 +314,7 @@
                   <td class="text-center">{{ $index + 1 }}</td>
                   <td class="text-center">{{ strtoupper($satu->waktu_mulai_formatted) }}</td>
                   <td class="text-center">{{ strtoupper($satu->waktu_selesai_formatted) }}</td>
-                  <td class="text-center">{{ strtoupper($satu->deskripsi) }}</td>
+                  <td>{{ strtoupper($satu->deskripsi) }}</td>
   
                   {{-- Kondisi Layanan Setelah Tindaklanjut --}}
               @if($satu->kondisi === config('constants.kondisi_layanan.serviceable'))
@@ -327,7 +342,7 @@
             </a> 
           @endif
       @else
-          <a href="{{ route('logbook.laporan.tambah.step2.form', ['layanan_id' => $laporan->id]) }}"
+          <a href="{{ route('logbook.laporan.tambah.step2.back.form', ['laporan_id' => $laporan->id]) }}"
                 class="btn btn-success btn-sm">
                 <i class="fas fa-angle-left"></i>&nbsp;&nbsp;&nbsp;Kembali
             </a>
@@ -351,10 +366,163 @@
     </div>
     <!-- /.row -->
 
-
-
   </div> <!-- container-fluid -->
 </section> <!-- content -->
 
+<!-- Modal tombol detail -->
+<div class="modal fade" id="modal_detail">
+    <div class="modal-dialog modal-lg">
+    <div class="modal-content" id="detail">
+        
+    </div>
+    <!-- /.modal-content -->
+    </div>
+    <!-- /.modal-dialog -->
+</div>
+<!-- /.modal -->
+
 @endsection
 
+
+@section('tail')
+
+<!-- javascript untuk menampilkan modal detail -->
+<script type="text/javascript">
+  function detail(id){
+
+    $.ajaxSetup({
+        headers: {
+            'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+        }
+    });
+
+    //Ajax Load data from ajax
+    
+    $.ajax({
+        url : "{{ route('fasilitas.peralatan.detail') }}",
+        type: "POST",
+        data : {id: id},
+        success: function(data){
+
+          //alert(data.jenis.nama);
+
+          $('#detail').empty();
+
+          var row = '<div class="modal-header">';
+              row += '<h4 class="modal-title">Detail Peralatan</h4>';
+              row += '<button type="button" class="close" data-dismiss="modal" aria-label="Close">';
+              row += '<span aria-hidden="true">&times;</span></button></div>';// modal header
+
+              row += '<div class="modal-body">';
+              row += "<table border='0' cellpadding='5px'>";            
+              row += "<tr><th>Kode</th><td>:</td><td>"+ data.peralatan.kode.toUpperCase(); +"</td></tr>";  
+              row += "<tr><th>Nama</th><td>:</td><td>"+ data.peralatan.nama.toUpperCase(); +"</td></tr>";
+
+          if(data.peralatan.merk != null){
+              row += "<tr><th>Merk</th><td>:</td><td>"+ data.peralatan.merk.toUpperCase(); +"</td></tr>";
+          }else{
+              row += "<tr><th>Merk</th><td>:</td><td></td></tr>";
+          }
+
+          if(data.peralatan.tipe != null){
+              row += "<tr><th>Tipe</th><td>:</td><td>"+ data.peralatan.tipe.toUpperCase(); +"</td></tr>";
+          }else{
+              row += "<tr><th>Tipe</th><td>:</td><td></td></tr>";
+          }
+
+          if(data.peralatan.model != null){
+              row += "<tr><th>Model</th><td>:</td><td>"+ data.peralatan.model.toUpperCase(); +"</td></tr>";
+          }else{
+              row += "<tr><th>Model</th><td>:</td><td></td></tr>";
+          }
+
+          if(data.peralatan.serial_number != null){
+              row += "<tr><th>Serial Number</th><td>:</td><td>"+ data.peralatan.serial_number.toUpperCase(); +"</td></tr>";
+          }else{
+              row += "<tr><th>Serial Number</th><td>:</td><td></td></tr>";
+          }
+
+          if(data.peralatan.no_aset != null){
+              row += "<tr><th>No. Aset</th><td>:</td><td>"+ data.peralatan.no_aset.toUpperCase(); +"</td></tr>";
+          }else{
+              row += "<tr><th>No. Aset</th><td>:</td><td></td></tr>";
+          }
+
+          if(data.peralatan.thn_produksi != null){
+              row += "<tr><th>Tahun Produksi</th><td>:</td><td>"+ data.peralatan.thn_produksi; +"</td></tr>";
+          }else{
+              row += "<tr><th>Tahun Produksi</th><td>:</td><td></td></tr>";
+          }
+
+          if(data.peralatan.thn_pengadaan != null){
+              row += "<tr><th>Tahun Pengadaan</th><td>:</td><td>"+ data.peralatan.thn_pengadaan; +"</td></tr>";
+          }else{
+              row += "<tr><th>Tahun Pengadaan</th><td>:</td><td></td></tr>";
+          }
+                   
+              row += "<tr><th>Jenis Alat</th><td>:</td><td>"+ data.jenis.nama.toUpperCase(); +"</td></tr>";
+          
+          if(data.peralatan.sewa == 1){
+              row += "<tr><th>Status Kepemilikan</th><td>:</td><td>SEWA</td></tr>";
+          }else{
+              row += "<tr><th>Status Kepemilikan</th><td>:</td><td>ASET</td></tr>";
+          }
+
+              row += "<tr><th>Perusahaan Pemilik</th><td>:</td><td>"+ data.perusahaan.nama.toUpperCase(); +"</td></tr>";
+
+          if(data.peralatan.kondisi == 1){
+              row += "<tr><th>Status</th><td>:</td><td><span class='badge bg-success'>NORMAL</span></td></tr>";
+          }
+          else if(data.peralatan.kondisi == 2){
+              row += "<tr><th>Status</th><td>:</td><td><span class='badge bg-warning'>NORMAL SEBAGIAN</span></td></tr>";
+          }else{
+              row += "<tr><th>Status</th><td>:</td><td><span class='badge bg-danger'>TIDAK AKTIF</span></td></tr>";
+          }
+          
+          if(data.peralatan.keterangan != null){
+              row += "<tr><th>Keterangan</th><td>:</td><td>"+ data.peralatan.keterangan.toUpperCase(); +"</td></tr>";
+          }else{
+              row += "<tr><th>Keterangan</th><td>:</td><td></td></tr>";
+          }
+
+          if(data.peralatan.status == 1){
+              row += "<tr><th>Status</th><td>:</td><td><span class='badge bg-success'>AKTIF</span></td></tr>";
+          }else{
+              row += "<tr><th>Status</th><td>:</td><td><span class='badge bg-danger'>TIDAK AKTIF</span></td></tr>";
+          }
+
+          if(data.created_by != null){
+              row += "<tr><th>Dibuat Oleh</th><td>:</td><td>"+ data.created_by.name.toUpperCase(); +"</td></tr>";
+              row += "<tr><th>Dibuat Pada</th><td>:</td><td>"+ data.peralatan.created_at_formatted +"</td></tr>";
+          }else{
+              row += "<tr><th>Dibuat Oleh</th><td>:</td><td></td></tr>";
+              row += "<tr><th>Dibuat Pada</th><td>:</td><td></td></tr>";
+          } 
+
+          if(data.updated_by != null){
+              row += "<tr><th>Update Terakhir Oleh</th><td>:</td><td>"+ data.updated_by.name.toUpperCase(); +"</td></tr>";
+              row += "<tr><th>Update Terakhir Pada</th><td>:</td><td>"+ data.peralatan.updated_at_formatted +"</td></tr>";
+          }else{
+              row += "<tr><th>Update Terakhir Oleh</th><td>:</td><td></td></tr>";
+              row += "<tr><th>Update Terakhir Pada</th><td>:</td><td></td></tr>";
+          }      
+              
+              row += '</table>';
+              row += '</div>'; // modal body
+              row += '<div class="modal-footer justify-content-between">';
+              row += '<button type="button" class="btn btn-default" data-dismiss="modal">Kembali</button>';
+              //row += '<button type="button" class="btn btn-danger">Hapus</button>';
+              row += '</div>';
+        
+            $("#detail").append(row);
+            $("#modal_detail").modal('show'); // show bootstrap modal when complete loaded
+        },
+        error: function (jqXHR, textStatus, errorThrown)
+        {
+            alert('Gagal menampilkan detail peralatan');
+        }
+    });
+}
+</script>
+
+@endsection

@@ -101,11 +101,28 @@ class Laporan extends Model
 
 
     /**
+     * Function untuk mendapatkan waktu layanan open dalam format yang diinginkan
+     */
+    public function getWaktuLayananOpenFormattedAttribute()
+    {
+        return $this->waktu_layanan_open ? Carbon::parse($this->waktu_layanan_open)->format('d/m/Y - H:i') : null;
+    }
+
+    /**
+     * Function untuk mendapatkan waktu layanan close dalam format yang diinginkan
+     */
+    public function getWaktuLayananCloseFormattedAttribute()
+    {
+        return $this->waktu_layanan_close ? Carbon::parse($this->waktu_layanan_close)->format('d/m/Y - H:i') : null;
+    }
+
+
+    /**
      * Function untuk mendapatkan waktu open dalam format yang diinginkan
      */
     public function getWaktuOpenFormattedAttribute()
     {
-        return $this->waktu_open ? Carbon::parse($this->waktu_open)->format('d/m/Y') : null;
+        return $this->waktu_open ? Carbon::parse($this->waktu_open)->format('d/m/Y - H:i') : null;
     }
 
     /**
@@ -113,7 +130,7 @@ class Laporan extends Model
      */
     public function getWaktuCloseFormattedAttribute()
     {
-        return $this->waktu_close ? Carbon::parse($this->waktu_close)->format('d/m/Y') : null;
+        return $this->waktu_close ? Carbon::parse($this->waktu_close)->format('d/m/Y - H:i') : null;
     }
 
     /**

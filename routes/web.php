@@ -888,19 +888,20 @@ Route::prefix('/logbook')->name('logbook.')
     /**
      * Menampilkan form tambah laporan step 2 ketika ditekan tombol back
      * Method: GET
-     * Name: logbook.laporan.tambah.step2.form.back
-     * URL: /logbook/laporan/tambah/step2/back/{layanan_id}
+     * Name: logbook.laporan.tambah.step2.back.from
+     * URL: /logbook/laporan/tambah/step2/back/{laporan_id}
      */
-    Route::get('/laporan/tambah/step2/back/{layanan_id}', [LaporanController::class, 'formTambahStep2Back'])->name('laporan.tambah.step2.form.back');
+    Route::get('/laporan/tambah/step2/back/{laporan_id}', [LaporanController::class, 'formTambahStep2Back'])->name('laporan.tambah.step2.back.form');
 
     /**
-     * Menampilkan form tambah laporan step 3 ketika ditombol back
-     * Method: GET
-     * Name: logbook.laporan.tambah.step3.form.back
-     * URL: /logbook/laporan/tambah/step3/back/{laporan_id}
+     * Memproses form tambah laporan step 2 back
+     * Method: POST
+     * Name: logbook.laporan.tambah.step2.back
+     * URL: /logbook/laporan/tambah/step2/back
      */
-    Route::get('/laporan/tambah/step3/back/{laporan_id}', [LaporanController::class, 'formTambahStep3Back'])->name('laporan.tambah.step3.form.back');
+    Route::get('/laporan/tambah/step2/back', [LaporanController::class, 'formTambahStep2Back'])->name('laporan.tambah.step2.back');
 
+    
 });
 
 // Logbook Module Routes

@@ -61,7 +61,7 @@ class TlGangguanNonPeralatan extends Model
      */
     public function getWaktuMulaiFormattedAttribute()
     {
-        return $this->waktu_mulai ? Carbon::parse($this->waktu_mulai)->format('d/m/Y') : null;
+        return $this->waktu_mulai ? Carbon::parse($this->waktu_mulai)->format('d/m/Y - H:i') : null;
     }
 
     /**
@@ -70,7 +70,7 @@ class TlGangguanNonPeralatan extends Model
      */
     public function getWaktuSelesaiFormattedAttribute()
     {
-        return $this->waktu_selesai ? Carbon::parse($this->waktu_selesai)->format('d/m/Y') : null;
+        return $this->waktu_selesai ? Carbon::parse($this->waktu_selesai)->format('d/m/Y - H:i') : null;
     }
 
     /**

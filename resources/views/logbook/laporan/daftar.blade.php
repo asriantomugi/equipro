@@ -207,6 +207,14 @@
           autohide: true,
           delay: 3000
         })
+    @elseif(session()->get('notif') == 'layanan_unserviceable')
+      $(document).Toasts('create', {
+          class: 'bg-danger',
+          title: 'Error!',
+          body: 'Layanan dalam kondisi unserviceable',
+          autohide: true,
+          delay: 3000
+        })
     @endif
   @endif
 </script>
