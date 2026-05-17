@@ -277,8 +277,11 @@
 
         // data dari controller
         const laporan = @json($laporan);
-        // console.log(laporan);
-        // console.log(laporan.gangguanNonPeralatan);
+        const gangguanPeralatan = laporan.gangguan_peralatan;
+        const gangguanNonPeralatan = laporan.gangguan_non_peralatan;
+        const tlGangguanNonPeralatan = laporan.tl_gangguan_non_peralatan?.[0];
+        //console.log(laporan);
+        console.log(tlGangguanNonPeralatan);
        
         // ==============================================================
         //                        FUNCTION UMUM
@@ -396,6 +399,7 @@
          * Saat jenis laporan dipilih GANGGUAN NON PERALATAN, maka akan tampil form input gangguan non peralatan.
          */
         formJenis.addEventListener('change', function () {
+
             // ambil value dari dropdown jenis laporan
             const jenis = this.value;
             let html = '';
@@ -620,7 +624,7 @@
 
             // jika jenis laporan = 2 (gangguan non peralatan)
             else if (jenis == JENIS.NON) {
-
+            
                 // ============================= FORM INPUT GANGGUAN ======================================
                 html += '<div class="form-gangguan-nonperalatan" id="gangguan_non">';
 
@@ -628,7 +632,7 @@
                 html += '<label class="col-sm-3 col-form-label required">Waktu Gangguan</label>';
                 html += '<div class="col-sm-6">';
                 html += '<div class="input-group date" id="datetime_nonperalatan" data-target-input="nearest">';
-                html += `<input type="text" name="waktu_gangguan" class="form-control datetimepicker-input nonperalatan-required" data-target="#datetime_nonperalatan" value="${laporan.gangguan_non_peralatan?.waktu ?? ''}"/>`;
+                html += `<input type="text" name="waktu_gangguan" class="form-control datetimepicker-input nonperalatan-required" data-target="#datetime_nonperalatan" value="${gangguanNonPeralatan?.waktu_formatted ?? ''}"/>`;
                 html += '<div class="input-group-append" data-target="#datetime_nonperalatan" data-toggle="datetimepicker">';
                 html += '<div class="input-group-text"><i class="fa fa-calendar"></i></div>';
                 html += '</div>';
@@ -639,7 +643,7 @@
                 html += '<div class="form-group row">';
                 html += '<label class="col-sm-3 col-form-label required">Deskripsi Gangguan</label>';
                 html += '<div class="col-sm-6">';
-                html += `<textarea class="form-control nonperalatan-required" rows="5" name="deskripsi_gangguan" placeholder="">${laporan.gangguan_non_peralatan?.deskripsi ?? ''}</textarea>`;
+                html += `<textarea class="form-control nonperalatan-required" rows="5" name="deskripsi_gangguan" placeholder="">${gangguanNonPeralatan?.deskripsi ?? ''}</textarea>`;
                 html += '</div></div>';
 
                 // tombol input tindaklanjut, untuk menampilkan form input tindaklanjut
@@ -663,7 +667,7 @@
                 html += '<label class="col-sm-3 col-form-label required">Waktu Mulai Tindak Lanjut</label>';
                 html += '<div class="col-sm-6">';
                 html += '<div class="input-group date" id="datetime_mulai_perbaikan" data-target-input="nearest">';
-                html += '<input type="text" name="waktu_mulai_tindaklanjut" class="form-control datetimepicker-input tindaklanjut-required" data-target="#datetime_mulai_perbaikan" disabled/>';
+                html += `<input type="text" name="waktu_mulai_tindaklanjut" class="form-control datetimepicker-input tindaklanjut-required" data-target="#datetime_mulai_perbaikan" value="${tlGangguanNonPeralatan?.waktu_mulai_formatted ?? ''}" disabled/>`;
                 html += '<div class="input-group-append" data-target="#datetime_mulai_perbaikan" data-toggle="datetimepicker">';
                 html += '<div class="input-group-text"><i class="fa fa-calendar"></i></div>';
                 html += '</div></div></div></div>';
@@ -671,14 +675,14 @@
                 html += '<div class="form-group row">';
                 html += '<label class="col-sm-3 col-form-label required">Deskripsi Tindak Lanjut</label>';
                 html += '<div class="col-sm-6">';
-                html += '<textarea class="form-control tindaklanjut-required" rows="5" name="deskripsi_tindaklanjut" placeholder="" disabled></textarea>';
+                html += `<textarea class="form-control tindaklanjut-required" rows="5" name="deskripsi_tindaklanjut" placeholder="" disabled>${tlGangguanNonPeralatan?.deskripsi ?? ''}</textarea>`;
                 html += '</div></div>';
 
                 html += '<div class="form-group row">';
                 html += '<label class="col-sm-3 col-form-label required">Waktu Selesai Tindak Lanjut</label>';
                 html += '<div class="col-sm-6">';
                 html += '<div class="input-group date" id="datetime_selesai_perbaikan" data-target-input="nearest">';
-                html += '<input type="text" name="waktu_selesai_tindaklanjut" class="form-control datetimepicker-input tindaklanjut-required" data-target="#datetime_selesai_perbaikan" disabled/>';
+                html += `<input type="text" name="waktu_selesai_tindaklanjut" class="form-control datetimepicker-input tindaklanjut-required" data-target="#datetime_selesai_perbaikan" value="${tlGangguanNonPeralatan?.waktu_selesai_formatted ?? ''}" disabled/>`;
                 html += '<div class="input-group-append" data-target="#datetime_selesai_perbaikan" data-toggle="datetimepicker">';
                 html += '<div class="input-group-text"><i class="fa fa-calendar"></i></div>';
                 html += '</div></div></div></div>';
@@ -738,8 +742,8 @@
             // AUTO SHOW FORM TINDAKLANJUT SAAT EDIT
             if (
                 jenis == JENIS.NON &&
-                laporan.gangguan_non_peralatan &&
-                laporan.gangguan_non_peralatan.tl_gangguan_non_peralatan
+                gangguanNonPeralatan &&
+                tlGangguanNonPeralatan
             ) {
 
                 const tindaklanjut = document.getElementById('tindaklanjut_non');

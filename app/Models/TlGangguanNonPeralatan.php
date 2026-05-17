@@ -26,6 +26,8 @@ class TlGangguanNonPeralatan extends Model
      * Atribut yang ditambahkan ke JSON.
      */
     protected $appends = [
+        'waktu_mulai_formatted',
+        'waktu_selesai_formatted',
         'created_at_formatted',
         'updated_at_formatted',
     ];
@@ -61,7 +63,7 @@ class TlGangguanNonPeralatan extends Model
      */
     public function getWaktuMulaiFormattedAttribute()
     {
-        return $this->waktu_mulai ? Carbon::parse($this->waktu_mulai)->format('d/m/Y - H:i') : null;
+        return $this->waktu_mulai ? Carbon::parse($this->waktu_mulai)->format('d-m-Y H:i') : null;
     }
 
     /**
@@ -70,7 +72,7 @@ class TlGangguanNonPeralatan extends Model
      */
     public function getWaktuSelesaiFormattedAttribute()
     {
-        return $this->waktu_selesai ? Carbon::parse($this->waktu_selesai)->format('d/m/Y - H:i') : null;
+        return $this->waktu_selesai ? Carbon::parse($this->waktu_selesai)->format('d-m-Y H:i') : null;
     }
 
     /**
@@ -95,7 +97,7 @@ class TlGangguanNonPeralatan extends Model
      */
     public function getCreatedAtFormattedAttribute()
     {
-        return $this->created_at ? $this->created_at->format('d/m/Y - H:i') : null;
+        return $this->created_at ? $this->created_at->format('d-m-Y H:i') : null;
     }
 
     /**
@@ -103,6 +105,6 @@ class TlGangguanNonPeralatan extends Model
      */
     public function getUpdatedAtFormattedAttribute()
     {
-        return $this->updated_at ? $this->updated_at->format('d/m/Y - H:i') : null;
+        return $this->updated_at ? $this->updated_at->format('d-m-Y H:i') : null;
     }
 }

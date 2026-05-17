@@ -26,6 +26,7 @@ class GangguanNonPeralatan extends Model
      * Atribut yang ditambahkan ke JSON.
      */
     protected $appends = [
+        'waktu_formatted',
         'created_at_formatted',
         'updated_at_formatted',
     ];
@@ -51,7 +52,7 @@ class GangguanNonPeralatan extends Model
      */
     public function getWaktuFormattedAttribute()
     {
-        return $this->waktu ? Carbon::parse($this->waktu)->format('d/m/Y - H:i') : null;
+        return $this->waktu ? Carbon::parse($this->waktu)->format('d-m-Y H:i') : null;
     }
 
     /**
@@ -76,7 +77,7 @@ class GangguanNonPeralatan extends Model
      */
     public function getCreatedAtFormattedAttribute()
     {
-        return $this->created_at ? $this->created_at->format('d/m/Y - H:i') : null;
+        return $this->created_at ? $this->created_at->format('d-m-Y H:i') : null;
     }
 
     /**
@@ -84,6 +85,6 @@ class GangguanNonPeralatan extends Model
      */
     public function getUpdatedAtFormattedAttribute()
     {
-        return $this->updated_at ? $this->updated_at->format('d/m/Y - H:i') : null;
+        return $this->updated_at ? $this->updated_at->format('d-m-Y H:i') : null;
     }
 }
