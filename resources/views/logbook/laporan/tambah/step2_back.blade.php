@@ -280,8 +280,6 @@
         const gangguanPeralatan = laporan.gangguan_peralatan;
         const gangguanNonPeralatan = laporan.gangguan_non_peralatan;
         const tlGangguanNonPeralatan = laporan.tl_gangguan_non_peralatan?.[0];
-        //console.log(laporan);
-        console.log(tlGangguanNonPeralatan);
        
         // ==============================================================
         //                        FUNCTION UMUM
@@ -483,7 +481,7 @@
                     html += '<label class="col-sm-3 col-form-label required">Waktu Gangguan</label>';
                     html += '<div class="col-sm-6">';
                     html += '<div class="input-group date" id="'+ gangguanPickerId +'" data-target-input="nearest">';
-                    html += '<input type="text" name="peralatan['+ index +'][waktu_gangguan]" class="form-control datetimepicker-input gangguan-required" data-target="#'+gangguanPickerId+'" disabled/>';
+                    html += `<input type="text" name="peralatan['+ index +'][waktu_gangguan]" class="form-control datetimepicker-input gangguan-required" data-target="#'+gangguanPickerId+'" value="${gangguanPeralatan?.waktu_formatted ?? ''}" disabled/>`;
                     html += '<div class="input-group-append" data-target="#'+ gangguanPickerId +'" data-toggle="datetimepicker">';
                     html += '<div class="input-group-text"><i class="fa fa-calendar"></i></div>';
                     html += '</div></div></div></div>';
@@ -713,8 +711,8 @@
             html += '<div class="col-sm-6">';
             html += '<select name="kondisi_layanan_open" class="form-control" required>';
             html += '<option value="">- Pilih -</option>';
-            html += `<option value="${ KONDISI_LAYANAN.serviceable }">SERVICEABLE</option>`;
-            html += `<option value="${ KONDISI_LAYANAN.unserviceable }">UNSERVICEABLE</option>`;
+            html += `<option value="${ KONDISI_LAYANAN.serviceable }" ${laporan.kondisi_layanan_open == KONDISI_LAYANAN.serviceable ? 'selected' : ''}>SERVICEABLE</option>`;
+            html += `<option value="${ KONDISI_LAYANAN.unserviceable }" ${laporan.kondisi_layanan_open == KONDISI_LAYANAN.unserviceable ? 'selected' : ''}>UNSERVICEABLE</option>`;
             html += '</select>';
             html += '<div class="invalid-feedback">Wajib dipilih</div>';
             html += '</div></div>';
@@ -728,8 +726,8 @@
             html += '<div class="col-sm-6">';
             html += '<select name="kondisi_layanan_close" class="form-control">';
             html += '<option value="">- Pilih -</option>';
-            html += `<option value="${ KONDISI_LAYANAN.serviceable }">SERVICEABLE</option>`;
-            html += `<option value="${ KONDISI_LAYANAN.unserviceable }">UNSERVICEABLE</option>`;
+            html += `<option value="${ KONDISI_LAYANAN.serviceable }" ${laporan.kondisi_layanan_open == KONDISI_LAYANAN.serviceable ? 'selected' : ''}>SERVICEABLE</option>`;
+            html += `<option value="${ KONDISI_LAYANAN.unserviceable }" ${laporan.kondisi_layanan_open == KONDISI_LAYANAN.unserviceable ? 'selected' : ''}>UNSERVICEABLE</option>`;
             html += '</select>';
             html += '<div class="invalid-feedback">Wajib dipilih.</div>';
             html += '</div></div>';
@@ -739,24 +737,48 @@
 
             formGangguan.innerHTML = html; // menampilkan variabel html ke halaman blade
 
-            // AUTO SHOW FORM TINDAKLANJUT SAAT EDIT
-            if (
-                jenis == JENIS.NON &&
-                gangguanNonPeralatan &&
-                tlGangguanNonPeralatan
-            ) {
-
-                const tindaklanjut = document.getElementById('tindaklanjut_non');
-
+            // function untuk menampilkan form tindaklanjut (Jenis Laporan Gangguan Non Peralatan)
+            if (jenis == JENIS.PERALATAN && gangguanPeralatan) {
+                // ambil id form tindaklanjut
+                const formGangguan = document.getElementById('tindaklanjut_non');
+                // tampilkan form tindaklanjut
                 show(tindaklanjut, true);
+                // tampilkan datetimepicker pada field input waktu
                 initDateTimeNonPeralatan();
+                // aktifkan field mandatory
                 toggleRequired(tindaklanjut, true, 'tindaklanjut-required');
+                // menampilkan field dropdown kondisi layanan setelah tindaklanjut
                 showKondisiLayanan(true);
 
-                // ubah flag menjadi 1
+                // id flag_tindaklanjut berfungsi sebagai penanda bahwa data tindaklanjut diisi
+                // ambil id flag_tindaklanjut
                 const flag = document.getElementById('flag_tindaklanjut');
-
+                // jika id flag_tindaklanjut ada
                 if (flag) {
+                    // ubah nilainya menjadi 1, menandakan bahwa form tindaklanjut diisi
+                    flag.value = 1;
+                }
+            }
+
+            // function untuk menampilkan form tindaklanjut (Jenis Laporan Gangguan Non Peralatan)
+            if (jenis == JENIS.NON && gangguanNonPeralatan && tlGangguanNonPeralatan) {
+                // ambil id form tindaklanjut
+                const tindaklanjut = document.getElementById('tindaklanjut_non');
+                // tampilkan form tindaklanjut
+                show(tindaklanjut, true);
+                // tampilkan datetimepicker pada field input waktu
+                initDateTimeNonPeralatan();
+                // aktifkan field mandatory
+                toggleRequired(tindaklanjut, true, 'tindaklanjut-required');
+                // menampilkan field dropdown kondisi layanan setelah tindaklanjut
+                showKondisiLayanan(true);
+
+                // id flag_tindaklanjut berfungsi sebagai penanda bahwa data tindaklanjut diisi
+                // ambil id flag_tindaklanjut
+                const flag = document.getElementById('flag_tindaklanjut');
+                // jika id flag_tindaklanjut ada
+                if (flag) {
+                    // ubah nilainya menjadi 1, menandakan bahwa form tindaklanjut diisi
                     flag.value = 1;
                 }
             }
@@ -889,131 +911,131 @@
 
 <!-- javascript untuk menampilkan modal detail -->
 <script type="text/javascript">
-function detail(id){
+    function detail(id){
 
-    $.ajaxSetup({
-        headers: {
-            'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
-        }
-    });
+        $.ajaxSetup({
+            headers: {
+                'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+            }
+        });
 
-    // Ajax Load data from ajax
-    $.ajax({
-        url : "{{ route('fasilitas.peralatan.detail') }}",
-        type: "POST",
-        data : {id: id},
-        success: function(data){
+        // Ajax Load data from ajax
+        $.ajax({
+            url : "{{ route('fasilitas.peralatan.detail') }}",
+            type: "POST",
+            data : {id: id},
+            success: function(data){
 
-        //alert(data.nama);
+            //alert(data.nama);
 
-        $('#detail').empty();
+            $('#detail').empty();
 
-        var row = '<div class="modal-header">';
-            row += '<h4 class="modal-title">Detail Peralatan</h4>';
-            row += '<button type="button" class="close" data-dismiss="modal" aria-label="Close">';
-            row += '<span aria-hidden="true">&times;</span></button></div>';// modal header
+            var row = '<div class="modal-header">';
+                row += '<h4 class="modal-title">Detail Peralatan</h4>';
+                row += '<button type="button" class="close" data-dismiss="modal" aria-label="Close">';
+                row += '<span aria-hidden="true">&times;</span></button></div>';// modal header
 
-            row += '<div class="modal-body">';
-            row += "<table border='0' cellpadding='5px'>";            
-            row += "<tr><th>Kode</th><td>:</td><td>"+ data.peralatan.kode.toUpperCase(); +"</td></tr>";  
-            row += "<tr><th>Nama</th><td>:</td><td>"+ data.peralatan.nama.toUpperCase(); +"</td></tr>";
+                row += '<div class="modal-body">';
+                row += "<table border='0' cellpadding='5px'>";            
+                row += "<tr><th>Kode</th><td>:</td><td>"+ data.peralatan.kode.toUpperCase(); +"</td></tr>";  
+                row += "<tr><th>Nama</th><td>:</td><td>"+ data.peralatan.nama.toUpperCase(); +"</td></tr>";
 
-        if(data.peralatan.merk != null){
-            row += "<tr><th>Merk</th><td>:</td><td>"+ data.peralatan.merk.toUpperCase(); +"</td></tr>";
-        }else{
-            row += "<tr><th>Merk</th><td>:</td><td></td></tr>";
-        }
+            if(data.peralatan.merk != null){
+                row += "<tr><th>Merk</th><td>:</td><td>"+ data.peralatan.merk.toUpperCase(); +"</td></tr>";
+            }else{
+                row += "<tr><th>Merk</th><td>:</td><td></td></tr>";
+            }
 
-        if(data.peralatan.tipe != null){
-            row += "<tr><th>Tipe</th><td>:</td><td>"+ data.peralatan.tipe.toUpperCase(); +"</td></tr>";
-        }else{
-            row += "<tr><th>Tipe</th><td>:</td><td></td></tr>";
-        }
+            if(data.peralatan.tipe != null){
+                row += "<tr><th>Tipe</th><td>:</td><td>"+ data.peralatan.tipe.toUpperCase(); +"</td></tr>";
+            }else{
+                row += "<tr><th>Tipe</th><td>:</td><td></td></tr>";
+            }
 
-        if(data.peralatan.model != null){
-            row += "<tr><th>Model</th><td>:</td><td>"+ data.peralatan.model.toUpperCase(); +"</td></tr>";
-        }else{
-            row += "<tr><th>Model</th><td>:</td><td></td></tr>";
-        }
+            if(data.peralatan.model != null){
+                row += "<tr><th>Model</th><td>:</td><td>"+ data.peralatan.model.toUpperCase(); +"</td></tr>";
+            }else{
+                row += "<tr><th>Model</th><td>:</td><td></td></tr>";
+            }
 
-        if(data.peralatan.serial_number != null){
-            row += "<tr><th>Serial Number</th><td>:</td><td>"+ data.peralatan.serial_number.toUpperCase(); +"</td></tr>";
-        }else{
-            row += "<tr><th>Serial Number</th><td>:</td><td></td></tr>";
-        }
+            if(data.peralatan.serial_number != null){
+                row += "<tr><th>Serial Number</th><td>:</td><td>"+ data.peralatan.serial_number.toUpperCase(); +"</td></tr>";
+            }else{
+                row += "<tr><th>Serial Number</th><td>:</td><td></td></tr>";
+            }
 
-        if(data.peralatan.no_aset != null){
-            row += "<tr><th>No. Aset</th><td>:</td><td>"+ data.peralatan.no_aset.toUpperCase(); +"</td></tr>";
-        }else{
-            row += "<tr><th>No. Aset</th><td>:</td><td></td></tr>";
-        }
+            if(data.peralatan.no_aset != null){
+                row += "<tr><th>No. Aset</th><td>:</td><td>"+ data.peralatan.no_aset.toUpperCase(); +"</td></tr>";
+            }else{
+                row += "<tr><th>No. Aset</th><td>:</td><td></td></tr>";
+            }
 
-        if(data.peralatan.thn_produksi != null){
-            row += "<tr><th>Tahun Produksi</th><td>:</td><td>"+ data.peralatan.thn_produksi; +"</td></tr>";
-        }else{
-            row += "<tr><th>Tahun Produksi</th><td>:</td><td></td></tr>";
-        }
+            if(data.peralatan.thn_produksi != null){
+                row += "<tr><th>Tahun Produksi</th><td>:</td><td>"+ data.peralatan.thn_produksi; +"</td></tr>";
+            }else{
+                row += "<tr><th>Tahun Produksi</th><td>:</td><td></td></tr>";
+            }
 
-        if(data.peralatan.thn_pengadaan != null){
-            row += "<tr><th>Tahun Pengadaan</th><td>:</td><td>"+ data.peralatan.thn_pengadaan; +"</td></tr>";
-        }else{
-            row += "<tr><th>Tahun Pengadaan</th><td>:</td><td></td></tr>";
-        }
-                
-            row += "<tr><th>Jenis Alat</th><td>:</td><td>"+ data.jenis.nama.toUpperCase(); +"</td></tr>";
-        
-        if(data.peralatan.sewa == 1){
-            row += "<tr><th>Status Kepemilikan</th><td>:</td><td>SEWA</td></tr>";
-        }else{
-            row += "<tr><th>Status Kepemilikan</th><td>:</td><td>ASET</td></tr>";
-        }
-
-            row += "<tr><th>Perusahaan Pemilik</th><td>:</td><td>"+ data.perusahaan.nama.toUpperCase(); +"</td></tr>";
-
-        if(data.peralatan.keterangan != null){
-            row += "<tr><th>Keterangan</th><td>:</td><td>"+ data.peralatan.keterangan.toUpperCase(); +"</td></tr>";
-        }else{
-            row += "<tr><th>Keterangan</th><td>:</td><td></td></tr>";
-        }
-
-        if(data.peralatan.status == 1){
-            row += "<tr><th>Status</th><td>:</td><td><span class='badge bg-success'>AKTIF</span></td></tr>";
-        }else{
-            row += "<tr><th>Status</th><td>:</td><td><span class='badge bg-danger'>TIDAK AKTIF</span></td></tr>";
-        }
-
-        if(data.created_by != null){
-            row += "<tr><th>Dibuat Oleh</th><td>:</td><td>"+ data.created_by.name.toUpperCase(); +"</td></tr>";
-            row += "<tr><th>Dibuat Pada</th><td>:</td><td>"+ data.peralatan.created_at +"</td></tr>";
-        }else{
-            row += "<tr><th>Dibuat Oleh</th><td>:</td><td></td></tr>";
-            row += "<tr><th>Dibuat Pada</th><td>:</td><td></td></tr>";
-        } 
-
-        if(data.updated_by != null){
-            row += "<tr><th>Update Terakhir Oleh</th><td>:</td><td>"+ data.updated_by.name.toUpperCase(); +"</td></tr>";
-            row += "<tr><th>Update Terakhir Pada</th><td>:</td><td>"+ data.peralatan.updated_at +"</td></tr>";
-        }else{
-            row += "<tr><th>Update Terakhir Oleh</th><td>:</td><td></td></tr>";
-            row += "<tr><th>Update Terakhir Pada</th><td>:</td><td></td></tr>";
-        }      
+            if(data.peralatan.thn_pengadaan != null){
+                row += "<tr><th>Tahun Pengadaan</th><td>:</td><td>"+ data.peralatan.thn_pengadaan; +"</td></tr>";
+            }else{
+                row += "<tr><th>Tahun Pengadaan</th><td>:</td><td></td></tr>";
+            }
+                    
+                row += "<tr><th>Jenis Alat</th><td>:</td><td>"+ data.jenis.nama.toUpperCase(); +"</td></tr>";
             
-            row += '</table>';
-            row += '</div>'; // modal body
-            row += '<div class="modal-footer justify-content-between">';
-            row += '<button type="button" class="btn btn-default" data-dismiss="modal">Kembali</button>';
-            //row += '<button type="button" class="btn btn-danger">Hapus</button>';
-            row += '</div>';
-        
-            $("#detail").append(row);
-            $("#modal_detail").modal('show'); // show bootstrap modal when complete loaded
-        },
-        error: function (jqXHR, textStatus, errorThrown)
-        {
-            alert('Gagal menampilkan detail peralatan');
-        }
-    });
-}
+            if(data.peralatan.sewa == 1){
+                row += "<tr><th>Status Kepemilikan</th><td>:</td><td>SEWA</td></tr>";
+            }else{
+                row += "<tr><th>Status Kepemilikan</th><td>:</td><td>ASET</td></tr>";
+            }
+
+                row += "<tr><th>Perusahaan Pemilik</th><td>:</td><td>"+ data.perusahaan.nama.toUpperCase(); +"</td></tr>";
+
+            if(data.peralatan.keterangan != null){
+                row += "<tr><th>Keterangan</th><td>:</td><td>"+ data.peralatan.keterangan.toUpperCase(); +"</td></tr>";
+            }else{
+                row += "<tr><th>Keterangan</th><td>:</td><td></td></tr>";
+            }
+
+            if(data.peralatan.status == 1){
+                row += "<tr><th>Status</th><td>:</td><td><span class='badge bg-success'>AKTIF</span></td></tr>";
+            }else{
+                row += "<tr><th>Status</th><td>:</td><td><span class='badge bg-danger'>TIDAK AKTIF</span></td></tr>";
+            }
+
+            if(data.created_by != null){
+                row += "<tr><th>Dibuat Oleh</th><td>:</td><td>"+ data.created_by.name.toUpperCase(); +"</td></tr>";
+                row += "<tr><th>Dibuat Pada</th><td>:</td><td>"+ data.peralatan.created_at +"</td></tr>";
+            }else{
+                row += "<tr><th>Dibuat Oleh</th><td>:</td><td></td></tr>";
+                row += "<tr><th>Dibuat Pada</th><td>:</td><td></td></tr>";
+            } 
+
+            if(data.updated_by != null){
+                row += "<tr><th>Update Terakhir Oleh</th><td>:</td><td>"+ data.updated_by.name.toUpperCase(); +"</td></tr>";
+                row += "<tr><th>Update Terakhir Pada</th><td>:</td><td>"+ data.peralatan.updated_at +"</td></tr>";
+            }else{
+                row += "<tr><th>Update Terakhir Oleh</th><td>:</td><td></td></tr>";
+                row += "<tr><th>Update Terakhir Pada</th><td>:</td><td></td></tr>";
+            }      
+                
+                row += '</table>';
+                row += '</div>'; // modal body
+                row += '<div class="modal-footer justify-content-between">';
+                row += '<button type="button" class="btn btn-default" data-dismiss="modal">Kembali</button>';
+                //row += '<button type="button" class="btn btn-danger">Hapus</button>';
+                row += '</div>';
+            
+                $("#detail").append(row);
+                $("#modal_detail").modal('show'); // show bootstrap modal when complete loaded
+            },
+            error: function (jqXHR, textStatus, errorThrown)
+            {
+                alert('Gagal menampilkan detail peralatan');
+            }
+        });
+    }
 </script>
 
 
