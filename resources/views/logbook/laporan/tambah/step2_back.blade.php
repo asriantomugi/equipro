@@ -275,9 +275,12 @@
         const JENIS_TINDAKLANJUT_PERALATAN = @json(config('constants.jenis_tindaklanjut_gangguan_peralatan'));
         const JENIS_TINDAKLANJUT_NON = @json(config('constants.jenis_tindaklanjut_gangguan_non_peralatan'));
 
-        // data dari controller
+        // data laporan dari controller
         const laporan = @json($laporan);
+        // ambil data gangguan peralatan dan tindaklanjutnya (jika ada)
         const gangguanPeralatan = laporan.gangguan_peralatan;
+        const tlGangguanPeralatan = laporan.tl_gangguan_peralatan;
+        // ambil data gangguan non peralatan dan tindaklanjutnya (jika ada)
         const gangguanNonPeralatan = laporan.gangguan_non_peralatan;
         const tlGangguanNonPeralatan = laporan.tl_gangguan_non_peralatan?.[0];
        
@@ -408,6 +411,17 @@
                 // LOOP daftar peralatan
                 daftarPeralatan.forEach(function (alat, index) {
 
+                    // ambil data gangguan alat dari variabel gangguanPeralatan untuk ditampilkan pada form input gangguan
+                    const dataGangguan = gangguanPeralatan.find(
+                        item => item.peralatan_id == alat.peralatan.id
+                    );
+
+                    // ambil data tindaklanjut (jika ada) untuk ditampilkan pada form input tindaklanjut
+                    const dataTindaklanjut = tlGangguanPeralatan.find(
+                        item => item.gangguan_id == dataGangguan?.id
+                    );
+
+                    // buat variabel untuk id field datepicker
                     const gangguanPickerId  = 'datetime_gangguan_' + index;
                     const mulaiPerbaikanPickerId = 'datetime_mulai_perbaikan_' + index;
                     const selesaiPerbaikanPickerId = 'datetime_selesai_perbaikan_' + index;
@@ -481,7 +495,7 @@
                     html += '<label class="col-sm-3 col-form-label required">Waktu Gangguan</label>';
                     html += '<div class="col-sm-6">';
                     html += '<div class="input-group date" id="'+ gangguanPickerId +'" data-target-input="nearest">';
-                    html += `<input type="text" name="peralatan['+ index +'][waktu_gangguan]" class="form-control datetimepicker-input gangguan-required" data-target="#'+gangguanPickerId+'" value="${gangguanPeralatan?.waktu_formatted ?? ''}" disabled/>`;
+                    html += `<input type="text" name="peralatan['+ index +'][waktu_gangguan]" class="form-control datetimepicker-input gangguan-required" data-target="#'+gangguanPickerId+'" value="${dataGangguan?.waktu_formatted ?? ''}" disabled/>`;
                     html += '<div class="input-group-append" data-target="#'+ gangguanPickerId +'" data-toggle="datetimepicker">';
                     html += '<div class="input-group-text"><i class="fa fa-calendar"></i></div>';
                     html += '</div></div></div></div>';
@@ -489,7 +503,7 @@
                     html += '<div class="form-group row">';
                     html += '<label class="col-sm-3 col-form-label required">Deskripsi Gangguan</label>';
                     html += '<div class="col-sm-6">';
-                    html += '<textarea class="form-control gangguan-required" rows="5" name="peralatan['+ index +'][deskripsi_gangguan]" placeholder="" disabled></textarea>';
+                    html += `<textarea class="form-control gangguan-required" rows="5" name="peralatan['+ index +'][deskripsi_gangguan]" placeholder="" disabled>${dataGangguan?.deskripsi ?? ''}</textarea>`;
                     html += '</div></div>';
 
                     html += '<div class="form-group row">';
@@ -499,12 +513,12 @@
                     html += '<option value="">- Pilih -</option>';
                     // hanya tampilkan pilihan kondisi peralatan sesuai kondisi terakhir dari peralatan
                     if(alat.peralatan.kondisi == KONDISI_PERALATAN.normal){
-                        html += `<option value="${ KONDISI_PERALATAN.normal }">NORMAL</option>`;
-                        html += `<option value="${ KONDISI_PERALATAN.normal_sebagian }">NORMAL SEBAGIAN</option>`;
-                        html += `<option value="${ KONDISI_PERALATAN.rusak }">RUSAK</option>`;
+                        html += `<option value="${ KONDISI_PERALATAN.normal }" ${dataGangguan?.kondisi == KONDISI_PERALATAN.normal ? 'selected' : ''}>NORMAL</option>`;
+                        html += `<option value="${ KONDISI_PERALATAN.normal_sebagian } " ${dataGangguan?.kondisi == KONDISI_PERALATAN.normal_sebagian ? 'selected' : ''}>NORMAL SEBAGIAN</option>`;
+                        html += `<option value="${ KONDISI_PERALATAN.rusak }" ${dataGangguan?.kondisi == KONDISI_PERALATAN.rusak ? 'selected' : ''}>RUSAK</option>`;
                     }else{
-                        html += `<option value="${ KONDISI_PERALATAN.normal_sebagian }">NORMAL SEBAGIAN</option>`;
-                        html += `<option value="${ KONDISI_PERALATAN.rusak }">RUSAK</option>`;
+                        html += `<option value="${ KONDISI_PERALATAN.normal_sebagian }" ${dataGangguan?.kondisi == KONDISI_PERALATAN.normal_sebagian ? 'selected' : ''}>NORMAL SEBAGIAN</option>`;
+                        html += `<option value="${ KONDISI_PERALATAN.rusak }" ${dataGangguan?.kondisi == KONDISI_PERALATAN.rusak ? 'selected' : ''}>RUSAK</option>`;
                     }
                     
                     html += '</select>';
@@ -736,31 +750,25 @@
             // end of dropdown kondisi layanan setelah dilakukan tindaklanjut
 
             formGangguan.innerHTML = html; // menampilkan variabel html ke halaman blade
+            
+            // function untuk menampilkan form gangguan dan tindaklanjut (Jenis Laporan Gangguan Peralatan) beserta datanya
+            if(jenis == JENIS.PERALATAN){
+                daftarPeralatan.forEach(function (alat, index) {
+                    const dataGangguan = gangguanPeralatan.find(
+                        item => item.peralatan_id == alat.peralatan.id
+                    );
 
-            // function untuk menampilkan form tindaklanjut (Jenis Laporan Gangguan Non Peralatan)
-            if (jenis == JENIS.PERALATAN && gangguanPeralatan) {
-                // ambil id form tindaklanjut
-                const formGangguan = document.getElementById('tindaklanjut_non');
-                // tampilkan form tindaklanjut
-                show(tindaklanjut, true);
-                // tampilkan datetimepicker pada field input waktu
-                initDateTimeNonPeralatan();
-                // aktifkan field mandatory
-                toggleRequired(tindaklanjut, true, 'tindaklanjut-required');
-                // menampilkan field dropdown kondisi layanan setelah tindaklanjut
-                showKondisiLayanan(true);
-
-                // id flag_tindaklanjut berfungsi sebagai penanda bahwa data tindaklanjut diisi
-                // ambil id flag_tindaklanjut
-                const flag = document.getElementById('flag_tindaklanjut');
-                // jika id flag_tindaklanjut ada
-                if (flag) {
-                    // ubah nilainya menjadi 1, menandakan bahwa form tindaklanjut diisi
-                    flag.value = 1;
-                }
+                    if (dataGangguan) {
+                        const formGangguan = document.getElementById('gangguan_' + index);
+                        show(formGangguan, true);
+                        initDateTimePeralatan(index);
+                        toggleRequired(formGangguan, true, 'gangguan-required');
+                    }
+                });
             }
+            
 
-            // function untuk menampilkan form tindaklanjut (Jenis Laporan Gangguan Non Peralatan)
+            // function untuk menampilkan form tindaklanjut (Jenis Laporan Gangguan Non Peralatan) beserta datanya
             if (jenis == JENIS.NON && gangguanNonPeralatan && tlGangguanNonPeralatan) {
                 // ambil id form tindaklanjut
                 const tindaklanjut = document.getElementById('tindaklanjut_non');
@@ -900,7 +908,7 @@
             }
         });
 
-        // trigger otomatis dropdown jenis laporan agar mengeksekusi function 'change'
+        // trigger otomatis agar mengeksekusi function 'change' pada saat dropdown jenis laporan sudah terisi
         formJenis.dispatchEvent(new Event('change'));
         
         // =================================================================
