@@ -26,6 +26,7 @@ class GangguanPeralatan extends Model
      * Atribut yang ditambahkan ke JSON.
      */
     protected $appends = [
+        'waktu_formatted',
         'created_at_formatted',
         'updated_at_formatted',
     ];

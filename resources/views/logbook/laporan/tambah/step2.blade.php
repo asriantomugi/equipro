@@ -258,22 +258,6 @@
 <!-- Javascript untuk menampilkan pilihan form berdasarkan jenis laporan -->
 <script type="text/javascript">
     document.addEventListener('DOMContentLoaded', function () {
-
-        const formJenis = document.getElementById('formJenis');
-        const formGangguan = document.getElementById('formGangguan');
-        // ambil variable dari controller
-        const daftarPeralatan = @json($daftar_peralatan);
-        // ambil variable dari constants.php
-        const JENIS = {
-            PERALATAN: {{ config('constants.jenis_laporan.gangguan_peralatan') }},
-            NON: {{ config('constants.jenis_laporan.gangguan_non_peralatan') }}
-        };
-
-        const KONDISI_PERALATAN = @json(config('constants.kondisi_peralatan'));
-        const KONDISI_LAYANAN = @json(config('constants.kondisi_layanan'));
-        const STATUS_LAPORAN = @json(config('constants.status_laporan'));
-        const JENIS_TINDAKLANJUT_PERALATAN = @json(config('constants.jenis_tindaklanjut_gangguan_peralatan'));
-        const JENIS_TINDAKLANJUT_NON = @json(config('constants.jenis_tindaklanjut_gangguan_non_peralatan'));
        
         // ==============================================================
         //                        FUNCTION UMUM
@@ -382,9 +366,27 @@
         //                       END OF FUNCTION UMUM
         // ===============================================================
 
+        
         // ===============================================================
         // FUNCTION UNTUK MENAMPILKAN FORM INPUT GANGGUAN DAN TINDAKLANJUT
         // ===============================================================
+
+        const formJenis = document.getElementById('formJenis');
+        const formGangguan = document.getElementById('formGangguan');
+        // ambil variable dari controller
+        const daftarPeralatan = @json($daftar_peralatan);
+        // ambil variable dari constants.php
+        const JENIS = {
+            PERALATAN: {{ config('constants.jenis_laporan.gangguan_peralatan') }},
+            NON: {{ config('constants.jenis_laporan.gangguan_non_peralatan') }}
+        };
+
+        const KONDISI_PERALATAN = @json(config('constants.kondisi_peralatan'));
+        const KONDISI_LAYANAN = @json(config('constants.kondisi_layanan'));
+        const STATUS_LAPORAN = @json(config('constants.status_laporan'));
+        const JENIS_TINDAKLANJUT_PERALATAN = @json(config('constants.jenis_tindaklanjut_gangguan_peralatan'));
+        const JENIS_TINDAKLANJUT_NON = @json(config('constants.jenis_tindaklanjut_gangguan_non_peralatan'));
+
         /** 
          * Javascript untuk menampilkan form input gangguan berdasarkan jenis laporan.
          * Saat jenis laporan dipilih GANGGUAN PERALATAN, maka akan tampil form input gangguan peralatan.
