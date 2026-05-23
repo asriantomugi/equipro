@@ -156,11 +156,12 @@
                 <div class="card-body">
 
     <form class="form-horizontal needs-validation" 
-          action="{{ route('logbook.laporan.tambah.step2') }}" 
+          action="{{ route('logbook.laporan.tambah.step2.back') }}" 
           method="post" 
           novalidate>
     @csrf
                     <input type="hidden" name="layanan_id"  value="{{ $layanan->id }}">
+                    <input type="hidden" name="laporan_id"  value="{{ $laporan->id }}">
 
                     <div class="form-group row">
                         <label class="col-sm-3 col-form-label required">Jenis Laporan</label>
@@ -740,7 +741,7 @@
             html += '<div class="form-group row">';
             html += '<label class="col-sm-3 col-form-label required">Kondisi Layanan Setelah Tindak Lanjut</label>';
             html += '<div class="col-sm-6">';
-            html += '<select name="kondisi_layanan_close" class="form-control">';
+            html += '<select name="kondisi_layanan_tindaklanjut" class="form-control">';
             html += '<option value="">- Pilih -</option>';
             html += `<option value="${ KONDISI_LAYANAN.serviceable }" ${laporan.kondisi_layanan_open == KONDISI_LAYANAN.serviceable ? 'selected' : ''}>SERVICEABLE</option>`;
             html += `<option value="${ KONDISI_LAYANAN.unserviceable }" ${laporan.kondisi_layanan_open == KONDISI_LAYANAN.unserviceable ? 'selected' : ''}>UNSERVICEABLE</option>`;

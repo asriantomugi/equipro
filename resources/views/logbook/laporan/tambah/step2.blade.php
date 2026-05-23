@@ -719,7 +719,7 @@
             html += '<div class="form-group row">';
             html += '<label class="col-sm-3 col-form-label required">Kondisi Layanan Setelah Tindak Lanjut</label>';
             html += '<div class="col-sm-6">';
-            html += '<select name="kondisi_layanan_close" class="form-control">';
+            html += '<select name="kondisi_layanan_tindaklanjut" class="form-control">';
             html += '<option value="">- Pilih -</option>';
             html += `<option value="${ KONDISI_LAYANAN.serviceable }">SERVICEABLE</option>`;
             html += `<option value="${ KONDISI_LAYANAN.unserviceable }">UNSERVICEABLE</option>`;

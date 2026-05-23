@@ -360,12 +360,13 @@ class LaporanController extends Controller
                     ->with('notif', 'layanan_null');
         }
 
-        // buat variable
+        // generate nomor laporan
         $no_laporan = now()->format('YmdHis') . rand(100, 999);
+        // ambil data dari form
         $jenis = $request->jenis;
         $peralatan = $request->peralatan;
         $kondisi_layanan_open = $request->kondisi_layanan_open;
-        $kondisi_layanan_temp = $request->kondisi_layanan_close;
+        $kondisi_layanan_temp = $request->kondisi_layanan_tindaklanjut;
 
         //dd($request->all());
 
@@ -760,7 +761,7 @@ class LaporanController extends Controller
 
 
     /**
-     * Function untuk menampilkan form tambah layanan step 2 melalui tombol Back.
+     * Function untuk menampilkan form tambah laporan step 2 melalui tombol Back.
      * Status laporan masih berstatus Draft.
      *
      * Akses:
@@ -860,6 +861,268 @@ class LaporanController extends Controller
             ->with('jenis_tindaklanjut', $jenis_tindaklanjut)
             ;
     }
+
+
+    /**
+     * Function untuk memproses form tambah laporan step 2 melalui tombol Back.
+     * Status laporan masih berstatus Draft.
+     *
+     * Akses:
+     * - Super Admin
+     * - Admin
+     * - Teknisi
+     * 
+     * Method: POST
+     * URL: /logbook/laporan/tambah/step2/back{laporan_id}
+     *
+     * @return \Illuminate\Http\Response
+     */
+    public function tambahStep2Back(Request $request)
+    {
+        // validasi umum
+        $request->validate([
+            'layanan_id' => 'required|exists:layanan,id',
+            'jenis' => 'required|in:1,2', // 1 = peralatan, 2 = non peralatan
+            'kondisi_layanan_open' => 'required|in:0,1',
+            'kondisi_layanan_close' => 'nullable|in:0,1',
+        ],[
+            // pesan error
+            'layanan_id.required' => 'Layanan kosong.',
+            'layanan_id.exists' => 'Layanan tidak valid.',
+            'jenis.required' => 'Jenis Laporan kosong.',
+            'jenis.in' => 'Jenis Laporan tidak valid.',
+        ]);
+        
+        // ambil data laporan berdasarkan ID laporan dari form
+        $laporan = Laporan::where('id', $request->laporan_id)
+            ->where('status', config('constants.status_laporan.draft'))
+            ->first();
+        
+        // jika laporan dengan id dan status tersebut tidak ada
+        if(! $layanan){
+            // kembali ke halaman daftar laporan dan tampilkan pesan error
+            return redirect()
+                    ->route('logbook.laporan.daftar')
+                    ->with('notif', 'laporan_null');
+        }
+
+        // ambil data layanan aktif berdasarkan ID layanan dari form
+        $layanan = Layanan::where('id', $request->layanan_id)
+            ->where('status', config('constants.status_layanan.aktif'))
+            ->first();
+
+        // jika layanan dengan id dan status tersebut tidak ada
+        if(! $layanan){
+            // kembali ke halaman daftar laporan dan tampilkan pesan error
+            return redirect()
+                    ->route('logbook.laporan.daftar')
+                    ->with('notif', 'layanan_null');
+        }
+
+        // ambil data dari form
+        $jenis = $request->jenis;
+        $peralatan = $request->peralatan;
+        $kondisi_layanan_open = $request->kondisi_layanan_open;
+        $kondisi_layanan_temp = $request->kondisi_layanan_tindaklanjut; // kondisi layanan terakhir
+
+        //dd($request->all());
+
+        // jika jenis laporan = gangguan peralatan
+        if ($jenis == config('constants.jenis_laporan.gangguan_peralatan')) {
+            // validasi input
+            $request->validate([
+                'peralatan.*.peralatan_id' => 'exists:peralatan,id',
+            ],[
+                // pesan error
+                'peralatan_id.*.peralatan_id.exists' => 'Peralatan tidak valid.',   
+            ]);
+
+            // cek apakah minimal ada 1 peralatan yang mengalami gangguan
+            if (!collect($peralatan)->pluck('flag_gangguan')->contains(1)) {
+                // jika tidak ada, kembalikan ke halaman tambah step 2 dan kirim pesan error
+                return back()
+                    ->with(['notif', 'gangguan_null'])
+                    ->withInput();
+            }
+        } 
+
+        // mulai transaksi ke database
+        DB::beginTransaction();
+
+        try{
+
+            // insert data laporan baru ke tabel Laporan
+            $laporan = Laporan::create([
+                'no_laporan' => $no_laporan,
+                'layanan_id' => $layanan->id,
+                'jenis' =>  $jenis,
+                'status' => config('constants.status_laporan.draft'), // draft
+                'kondisi_layanan_open' => $kondisi_layanan_open,
+                'kondisi_layanan_temp' => $kondisi_layanan_temp, // ini kondisi terupdate, nilai ini nantinya akan diupdate ke field kondisi_layanan_close
+                'created_by' => session()->get('id')
+            ]);
+
+            // jika jenis laporan = gangguan peralatan, maka insert data ke tabel Gangguan Peralatan
+            if($jenis == config('constants.jenis_laporan.gangguan_peralatan')){
+
+                // Looping untuk mengambil data dan menyimpannya ke tabel Gangguan Peralatan
+                // -------------------------------------------------------------------------
+                //              LOOPING INSERT DATA KE TABEL GANGGUAN PERALATAN
+                // -------------------------------------------------------------------------
+                foreach ($peralatan as $satu) {
+
+                    // jika peralatan tsb ada di-input gangguan
+                    if($satu['flag_gangguan'] == 1){
+
+                        $gangguan = GangguanPeralatan::create([
+                            'laporan_id' => $laporan->id,
+                            'layanan_id' => $layanan->id,
+                            'peralatan_id' => $satu['peralatan_id'],
+                            'waktu' => Carbon::createFromFormat('d-m-Y H:i', $satu['waktu_gangguan'])->format('Y-m-d H:i'),
+                            'deskripsi' => $satu['deskripsi_gangguan'],
+                            'kondisi' => $satu['kondisi_gangguan'], // kondisi saat gangguan
+                            'kondisi_awal' => $satu['kondisi_awal'], // kondisi sebelum gangguan, diambil dari kondisi di tabel Peralatan.
+                            'created_by' => session()->get('id')
+                        ]);
+
+                        // jika tindaklanjut ada diisi
+                        if($satu['jenis_tindaklanjut'] != null){
+                            // jika tindaklanjut perbaikan
+                            if($satu['jenis_tindaklanjut'] == config('constants.jenis_tindaklanjut_gangguan_peralatan.perbaikan')){
+
+                                // ubah format waktu ke format yang bisa disimpan oleh DB
+                                $waktu_mulai = Carbon::createFromFormat('d-m-Y H:i', $satu['tindaklanjut'][$satu['jenis_tindaklanjut']]['waktu_mulai_tindaklanjut'])
+                                    ->format('Y-m-d H:i');
+                                $waktu_selesai = Carbon::createFromFormat('d-m-Y H:i', $satu['tindaklanjut'][$satu['jenis_tindaklanjut']]['waktu_selesai_tindaklanjut'])
+                                    ->format('Y-m-d H:i');
+
+                                // insert data ke table Tindaklanjut Gangguan Peralatan
+                                $tl_gangguan = TlGangguanPeralatan::create([
+                                    'gangguan_id' => $gangguan->id,
+                                    'laporan_id' => $laporan->id,
+                                    'layanan_id' => $layanan->id,
+                                    'peralatan_id' => $satu['peralatan_id'],
+                                    'waktu_mulai' => $waktu_mulai,
+                                    'waktu_selesai' => $waktu_selesai,
+                                    'deskripsi'=> $satu['tindaklanjut'][$satu['jenis_tindaklanjut']]['deskripsi_tindaklanjut'],
+                                    'kondisi' => $satu['tindaklanjut'][$satu['jenis_tindaklanjut']]['kondisi_tindaklanjut'],
+                                    'jenis' => $satu['jenis_tindaklanjut'],
+                                    'created_by' => session()->get('id')
+                                ]);
+                            }
+                            // jika tindaklanjut penggantian
+                            else if($satu['jenis_tindaklanjut'] == config('constants.jenis_tindaklanjut_gangguan_peralatan.penggantian')){
+                                // ubah format waktu ke format yang bisa disimpan oleh DB
+                                $waktu_mulai = Carbon::createFromFormat('d-m-Y H:i', $satu['tindaklanjut'][$satu['jenis_tindaklanjut']]['waktu_mulai_tindaklanjut'])
+                                    ->format('Y-m-d H:i');
+                                $waktu_selesai = Carbon::createFromFormat('d-m-Y H:i', $satu['tindaklanjut'][$satu['jenis_tindaklanjut']]['waktu_selesai_tindaklanjut'])
+                                    ->format('Y-m-d H:i');
+
+                                // insert data ke table Tindaklanjut Gangguan Peralatan
+                                $tl_gangguan = TlGangguanPeralatan::create([
+                                    'gangguan_id' => $gangguan->id,
+                                    'laporan_id' => $laporan->id,
+                                    'layanan_id' => $layanan->id,
+                                    'peralatan_id' => $satu['peralatan_id'],
+                                    'waktu_mulai' => $waktu_mulai,
+                                    'waktu_selesai' => $waktu_selesai,
+                                    'deskripsi'=> $satu['tindaklanjut'][$satu['jenis_tindaklanjut']]['deskripsi_tindaklanjut'],
+                                    'jenis' => $satu['jenis_tindaklanjut'],
+                                    'created_by' => session()->get('id')
+                                ]);
+                            }
+                        } 
+                    }
+                }
+                // -------------------------------------------------------------------------
+                //                             END OF LOOPING
+                // -------------------------------------------------------------------------
+
+                // ambil waktu terawal dari daftar gangguan peralatan
+                $waktuAwalGangguan = GangguanPeralatan::where('laporan_id', $laporan->id)
+                    ->min('waktu_mulai');
+                // masukkan ke variable waktu_layanan_open di tabel Laporan, sebagai waktu awal layanan gangguan
+                $laporan->update([
+                        'waktu_layanan_open' => $waktuAwalGangguan,
+                        'updated_by' => session()->get('id')
+                    ]);
+            }
+            // akhir proses simpan ke DB jika jenis gangguan peralatan
+
+            // jika jenis laporan = gangguan non peralatan, maka insert data ke tabel Gangguan Non Peralatan
+            else if($jenis == config('constants.jenis_laporan.gangguan_non_peralatan')){
+
+                // insert data ke tabel Gangguan Peralatan
+                $gangguan = GangguanNonPeralatan::create([
+                    'laporan_id' => $laporan->id,
+                    'layanan_id' => $layanan->id,
+                    'waktu' => Carbon::createFromFormat('d-m-Y H:i', $request->waktu_gangguan)->format('Y-m-d H:i'),
+                    'deskripsi'=> $request->deskripsi_gangguan,
+                    'created_by' => session()->get('id')
+                ]);
+                
+                // ambil flag tindaklanjut dari form
+                $flag_tindaklanjut = $request->flag_tindaklanjut;
+                // jika ada tindaklanjut
+                if($flag_tindaklanjut != null && $flag_tindaklanjut == 1){
+                    // insert data ke table Tindaklanjut Gangguan Peralatan
+                    $tl_gangguan = TlGangguanNonPeralatan::create([
+                        'gangguan_id' => $gangguan->id,
+                        'laporan_id' => $laporan->id,
+                        'layanan_id' => $layanan->id,
+                        'waktu_mulai' => Carbon::createFromFormat('d-m-Y H:i', $request->waktu_mulai_tindaklanjut)->format('Y-m-d H:i'),
+                        'waktu_selesai' => Carbon::createFromFormat('d-m-Y H:i', $request->waktu_selesai_tindaklanjut)->format('Y-m-d H:i'),
+                        'deskripsi'=> $request->deskripsi_tindaklanjut,
+                        'kondisi' => $request->kondisi_layanan_close,
+                    ]);
+                }
+
+                // masukkan waktu mulai gangguan sebagai waktu mulai layanan dalam status
+                // sesuai dengan status kondisi_layanan_open
+                $laporan->update([
+                        'waktu_layanan_open' => $gangguan->waktu,
+                        'updated_by' => session()->get('id')
+                    ]);
+            }
+            // akhir proses simpan ke DB jika jenis gangguan non peralatan
+
+            // simpan transaksi ke database
+            DB::commit();
+        }
+        
+        // jika proses insert gagal
+        catch(QueryException $ex){
+            // batalkan semua transaksi ke database
+            DB::rollBack();
+
+            dd($ex->getMessage());
+            // kembali ke halaman tambah step 2 dan tampilkan pesan error
+            return redirect()
+                ->route('logbook.laporan.tambah.step2.form', $layanan->id)
+                ->with('notif', 'tambah_gagal');
+        }
+
+        // jika ada tindaklanjut penggantian alat, lanjutkan ke form tambah step 3 (khusus jenis gangguan peralatan)
+        if($jenis == config('constants.jenis_laporan.gangguan_peralatan')){
+            // cek apakah ada penggantian
+            $adaPenggantian = collect($request->peralatan)
+                ->where('flag_gangguan', 1)
+                ->contains(fn ($item) => (int) ($item['jenis_tindaklanjut'] ?? 0) === 2);
+            // jika ada
+            if($adaPenggantian){
+                // lanjut ke halaman form tambah step 3 (input penggantian peralatan)
+                return redirect()
+                    ->route('logbook.laporan.tambah.step3.form', $laporan->id)
+                    ->with('notif', 'draft_sukses');
+            }
+        }
+        
+        // selain dari itu, lanjut ke halaman form tambah step 4 (halaman review)
+        return redirect()
+            ->route('logbook.laporan.tambah.step4.form', $laporan->id)
+            ->with('notif', 'draft_sukses');
+    }
+
 
     /**
      * Function untuk memproses filter daftar peralatan tersedia.
