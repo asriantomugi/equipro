@@ -198,11 +198,6 @@
                             <i class="fas fa-angle-right"></i>
                     </button>
                     
-                  <!--
-                  <a class="btn btn-success btn-sm float-right" 
-                    href="{{ route('fasilitas.layanan.tambah.step3.form', ['id' => $layanan->id]) }}" 
-                    role="button">Lanjut &nbsp;&nbsp;&nbsp;<i class="fas fa-angle-right"></i></a>
-                    -->
                 </div>
     </form>
 
