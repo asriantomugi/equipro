@@ -425,10 +425,9 @@ class LaporanController extends Controller
                             'created_by' => session()->get('id')
                         ]);
 
-                        // jika tindaklanjut ada diisi
+                        // jika tindaklanjut ada diisi dan jenis tindaklanjut adalah PERBAIKAN
                         if(!empty($satu['jenis_tindaklanjut']) && 
-                            ($satu['jenis_tindaklanjut'] == config('constants.jenis_tindaklanjut_gangguan_peralatan.penggantian') || 
-                            $satu['jenis_tindaklanjut'] == config('constants.jenis_tindaklanjut_gangguan_peralatan.penggantian'))){
+                            ($satu['jenis_tindaklanjut'] == config('constants.jenis_tindaklanjut_gangguan_peralatan.perbaikan'))){
                                 
                             // ubah format waktu ke format yang bisa disimpan oleh DB
                             $waktu_mulai = Carbon::createFromFormat('d-m-Y H:i', $satu['tindaklanjut'][$satu['jenis_tindaklanjut']]['waktu_mulai_tindaklanjut'])
@@ -450,6 +449,30 @@ class LaporanController extends Controller
                                 'created_by' => session()->get('id')
                             ]);
                         } 
+                        // jika tindaklanjut ada diisi dan jenis tindaklanjut adalah PENGGANTIAN
+                        else if(!empty($satu['jenis_tindaklanjut']) && 
+                            ($satu['jenis_tindaklanjut'] == config('constants.jenis_tindaklanjut_gangguan_peralatan.penggantian'))){
+                            
+                            // ubah format waktu ke format yang bisa disimpan oleh DB
+                            $waktu_mulai = Carbon::createFromFormat('d-m-Y H:i', $satu['tindaklanjut'][$satu['jenis_tindaklanjut']]['waktu_mulai_tindaklanjut'])
+                                ->format('Y-m-d H:i');
+                            $waktu_selesai = Carbon::createFromFormat('d-m-Y H:i', $satu['tindaklanjut'][$satu['jenis_tindaklanjut']]['waktu_selesai_tindaklanjut'])
+                                ->format('Y-m-d H:i');
+
+                            // insert data ke table Tindaklanjut Gangguan Peralatan
+                            $tl_gangguan = TlGangguanPeralatan::create([
+                                'gangguan_id' => $gangguan->id,
+                                'laporan_id' => $laporan->id,
+                                'layanan_id' => $layanan->id,
+                                'peralatan_id' => $satu['peralatan_id'],
+                                'waktu_mulai' => $waktu_mulai,
+                                'waktu_selesai' => $waktu_selesai,
+                                'deskripsi'=> $satu['tindaklanjut'][$satu['jenis_tindaklanjut']]['deskripsi_tindaklanjut'],
+                                'kondisi' => null,  // kondisi diisi saat proses penggantian peralatan dilakukan
+                                'jenis' => $satu['jenis_tindaklanjut'],
+                                'created_by' => session()->get('id')
+                            ]);
+                        }
                     }
                 }
                 // -------------------------------------------------------------------------
@@ -655,10 +678,15 @@ class LaporanController extends Controller
         // ambil laporan dengan status DRAFT berdasarkan id
         $laporan = Laporan::with([
             'gangguanPeralatan',
-            'tlGangguanPeralatan', 
+            'tlGangguanPeralatan' => function ($query) {
+                    $query->orderBy('waktu_mulai', 'asc'); // menampilkan urutan waktu dari paling awal 
+                },
             'tlPenggantianPeralatan',
             'gangguanNonPeralatan',
-            'tlGangguanNonPeralatan'])
+            'tlGangguanNonPeralatan' => function ($query) {
+                    $query->orderBy('waktu_mulai', 'asc'); // menampilkan urutan waktu dari paling awal 
+                },
+            ])
             ->where('id', $laporan_id)
             ->where('status', config('constants.status_laporan.draft'))
             ->first();
@@ -900,6 +928,8 @@ class LaporanController extends Controller
         $peralatan = $request->peralatan;
         $kondisi_layanan_open = $request->kondisi_layanan_open;
         $kondisi_layanan_temp = $request->kondisi_layanan_tindaklanjut; // kondisi layanan terakhir
+        // ambil data jenis laporan lama
+        $jenisLama = $laporan->jenis;
 
         //dd($request->all());
 
@@ -909,8 +939,7 @@ class LaporanController extends Controller
         try{
 
             // update data laporan ke DB
-            Laporan::where('id', $laporan->id)
-            ->update([
+            $laporan->update([
                 'jenis' =>  $jenis,
                 'kondisi_layanan_open' => $kondisi_layanan_open,
                 'kondisi_layanan_temp' => $kondisi_layanan_temp, // ini kondisi terupdate, nilai ini nantinya akan diupdate ke field kondisi_layanan_close
@@ -941,13 +970,6 @@ class LaporanController extends Controller
                     ->where('layanan_id', $layanan->id)
                     ->get();
 
-                // jika daftar peralatan layanan kosong
-                if(! $daftarGangguan){
-                    return redirect()
-                        ->route('logbook.laporan.daftar')
-                        ->with('notif', 'peralatan_null');
-                }
-
                 // Looping untuk mengambil data dan menyimpannya ke tabel Gangguan Peralatan
                 // -------------------------------------------------------------------------
                 //              LOOPING INSERT/UPDATE DATA KE TABEL GANGGUAN PERALATAN
@@ -961,7 +983,6 @@ class LaporanController extends Controller
                     // ambil data tindaklanjut yang lama
                     $dataTlGangguan = TlGangguanPeralatan::where('laporan_id', $laporan->id)
                         ->where('layanan_id', $layanan->id)
-                        ->where('gangguan_id', $dataGangguan->id)
                         ->where('peralatan_id', $satu['peralatan_id'])
                         ->first();
 
@@ -982,12 +1003,9 @@ class LaporanController extends Controller
                             // jika ADA data tindaklanjut yang lama
                             if($dataTlGangguan){
 
-                                // dan jika form tindaklanjut ada diisi, update data tindaklanjut yang lama
-                                if (
-                                    !empty($satu['jenis_tindaklanjut']) && 
-                                    ($satu['jenis_tindaklanjut'] == config('constants.jenis_tindaklanjut_gangguan_peralatan.perbaikan')
-                                    || $satu['jenis_tindaklanjut'] == config('constants.jenis_tindaklanjut_gangguan_peralatan.penggantian'))
-                                    ){
+                                // dan jika form tindaklanjut ada diisi dan jenis tindaklanjut = PERBAIKAN, update data tindaklanjut yang lama
+                                if (!empty($satu['jenis_tindaklanjut']) && 
+                                    ($satu['jenis_tindaklanjut'] == config('constants.jenis_tindaklanjut_gangguan_peralatan.perbaikan'))){
                                     
                                     // update data tindaklanjut gangguan
                                     $dataTlGangguan->update([
@@ -1017,6 +1035,22 @@ class LaporanController extends Controller
                                             $dataPenggantian->delete();
                                         }
                                     }
+                                }
+                                // dan jika form tindaklanjut ada diisi dan jenis tindaklanjut = PENGGANTIAN, update data tindaklanjut yang lama
+                                else if(!empty($satu['jenis_tindaklanjut']) && 
+                                    ($satu['jenis_tindaklanjut'] == config('constants.jenis_tindaklanjut_gangguan_peralatan.penggantian'))){
+                                    
+                                    // update data tindaklanjut gangguan
+                                    $dataTlGangguan->update([
+                                        'waktu_mulai' => Carbon::createFromFormat('d-m-Y H:i', $satu['tindaklanjut'][$satu['jenis_tindaklanjut']]['waktu_mulai_tindaklanjut'])
+                                            ->format('Y-m-d H:i'),
+                                        'waktu_selesai' => Carbon::createFromFormat('d-m-Y H:i', $satu['tindaklanjut'][$satu['jenis_tindaklanjut']]['waktu_selesai_tindaklanjut'])
+                                            ->format('Y-m-d H:i'),
+                                        'deskripsi'=> $satu['tindaklanjut'][$satu['jenis_tindaklanjut']]['deskripsi_tindaklanjut'],
+                                        'kondisi' => null, // kondisi diisi pada saat proses penggantian alat di step 3
+                                        'jenis' => $satu['jenis_tindaklanjut'],
+                                        'updated_by' => session()->get('id')
+                                    ]);
                                 }
 
                                 // jika form tindaklanjut tidak diisi, hapus data tindaklanjut yang lama
@@ -1107,8 +1141,7 @@ class LaporanController extends Controller
 
                             // jika form tindaklanjutnya ada diisi, create data tindaklanjut baru ke DB
                             if(!empty($satu['jenis_tindaklanjut']) && 
-                                ($satu['jenis_tindaklanjut'] == config('constants.jenis_tindaklanjut_gangguan_peralatan.perbaikan') || 
-                                $satu['jenis_tindaklanjut'] == config('constants.jenis_tindaklanjut_gangguan_peralatan.penggantian'))){
+                                ($satu['jenis_tindaklanjut'] == config('constants.jenis_tindaklanjut_gangguan_peralatan.perbaikan'))){
 
                                 // create data ke table Tindaklanjut Gangguan Peralatan
                                 $tl_gangguan = TlGangguanPeralatan::create([
@@ -1126,6 +1159,25 @@ class LaporanController extends Controller
                                     'created_by' => session()->get('id')
                                 ]);
                             }
+                            else if(!empty($satu['jenis_tindaklanjut']) && 
+                                ($satu['jenis_tindaklanjut'] == config('constants.jenis_tindaklanjut_gangguan_peralatan.perbaikan'))){
+                                
+                                // create data ke table Tindaklanjut Gangguan Peralatan
+                                $tl_gangguan = TlGangguanPeralatan::create([
+                                    'gangguan_id' => $gangguanBaru->id,
+                                    'laporan_id' => $laporan->id,
+                                    'layanan_id' => $layanan->id,
+                                    'peralatan_id' => $satu['peralatan_id'],
+                                    'waktu_mulai' => Carbon::createFromFormat('d-m-Y H:i', $satu['tindaklanjut'][$satu['jenis_tindaklanjut']]['waktu_mulai_tindaklanjut'])
+                                        ->format('Y-m-d H:i'),
+                                    'waktu_selesai' => Carbon::createFromFormat('d-m-Y H:i', $satu['tindaklanjut'][$satu['jenis_tindaklanjut']]['waktu_selesai_tindaklanjut'])
+                                        ->format('Y-m-d H:i'),
+                                    'deskripsi'=> $satu['tindaklanjut'][$satu['jenis_tindaklanjut']]['deskripsi_tindaklanjut'],
+                                    'kondisi' => null, // kondisi diisi pada saat proses penggantian alat di step 3
+                                    'jenis' => $satu['jenis_tindaklanjut'],
+                                    'created_by' => session()->get('id')
+                                ]);
+                            }
                         }
                     }    
                 }
@@ -1133,10 +1185,20 @@ class LaporanController extends Controller
                 //                             END OF LOOPING
                 // -------------------------------------------------------------------------
 
+                // jika jenis laporan yang lama adalah GANGGUAN NON PERALATAN,
+                // maka hapus data gangguan non peralatan yang lama
+                if(($jenis == config('constants.jenis_laporan.gangguan_peralatan')) && 
+                    ($jenisLama == config('constants.jenis_laporan.gangguan_non_peralatan'))){
+                    // hapus data tindaklanjut gangguan non peralatannya
+                    $laporan->tlGangguanNonPeralatan()->delete();
+                    // hapus data gangguan non peralatannya
+                    $laporan->gangguanNonPeralatan()->delete();
+                }
+
                 // lakukan pengisian data waktu layanan itu mulai terhitung DOWN di data laporan
                 // ambil waktu terawal dari daftar gangguan peralatan
                 $waktuAwalGangguan = GangguanPeralatan::where('laporan_id', $laporan->id)
-                    ->min('waktu_mulai');
+                    ->min('waktu');
                 // masukkan ke variable waktu_layanan_open di tabel Laporan, sebagai waktu awal layanan gangguan
                 $laporan->update([
                         'waktu_layanan_open' => $waktuAwalGangguan,
@@ -1237,6 +1299,18 @@ class LaporanController extends Controller
                             'kondisi' => $request->kondisi_layanan_close,
                         ]);
                     }
+                }
+
+                // jika jenis laporan yang lama adalah GANGGUAN PERALATAN,
+                // maka hapus data gangguan peralatan yang lama
+                if(($jenis == config('constants.jenis_laporan.gangguan_non_peralatan')) && 
+                    ($jenisLama == config('constants.jenis_laporan.gangguan_peralatan'))){
+                    // hapus data penggantian peralatannya
+                    $laporan->tlPenggantianPeralatan()->delete();
+                    // hapus data tindaklanjut gangguan peralatannya
+                    $laporan->tlGangguanPeralatan()->delete();
+                    // hapus data gangguan non peralatannya
+                    $laporan->gangguanPeralatan()->delete();
                 }
 
                 // lakukan pengisian data waktu layanan itu mulai terhitung DOWN di data laporan
@@ -1384,6 +1458,13 @@ class LaporanController extends Controller
             Peralatan::where('id', $peralatan->id)
             ->update([
                 'flag_layanan' => 1, // peralatan diberi tanda bahwa sedang terpasang di layanan
+                'updated_by' => session()->get('id')
+            ]);
+
+            // update data kondisi di tabel tl_ganggauan_peralatan
+            TlGangguanPeralatan::where('id', $request->tl_gangguan_id)
+            ->update([
+                'kondisi' => $peralatan->kondisi,
                 'updated_by' => session()->get('id')
             ]);
 

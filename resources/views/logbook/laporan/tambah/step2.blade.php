@@ -163,7 +163,7 @@
                     <input type="hidden" name="layanan_id"  value="{{ $layanan->id }}">
 
                     <div class="form-group row">
-                        <label class="col-sm-3 col-form-label required">Jenis Laporan</label>
+                        <label class="col-sm-4 col-form-label required">Jenis Laporan</label>
                         <div class="col-sm-6">
                             <select name="jenis" 
                                     class="form-control"
@@ -414,31 +414,31 @@
                     html += '<input type="hidden" name="peralatan['+ index +'][kondisi_awal]" value="'+ alat.peralatan.kondisi +'">';
 
                     html += '<div class="form-group row">';
-                    html += '<label class="col-sm-3 col-form-label">Kode</label>';
+                    html += '<label class="col-sm-4 col-form-label">Kode</label>';
                     html += '<div class="col-sm-6">';
                     html += '<input type="text" name="" class="form-control" value="'+ alat.peralatan.kode +'" readonly>';
                     html += '</div></div>';
 
                     html += '<div class="form-group row">';
-                    html += '<label class="col-sm-3 col-form-label">Nama</label>';
+                    html += '<label class="col-sm-4 col-form-label">Nama</label>';
                     html += '<div class="col-sm-6">';
                     html += '<input type="text" name="" class="form-control" value="'+ alat.peralatan.nama +'" readonly>';
                     html += '</div></div>';
 
                     html += '<div class="form-group row">';
-                    html += '<label class="col-sm-3 col-form-label">Merk</label>';
+                    html += '<label class="col-sm-4 col-form-label">Merk</label>';
                     html += '<div class="col-sm-6">';
                     html += '<input type="text" name="" class="form-control" value="'+ alat.peralatan.merk +'" readonly>';
                     html += '</div></div>';
 
                     html += '<div class="form-group row">';
-                    html += '<label class="col-sm-3 col-form-label">Jenis Alat</label>';
+                    html += '<label class="col-sm-4 col-form-label">Jenis Alat</label>';
                     html += '<div class="col-sm-6">';
                     html += '<input type="text" name="" class="form-control" value="'+ alat.peralatan.jenis.nama +'" readonly>';
                     html += '</div></div>';
 
                     html += '<div class="form-group row">';
-                    html += '<label class="col-sm-3 col-form-label">IP Address</label>';
+                    html += '<label class="col-sm-4 col-form-label">IP Address</label>';
                     html += '<div class="col-sm-6">';
                     if(alat.ip_address != null){
                         html += '<input type="text" name="" class="form-control" value="'+ alat.ip_address +'" readonly>';
@@ -450,13 +450,13 @@
                     // tampilkan tombol input gangguan hanya saja jika peralatan normal atau normal sebagian
                     if(alat.peralatan.kondisi == KONDISI_PERALATAN.rusak){
                         html += '<div class="form-group row">';
-                        html += '<div class="col-sm-3"></div>';
+                        html += '<div class="col-sm-4"></div>';
                         html += '<div class="col-sm-6">';
                         html += '<span class="badge bg-danger">RUSAK</span>';
                         html += '</div></div>';
                     }else{
                         html += '<div class="form-group row">';
-                        html += '<div class="col-sm-3"></div>';
+                        html += '<div class="col-sm-4"></div>';
                         html += '<div class="col-sm-6">';
                         html += '<button type="button" class="btn btn-success btn-sm btn-input-gangguan" data-index="'+index+'">';
                         html += 'Input Gangguan &nbsp;&nbsp;&nbsp;<i class="fas fa-angle-down"></i>';
@@ -473,7 +473,7 @@
                     html += '<input type="hidden" id="flag_gangguan_'+ index +'" name="peralatan['+ index +'][flag_gangguan]" value="0">';
 
                     html += '<div class="form-group row">';
-                    html += '<label class="col-sm-3 col-form-label required">Waktu Gangguan</label>';
+                    html += '<label class="col-sm-4 col-form-label required">Waktu Gangguan</label>';
                     html += '<div class="col-sm-6">';
                     html += '<div class="input-group date" id="'+ gangguanPickerId +'" data-target-input="nearest">';
                     html += '<input type="text" name="peralatan['+ index +'][waktu_gangguan]" class="form-control datetimepicker-input gangguan-required" data-target="#'+gangguanPickerId+'" disabled/>';
@@ -482,13 +482,13 @@
                     html += '</div></div></div></div>';
 
                     html += '<div class="form-group row">';
-                    html += '<label class="col-sm-3 col-form-label required">Deskripsi Gangguan</label>';
+                    html += '<label class="col-sm-4 col-form-label required">Deskripsi Gangguan</label>';
                     html += '<div class="col-sm-6">';
                     html += '<textarea class="form-control gangguan-required" rows="5" name="peralatan['+ index +'][deskripsi_gangguan]" placeholder="" disabled></textarea>';
                     html += '</div></div>';
 
                     html += '<div class="form-group row">';
-                    html += '<label class="col-sm-3 col-form-label required">Kondisi Saat Gangguan</label>';
+                    html += '<label class="col-sm-4 col-form-label required">Kondisi Saat Gangguan</label>';
                     html += '<div class="col-sm-6">';
                     html += '<select name="peralatan['+ index +'][kondisi_gangguan]" class="form-control kondisi-peralatan gangguan-required" data-index="'+ index +'" disabled>';
                     html += '<option value="">- Pilih -</option>';
@@ -507,7 +507,7 @@
 
                     // dropdown jenis tindaklanjut, pilihan ini menentukan form yang akan muncul selanjutnya
                     html += '<div class="form-group row">';
-                    html += '<label class="col-sm-3 col-form-label">Jenis Tindak Lanjut</label>';
+                    html += '<label class="col-sm-4 col-form-label">Jenis Tindak Lanjut</label>';
                     html += '<div class="col-sm-6">';
                     html += '<select name="peralatan['+ index +'][jenis_tindaklanjut]" class="form-control jenis-tindaklanjut" data-index="'+ index +'">';
                     html += '<option value="">- Pilih -</option>';
@@ -522,7 +522,7 @@
                     html += '<div class="form-perbaikan-peralatan" id="perbaikan_'+ index +'" style="display:none">';
 
                     html += '<div class="form-group row">';
-                    html += '<label class="col-sm-3 col-form-label required">Waktu Mulai Perbaikan</label>';
+                    html += '<label class="col-sm-4 col-form-label required">Waktu Mulai Perbaikan</label>';
                     html += '<div class="col-sm-6">';
                     html += '<div class="input-group date" id="'+ mulaiPerbaikanPickerId +'" data-target-input="nearest">';
                     html += '<input type="text" name="peralatan['+ index +'][tindaklanjut]['+ JENIS_TINDAKLANJUT_PERALATAN.perbaikan +'][waktu_mulai_tindaklanjut]" class="form-control datetimepicker-input perbaikan-required" data-target="#'+ mulaiPerbaikanPickerId +'" disabled/>';
@@ -531,13 +531,13 @@
                     html += '</div></div></div></div>';
 
                     html += '<div class="form-group row">';
-                    html += '<label class="col-sm-3 col-form-label required">Deskripsi Perbaikan</label>';
+                    html += '<label class="col-sm-4 col-form-label required">Deskripsi Perbaikan</label>';
                     html += '<div class="col-sm-6">';
                     html += '<textarea class="form-control perbaikan-required" rows="5" name="peralatan['+ index +'][tindaklanjut]['+ JENIS_TINDAKLANJUT_PERALATAN.perbaikan +'][deskripsi_tindaklanjut]" placeholder="" disabled></textarea>';
                     html += '</div></div>';
 
                     html += '<div class="form-group row">';
-                    html += '<label class="col-sm-3 col-form-label required">Waktu Selesai Perbaikan</label>';
+                    html += '<label class="col-sm-4 col-form-label required">Waktu Selesai Perbaikan</label>';
                     html += '<div class="col-sm-6">';
                     html += '<div class="input-group date" id="'+ selesaiPerbaikanPickerId +'" data-target-input="nearest">';
                     html += '<input type="text" name="peralatan['+ index +'][tindaklanjut]['+ JENIS_TINDAKLANJUT_PERALATAN.perbaikan +'][waktu_selesai_tindaklanjut]" class="form-control datetimepicker-input perbaikan-required" data-target="#'+ selesaiPerbaikanPickerId +'" disabled/>';
@@ -546,7 +546,7 @@
                     html += '</div></div></div></div>';
 
                     html += '<div class="form-group row">';
-                    html += '<label class="col-sm-3 col-form-label required">Kondisi Setelah Perbaikan</label>';
+                    html += '<label class="col-sm-4 col-form-label required">Kondisi Setelah Perbaikan</label>';
                     html += '<div class="col-sm-6">';
                     html += '<select name="peralatan['+ index +'][tindaklanjut]['+ JENIS_TINDAKLANJUT_PERALATAN.perbaikan +'][kondisi_tindaklanjut]" class="form-control perbaikan-required" data-index="'+ index +'" disabled>';
                     html += '<option value="">- Pilih -</option>';
@@ -571,7 +571,7 @@
                     html += '<div class="form-penggantian-peralatan" id="penggantian_'+ index +'" style="display:none">';
 
                     html += '<div class="form-group row">';
-                    html += '<label class="col-sm-3 col-form-label required">Waktu Mulai Penggantian</label>';
+                    html += '<label class="col-sm-4 col-form-label required">Waktu Mulai Penggantian</label>';
                     html += '<div class="col-sm-6">';
                     html += '<div class="input-group date" id="'+ mulaiPenggantianPickerId +'" data-target-input="nearest">';
                     html += '<input type="text" name="peralatan['+ index +'][tindaklanjut]['+ JENIS_TINDAKLANJUT_PERALATAN.penggantian +'][waktu_mulai_tindaklanjut]" class="form-control datetimepicker-input penggantian-required" data-target="#'+ mulaiPenggantianPickerId +'" disabled/>';
@@ -580,13 +580,13 @@
                     html += '</div></div></div></div>';
 
                     html += '<div class="form-group row">';
-                    html += '<label class="col-sm-3 col-form-label required">Deskripsi Penggantian</label>';
+                    html += '<label class="col-sm-4 col-form-label required">Deskripsi Penggantian</label>';
                     html += '<div class="col-sm-6">';
                     html += '<textarea class="form-control penggantian-required" rows="5" name="peralatan['+ index +'][tindaklanjut]['+ JENIS_TINDAKLANJUT_PERALATAN.penggantian +'][deskripsi_tindaklanjut]" placeholder="" disabled></textarea>';
                     html += '</div></div>';
 
                     html += '<div class="form-group row">';
-                    html += '<label class="col-sm-3 col-form-label required">Waktu Selesai Penggantian</label>';
+                    html += '<label class="col-sm-4 col-form-label required">Waktu Selesai Penggantian</label>';
                     html += '<div class="col-sm-6">';
                     html += '<div class="input-group date" id="'+ selesaiPenggantianPickerId +'" data-target-input="nearest">';
                     html += '<input type="text" name="peralatan['+ index +'][tindaklanjut]['+ JENIS_TINDAKLANJUT_PERALATAN.penggantian +'][waktu_selesai_tindaklanjut]" class="form-control datetimepicker-input penggantian-required" data-target="#'+ selesaiPenggantianPickerId +'" disabled/>';
@@ -599,7 +599,7 @@
 
                     // tombol batal untuk membatalkan pengisian form penggantian
                     html += '<div class="form-group row">';
-                    html += '<div class="col-sm-3"></div>';
+                    html += '<div class="col-sm-4"></div>';
                     html += '<div class="col-sm-6">';
                     html += '<button type="button" class="btn btn-danger btn-sm float-right btn-close-input-gangguan" data-index="'+index+'">';
                     html += '<i class="fas fa-times"></i>&nbsp;&nbsp;&nbsp; Batal';
@@ -622,7 +622,7 @@
                 html += '<div class="form-gangguan-nonperalatan" id="gangguan_non">';
 
                 html += '<div class="form-group row">';
-                html += '<label class="col-sm-3 col-form-label required">Waktu Gangguan</label>';
+                html += '<label class="col-sm-4 col-form-label required">Waktu Gangguan</label>';
                 html += '<div class="col-sm-6">';
                 html += '<div class="input-group date" id="datetime_nonperalatan" data-target-input="nearest">';
                 html += '<input type="text" name="waktu_gangguan" class="form-control datetimepicker-input nonperalatan-required" data-target="#datetime_nonperalatan"/>';
@@ -634,14 +634,14 @@
                 html += '</div>';
 
                 html += '<div class="form-group row">';
-                html += '<label class="col-sm-3 col-form-label required">Deskripsi Gangguan</label>';
+                html += '<label class="col-sm-4 col-form-label required">Deskripsi Gangguan</label>';
                 html += '<div class="col-sm-6">';
                 html += '<textarea class="form-control nonperalatan-required" rows="5" name="deskripsi_gangguan" placeholder=""></textarea>';
                 html += '</div></div>';
 
                 // tombol input tindaklanjut, untuk menampilkan form input tindaklanjut
                 html += '<div class="form-group row">';
-                html += '<div class="col-sm-3"></div>';
+                html += '<div class="col-sm-4"></div>';
                 html += '<div class="col-sm-6">';
                 html += '<button type="button" class="btn btn-success btn-sm btn-input-tindaklanjut">';
                 html += 'Input Tindaklanjut &nbsp;&nbsp;&nbsp;<i class="fas fa-angle-down"></i>';
@@ -657,7 +657,7 @@
                 html += '<input type="hidden" id="flag_tindaklanjut" name="flag_tindaklanjut" value="0">';
 
                 html += '<div class="form-group row">';
-                html += '<label class="col-sm-3 col-form-label required">Waktu Mulai Tindak Lanjut</label>';
+                html += '<label class="col-sm-4 col-form-label required">Waktu Mulai Tindak Lanjut</label>';
                 html += '<div class="col-sm-6">';
                 html += '<div class="input-group date" id="datetime_mulai_perbaikan" data-target-input="nearest">';
                 html += '<input type="text" name="waktu_mulai_tindaklanjut" class="form-control datetimepicker-input tindaklanjut-required" data-target="#datetime_mulai_perbaikan" disabled/>';
@@ -666,13 +666,13 @@
                 html += '</div></div></div></div>';
 
                 html += '<div class="form-group row">';
-                html += '<label class="col-sm-3 col-form-label required">Deskripsi Tindak Lanjut</label>';
+                html += '<label class="col-sm-4 col-form-label required">Deskripsi Tindak Lanjut</label>';
                 html += '<div class="col-sm-6">';
                 html += '<textarea class="form-control tindaklanjut-required" rows="5" name="deskripsi_tindaklanjut" placeholder="" disabled></textarea>';
                 html += '</div></div>';
 
                 html += '<div class="form-group row">';
-                html += '<label class="col-sm-3 col-form-label required">Waktu Selesai Tindak Lanjut</label>';
+                html += '<label class="col-sm-4 col-form-label required">Waktu Selesai Tindak Lanjut</label>';
                 html += '<div class="col-sm-6">';
                 html += '<div class="input-group date" id="datetime_selesai_perbaikan" data-target-input="nearest">';
                 html += '<input type="text" name="waktu_selesai_tindaklanjut" class="form-control datetimepicker-input tindaklanjut-required" data-target="#datetime_selesai_perbaikan" disabled/>';
@@ -682,7 +682,7 @@
 
                 // tombol batal, untuk membatalkan pengisian form tindaklanjut
                 html += '<div class="form-group row">';
-                html += '<div class="col-sm-3"></div>';
+                html += '<div class="col-sm-4"></div>';
                 html += '<div class="col-sm-6">';
                 html += '<button type="button" class="btn btn-danger btn-sm float-right btn-close-input-tindaklanjut">';
                 html += '<i class="fas fa-times"></i>&nbsp;&nbsp;&nbsp; Batal';
@@ -702,7 +702,7 @@
 
             // dropdown kondisi layanan saat mengalami gangguan
             html += '<div class="form-group row">';
-            html += '<label class="col-sm-3 col-form-label required">Kondisi Layanan Saat Gangguan</label>';
+            html += '<label class="col-sm-4 col-form-label required">Kondisi Layanan Saat Gangguan</label>';
             html += '<div class="col-sm-6">';
             html += '<select name="kondisi_layanan_open" class="form-control" required>';
             html += '<option value="">- Pilih -</option>';
@@ -717,7 +717,7 @@
             html += '<div class="form-kondisi-tindaklanjut" id="dropdown_kondisi" style="display:none">';
 
             html += '<div class="form-group row">';
-            html += '<label class="col-sm-3 col-form-label required">Kondisi Layanan Setelah Tindak Lanjut</label>';
+            html += '<label class="col-sm-4 col-form-label required">Kondisi Layanan Setelah Tindak Lanjut</label>';
             html += '<div class="col-sm-6">';
             html += '<select name="kondisi_layanan_tindaklanjut" class="form-control">';
             html += '<option value="">- Pilih -</option>';
@@ -775,15 +775,38 @@
 
                 const btn = e.target.closest('.btn-close-input-gangguan');
                 const index = btn.dataset.index;
-
                 const gangguan = document.getElementById('gangguan_' + index);
+                const isGangguan = false;
+
+                // form perbaikan & penggantian
+                const perbaikan = document.getElementById('perbaikan_' + index);
+                const isPerbaikan = false;
+                const penggantian = document.getElementById('penggantian_' + index);
+                const isPenggantian = false;
 
                 // ubah nilai flag_gangguan menjadi 0
                 const flag = document.getElementById('flag_gangguan_' + index);
                 if (flag) flag.value = 0;
 
-                show(gangguan, false);
-                toggleRequired(gangguan, false, 'gangguan-required');
+                // reset dropdown jenis tindaklanjut
+                const jenisTl = gangguan.querySelector('.jenis-tindaklanjut');
+                if (jenisTl) jenisTl.value = '';
+
+                // sembunyikan form
+                show(gangguan, isGangguan);
+                show(perbaikan, isPerbaikan);
+                show(penggantian, isPenggantian);
+
+                // disable required
+                toggleRequired(gangguan, isGangguan, 'gangguan-required');
+                toggleRequired(perbaikan, isPerbaikan, 'perbaikan-required');
+                toggleRequired(penggantian, isPenggantian, 'penggantian-required');
+                
+                // cek apakah masih ada peralatan lain terisi form input gangguan
+                // jika ADA, maka dropdown Kondisi Layanan Setelah Tindaklanjut tidak akan hilang
+                // jika TIDAK ADA, maka dropdown Kondisi Layanan Setelah Tindaklanjut akan hilang
+                const masihAdaTindaklanjut = document.querySelectorAll('.form-perbaikan-peralatan[style*="block"], .form-penggantian-peralatan[style*="block"]').length > 0;
+                showKondisiLayanan(masihAdaTindaklanjut);
             }
 
             // function untuk menampilkan form tindaklanjut saat tombol Input Tindaklanjut di-klik (Jenis Laporan Gangguan Non Peralatan) 
