@@ -899,7 +899,7 @@ Route::prefix('/logbook')->name('logbook.')
      * Name: logbook.laporan.tambah.step2.back
      * URL: /logbook/laporan/tambah/step2/back
      */
-    Route::get('/laporan/tambah/step2/back', [LaporanController::class, 'formTambahStep2Back'])->name('laporan.tambah.step2.back');
+    Route::post('/laporan/tambah/step2/back', [LaporanController::class, 'tambahStep2Back'])->name('laporan.tambah.step2.back');
 
     
 });

@@ -954,13 +954,6 @@ class LaporanController extends Controller
                 // -------------------------------------------------------------------------
                 foreach ($peralatan as $satu) {
 
-                    // ambil data dari form
-                    // ubah format waktu ke format yang bisa disimpan oleh DB
-                    $waktu_mulai = Carbon::createFromFormat('d-m-Y H:i', $satu['tindaklanjut'][$satu['jenis_tindaklanjut']]['waktu_mulai_tindaklanjut'])
-                        ->format('Y-m-d H:i');
-                    $waktu_selesai = Carbon::createFromFormat('d-m-Y H:i', $satu['tindaklanjut'][$satu['jenis_tindaklanjut']]['waktu_selesai_tindaklanjut'])
-                        ->format('Y-m-d H:i');
-
                     // cek apakah peralatan itu sudah pernah di-input gangguan yang lama
                     // ambil data gangguan peralatan yang lama
                     $dataGangguan = $daftarGangguan->firstWhere('peralatan_id', $satu['peralatan_id']);
@@ -972,7 +965,7 @@ class LaporanController extends Controller
                         ->where('peralatan_id', $satu['peralatan_id'])
                         ->first();
 
-                    // jika ada data gangguan yang lama
+                    // jika ADA data gangguan yang lama
                     if($dataGangguan){
 
                         // dan jika peralatan ini diinputkan sebagai gangguan peralatan
@@ -986,7 +979,7 @@ class LaporanController extends Controller
                                 'updated_by' => session()->get('id')
                             ]);
 
-                            // jika ada data tindaklanjut yang lama
+                            // jika ADA data tindaklanjut yang lama
                             if($dataTlGangguan){
 
                                 // dan jika form tindaklanjut ada diisi, update data tindaklanjut yang lama
@@ -998,8 +991,10 @@ class LaporanController extends Controller
                                     
                                     // update data tindaklanjut gangguan
                                     $dataTlGangguan->update([
-                                        'waktu_mulai' => $waktu_mulai,
-                                        'waktu_selesai' => $waktu_selesai,
+                                        'waktu_mulai' => Carbon::createFromFormat('d-m-Y H:i', $satu['tindaklanjut'][$satu['jenis_tindaklanjut']]['waktu_mulai_tindaklanjut'])
+                                            ->format('Y-m-d H:i'),
+                                        'waktu_selesai' => Carbon::createFromFormat('d-m-Y H:i', $satu['tindaklanjut'][$satu['jenis_tindaklanjut']]['waktu_selesai_tindaklanjut'])
+                                            ->format('Y-m-d H:i'),
                                         'deskripsi'=> $satu['tindaklanjut'][$satu['jenis_tindaklanjut']]['deskripsi_tindaklanjut'],
                                         'kondisi' => $satu['tindaklanjut'][$satu['jenis_tindaklanjut']]['kondisi_tindaklanjut'],
                                         'jenis' => $satu['jenis_tindaklanjut'],
@@ -1043,7 +1038,7 @@ class LaporanController extends Controller
                                 }     
                             }
 
-                            // jika tidak ada data tindaklanjut yang lama
+                            // jika TIDAK ADA data tindaklanjut yang lama
                             else{
                                 // dan jika form tindaklanjut ada diisi, create data tindaklanjut baru
                                 if (
@@ -1058,8 +1053,10 @@ class LaporanController extends Controller
                                         'laporan_id' => $laporan->id,
                                         'layanan_id' => $layanan->id,
                                         'peralatan_id' => $satu['peralatan_id'],
-                                        'waktu_mulai' => $waktu_mulai,
-                                        'waktu_selesai' => $waktu_selesai,
+                                        'waktu_mulai' => Carbon::createFromFormat('d-m-Y H:i', $satu['tindaklanjut'][$satu['jenis_tindaklanjut']]['waktu_mulai_tindaklanjut'])
+                                            ->format('Y-m-d H:i'),
+                                        'waktu_selesai' => Carbon::createFromFormat('d-m-Y H:i', $satu['tindaklanjut'][$satu['jenis_tindaklanjut']]['waktu_selesai_tindaklanjut'])
+                                            ->format('Y-m-d H:i'),
                                         'deskripsi'=> $satu['tindaklanjut'][$satu['jenis_tindaklanjut']]['deskripsi_tindaklanjut'],
                                         'kondisi' => $satu['tindaklanjut'][$satu['jenis_tindaklanjut']]['kondisi_tindaklanjut'],
                                         'jenis' => $satu['jenis_tindaklanjut'],
@@ -1092,7 +1089,7 @@ class LaporanController extends Controller
                         }
                     }
 
-                    // jika tidak ada data gangguan yang lama
+                    // jika TIDAK ADA data gangguan yang lama
                     else{
                         // dan jika peralatan ini diinputkan sebagai gangguan peralatan
                         if($satu['flag_gangguan'] == 1){
@@ -1119,8 +1116,10 @@ class LaporanController extends Controller
                                     'laporan_id' => $laporan->id,
                                     'layanan_id' => $layanan->id,
                                     'peralatan_id' => $satu['peralatan_id'],
-                                    'waktu_mulai' => $waktu_mulai,
-                                    'waktu_selesai' => $waktu_selesai,
+                                    'waktu_mulai' => Carbon::createFromFormat('d-m-Y H:i', $satu['tindaklanjut'][$satu['jenis_tindaklanjut']]['waktu_mulai_tindaklanjut'])
+                                        ->format('Y-m-d H:i'),
+                                    'waktu_selesai' => Carbon::createFromFormat('d-m-Y H:i', $satu['tindaklanjut'][$satu['jenis_tindaklanjut']]['waktu_selesai_tindaklanjut'])
+                                        ->format('Y-m-d H:i'),
                                     'deskripsi'=> $satu['tindaklanjut'][$satu['jenis_tindaklanjut']]['deskripsi_tindaklanjut'],
                                     'kondisi' => $satu['tindaklanjut'][$satu['jenis_tindaklanjut']]['kondisi_tindaklanjut'],
                                     'jenis' => $satu['jenis_tindaklanjut'],
@@ -1152,8 +1151,7 @@ class LaporanController extends Controller
                 // ambil data dari form gangguan
                 // ubah format waktu ke format yang bisa disimpan oleh DB
                 $waktu_gangguan = Carbon::createFromFormat('d-m-Y H:i', $request->waktu_gangguan)->format('Y-m-d H:i');
-                $waktu_mulai = Carbon::createFromFormat('d-m-Y H:i', $request->waktu_mulai_tindaklanjut)->format('Y-m-d H:i');
-                $waktu_selesai = Carbon::createFromFormat('d-m-Y H:i', $request->waktu_selesai_tindaklanjut)->format('Y-m-d H:i');
+
                 // ambil data flag tindaklanjut dari form gangguan
                 $flag_tindaklanjut = $request->flag_tindaklanjut;
 
@@ -1168,7 +1166,7 @@ class LaporanController extends Controller
                     ->where('gangguan_id', $dataGangguan->id)
                     ->first();
 
-                // jika ada data gangguan non peralatan yang lama, update data gangguan yang lama
+                // jika ADA data gangguan non peralatan yang lama, update data gangguan yang lama
                 if($dataGangguan){
                     // lakukan update data gangguan non peralatan
                     $dataGangguan->update([
@@ -1183,8 +1181,8 @@ class LaporanController extends Controller
                         if(!empty($flag_tindaklanjut) && $flag_tindaklanjut == 1){
                             // update data tindaklanjut yang lama
                             $dataTlGangguan->update([
-                                'waktu_mulai' => $waktu_mulai,
-                                'waktu_selesai' => $waktu_selesai,
+                                $waktu_mulai = Carbon::createFromFormat('d-m-Y H:i', $request->waktu_mulai_tindaklanjut)->format('Y-m-d H:i');
+                                $waktu_selesai = Carbon::createFromFormat('d-m-Y H:i', $request->waktu_selesai_tindaklanjut)->format('Y-m-d H:i');
                                 'deskripsi'=> $request->deskripsi_tindaklanjut,
                                 'kondisi' => $request->kondisi_layanan_tindaklanjut,
                                 'updated_by' => session()->get('id')
@@ -1206,8 +1204,8 @@ class LaporanController extends Controller
                                 'gangguan_id' => $dataGangguan->id,
                                 'laporan_id' => $laporan->id,
                                 'layanan_id' => $layanan->id,
-                                'waktu_mulai' => $waktu_mulai,
-                                'waktu_selesai' => $waktu_selesai,
+                                $waktu_mulai = Carbon::createFromFormat('d-m-Y H:i', $request->waktu_mulai_tindaklanjut)->format('Y-m-d H:i');
+                                $waktu_selesai = Carbon::createFromFormat('d-m-Y H:i', $request->waktu_selesai_tindaklanjut)->format('Y-m-d H:i');
                                 'deskripsi'=> $request->deskripsi_tindaklanjut,
                                 'kondisi' => $request->kondisi_layanan_tindaklanjut,
                                 'created_by' => session()->get('id')
@@ -1215,7 +1213,7 @@ class LaporanController extends Controller
                         }
                     }
                 }
-                // jika tidak ada data gangguan non peralatan yang lama, create data gangguan baru
+                // jika TIDAK ADA data gangguan non peralatan yang lama, create data gangguan baru
                 else{
                     // create data baru ke tabel gangguan_non_peralatan
                     $gangguanBaru = GangguanNonPeralatan::create([
