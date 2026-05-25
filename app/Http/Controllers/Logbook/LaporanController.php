@@ -1181,8 +1181,8 @@ class LaporanController extends Controller
                         if(!empty($flag_tindaklanjut) && $flag_tindaklanjut == 1){
                             // update data tindaklanjut yang lama
                             $dataTlGangguan->update([
-                                $waktu_mulai = Carbon::createFromFormat('d-m-Y H:i', $request->waktu_mulai_tindaklanjut)->format('Y-m-d H:i');
-                                $waktu_selesai = Carbon::createFromFormat('d-m-Y H:i', $request->waktu_selesai_tindaklanjut)->format('Y-m-d H:i');
+                                'waktu_mulai' => Carbon::createFromFormat('d-m-Y H:i', $request->waktu_mulai_tindaklanjut)->format('Y-m-d H:i'),
+                                'waktu_selesai' => Carbon::createFromFormat('d-m-Y H:i', $request->waktu_selesai_tindaklanjut)->format('Y-m-d H:i'),
                                 'deskripsi'=> $request->deskripsi_tindaklanjut,
                                 'kondisi' => $request->kondisi_layanan_tindaklanjut,
                                 'updated_by' => session()->get('id')
@@ -1204,8 +1204,8 @@ class LaporanController extends Controller
                                 'gangguan_id' => $dataGangguan->id,
                                 'laporan_id' => $laporan->id,
                                 'layanan_id' => $layanan->id,
-                                $waktu_mulai = Carbon::createFromFormat('d-m-Y H:i', $request->waktu_mulai_tindaklanjut)->format('Y-m-d H:i');
-                                $waktu_selesai = Carbon::createFromFormat('d-m-Y H:i', $request->waktu_selesai_tindaklanjut)->format('Y-m-d H:i');
+                                'waktu_mulai' => Carbon::createFromFormat('d-m-Y H:i', $request->waktu_mulai_tindaklanjut)->format('Y-m-d H:i'),
+                                'waktu_selesai' => Carbon::createFromFormat('d-m-Y H:i', $request->waktu_selesai_tindaklanjut)->format('Y-m-d H:i'),
                                 'deskripsi'=> $request->deskripsi_tindaklanjut,
                                 'kondisi' => $request->kondisi_layanan_tindaklanjut,
                                 'created_by' => session()->get('id')
@@ -1231,8 +1231,8 @@ class LaporanController extends Controller
                             'gangguan_id' => $gangguan->id,
                             'laporan_id' => $laporan->id,
                             'layanan_id' => $layanan->id,
-                            'waktu_mulai' => $waktu_mulai,
-                            'waktu_selesai' => $waktu_selesai,
+                            'waktu_mulai' => Carbon::createFromFormat('d-m-Y H:i', $request->waktu_mulai_tindaklanjut)->format('Y-m-d H:i'),
+                            'waktu_selesai' => Carbon::createFromFormat('d-m-Y H:i', $request->waktu_selesai_tindaklanjut)->format('Y-m-d H:i'),
                             'deskripsi'=> $request->deskripsi_tindaklanjut,
                             'kondisi' => $request->kondisi_layanan_close,
                         ]);
