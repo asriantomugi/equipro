@@ -207,11 +207,27 @@
           autohide: true,
           delay: 3000
         })
+    @elseif(session()->get('notif') == 'gangguan_null')
+      $(document).Toasts('create', {
+          class: 'bg-danger',
+          title: 'Error!',
+          body: 'Gagal menampilkan data gangguan',
+          autohide: true,
+          delay: 3000
+        })
     @elseif(session()->get('notif') == 'layanan_unserviceable')
       $(document).Toasts('create', {
           class: 'bg-danger',
           title: 'Error!',
           body: 'Layanan dalam kondisi unserviceable',
+          autohide: true,
+          delay: 3000
+        })
+    @elseif (session()->get('notif') == 'peralatan_null')
+      $(document).Toasts('create', {
+          class: 'bg-danger',
+          title: 'Error!',
+          body: 'Daftar peralatan layanan tidak ditemukan.',
           autohide: true,
           delay: 3000
         })
