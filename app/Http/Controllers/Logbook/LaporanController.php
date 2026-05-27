@@ -966,6 +966,7 @@ class LaporanController extends Controller
                 }
 
                 // ambil daftar gangguan peralatan dari laporan ini
+                // jika TIDAK ADA maka menghasilkan NULL
                 $daftarGangguan = GangguanPeralatan::where('laporan_id', $laporan->id)
                     ->where('layanan_id', $layanan->id)
                     ->get();
@@ -977,10 +978,10 @@ class LaporanController extends Controller
                 foreach ($peralatan as $satu) {
 
                     // cek apakah peralatan itu sudah pernah di-input gangguan yang lama
-                    // ambil data gangguan peralatan yang lama
+                    // ambil data gangguan peralatan yang lama, jika tidak ada maka bernilai NULL
                     $dataGangguan = $daftarGangguan->firstWhere('peralatan_id', $satu['peralatan_id']);
 
-                    // ambil data tindaklanjut yang lama
+                    // ambil data tindaklanjut yang lama, jika tidak ada maka bernilai NULL
                     $dataTlGangguan = TlGangguanPeralatan::where('laporan_id', $laporan->id)
                         ->where('layanan_id', $layanan->id)
                         ->where('peralatan_id', $satu['peralatan_id'])
@@ -1000,7 +1001,7 @@ class LaporanController extends Controller
                                 'updated_by' => session()->get('id')
                             ]);
 
-                            // jika ADA data tindaklanjut yang lama
+                            // jika ADA data tindaklanjut yang lama, update data tindaklanjut
                             if($dataTlGangguan){
 
                                 // dan jika form tindaklanjut ada diisi dan jenis tindaklanjut = PERBAIKAN, update data tindaklanjut yang lama
@@ -1036,7 +1037,7 @@ class LaporanController extends Controller
                                         }
                                     }
                                 }
-                                // dan jika form tindaklanjut ada diisi dan jenis tindaklanjut = PENGGANTIAN, update data tindaklanjut yang lama
+                                // dan jika form tindaklanjut ADA diisi dan jenis tindaklanjut = PENGGANTIAN, update data tindaklanjut yang lama
                                 else if(!empty($satu['jenis_tindaklanjut']) && 
                                     ($satu['jenis_tindaklanjut'] == config('constants.jenis_tindaklanjut_gangguan_peralatan.penggantian'))){
                                     
@@ -1052,7 +1053,6 @@ class LaporanController extends Controller
                                         'updated_by' => session()->get('id')
                                     ]);
                                 }
-
                                 // jika form tindaklanjut tidak diisi, hapus data tindaklanjut yang lama
                                 else{
                                     // jika jenis tindaklanjut yang lama adalah PENGGANTIAN
@@ -1139,7 +1139,7 @@ class LaporanController extends Controller
                                 'created_by' => session()->get('id')
                             ]);
 
-                            // jika form tindaklanjutnya ada diisi, create data tindaklanjut baru ke DB
+                            // jika form tindaklanjutnya ada diisi dan jenis tindaklanjut = PERBAIKAN, create data tindaklanjut baru ke DB
                             if(!empty($satu['jenis_tindaklanjut']) && 
                                 ($satu['jenis_tindaklanjut'] == config('constants.jenis_tindaklanjut_gangguan_peralatan.perbaikan'))){
 
@@ -1159,8 +1159,9 @@ class LaporanController extends Controller
                                     'created_by' => session()->get('id')
                                 ]);
                             }
+                            // jika form tindalanjut ada diisi dan jenis tindaklanjut = PENGGANTIAN
                             else if(!empty($satu['jenis_tindaklanjut']) && 
-                                ($satu['jenis_tindaklanjut'] == config('constants.jenis_tindaklanjut_gangguan_peralatan.perbaikan'))){
+                                ($satu['jenis_tindaklanjut'] == config('constants.jenis_tindaklanjut_gangguan_peralatan.penggantian'))){
                                 
                                 // create data ke table Tindaklanjut Gangguan Peralatan
                                 $tl_gangguan = TlGangguanPeralatan::create([
@@ -1330,7 +1331,6 @@ class LaporanController extends Controller
         catch(QueryException $ex){
             // batalkan semua transaksi ke database
             DB::rollBack();
-
             // dd($ex->getMessage());
             // kembali ke halaman tambah step 2 back dan tampilkan pesan error
             return redirect()
