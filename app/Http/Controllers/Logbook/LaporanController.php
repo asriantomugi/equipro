@@ -1238,7 +1238,7 @@ class LaporanController extends Controller
                         'updated_by' => session()->get('id')
                     ]);
 
-                    // jika ada data tindaklanjut yang lama
+                    // jika ADA data tindaklanjut yang lama
                     if($dataTlGangguan){
                         // jika form tindaklanjut ada diisi
                         if(!empty($flag_tindaklanjut) && $flag_tindaklanjut == 1){
@@ -1258,7 +1258,7 @@ class LaporanController extends Controller
                         }
                     }
 
-                    // jika tidak ada data tindaklanjut yang lama
+                    // jika TIDAK ADA data tindaklanjut yang lama
                     else{
                         // jika form tindaklanjut ada diisi
                         if(!empty($flag_tindaklanjut) && $flag_tindaklanjut == 1){
