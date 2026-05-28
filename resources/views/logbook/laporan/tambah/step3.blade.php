@@ -230,7 +230,7 @@
                                         <input type="text" 
                                                 name="kode" 
                                                 class="form-control" 
-                                                value="{{ strtoupper($satu->tlPenggantianPeralatan->peralatanBaru->kode ?? '-') }}" 
+                                                value="{{ strtoupper($satu->tlPenggantianPeralatan?->peralatanBaru?->kode ?? '-') }}" 
                                                 readonly>
                                     </div>
                                 </div>
@@ -241,7 +241,7 @@
                                         <input type="text" 
                                                 name="nama" 
                                                 class="form-control" 
-                                                value="{{ strtoupper($satu->tlPenggantianPeralatan->peralatanBaru->nama ?? '-') }}"
+                                                value="{{ strtoupper($satu->tlPenggantianPeralatan?->peralatanBaru?->nama ?? '-') }}"
                                                 readonly>
                                     </div>
                                 </div>
@@ -252,7 +252,7 @@
                                         <input type="text" 
                                                 name="merk" 
                                                 class="form-control"
-                                                value="{{ strtoupper($satu->tlPenggantianPeralatan->peralatanBaru->merk ?? '-') }}"
+                                                value="{{ strtoupper($satu->tlPenggantianPeralatan?->peralatanBaru?->merk ?? '-') }}"
                                                 readonly>
                                     </div>
                                 </div>
@@ -263,7 +263,7 @@
                                         <input type="text" 
                                                 name="tipe" 
                                                 class="form-control" 
-                                                value="{{ strtoupper($satu->tlPenggantianPeralatan->peralatanBaru->tipe ?? '-') }}"
+                                                value="{{ strtoupper($satu->tlPenggantianPeralatan?->peralatanBaru?->tipe ?? '-') }}"
                                                 readonly>
                                     </div>
                                 </div>
@@ -274,7 +274,7 @@
                                         <input type="text" 
                                                 name="model" 
                                                 class="form-control" 
-                                                value="{{ strtoupper($satu->tlPenggantianPeralatan->peralatanBaru->model ?? '-') }}"
+                                                value="{{ strtoupper($satu->tlPenggantianPeralatan?->peralatanBaru?->model ?? '-') }}"
                                                 readonly>
                                     </div>
                                 </div>
@@ -285,7 +285,7 @@
                                         <input type="text" 
                                                 name="serial_number" 
                                                 class="form-control"
-                                                value="{{ strtoupper($satu->tlPenggantianPeralatan->peralatanBaru->serial_number ?? '-') }}"
+                                                value="{{ strtoupper($satu->tlPenggantianPeralatan?->peralatanBaru?->serial_number ?? '-') }}"
                                                 readonly>
                                     </div>
                                 </div>
@@ -296,7 +296,7 @@
                                         <input type="text" 
                                                 name="no_aset" 
                                                 class="form-control"
-                                                value="{{ strtoupper($satu->tlPenggantianPeralatan->peralatanBaru->no_aset ?? '-') }}"
+                                                value="{{ strtoupper($satu->tlPenggantianPeralatan?->peralatanBaru?->no_aset ?? '-') }}"
                                                 readonly>
                                     </div>
                                 </div>
@@ -307,7 +307,7 @@
                                         <input type="text" 
                                                 name="thn_produksi" 
                                                 class="form-control" 
-                                                value="{{ strtoupper($satu->tlPenggantianPeralatan->peralatanBaru->thn_produksi ?? '-') }}"
+                                                value="{{ strtoupper($satu->tlPenggantianPeralatan?->peralatanBaru?->thn_produksi ?? '-') }}"
                                                 readonly>
                                     </div>
                                 </div>
@@ -318,7 +318,7 @@
                                         <input type="text" 
                                                 name="thn_pengadaan" 
                                                 class="form-control"
-                                                value="{{ strtoupper($satu->tlPenggantianPeralatan->peralatanBaru->thn_pengadaan ?? '-') }}"
+                                                value="{{ strtoupper($satu->tlPenggantianPeralatan?->peralatanBaru?->thn_pengadaan ?? '-') }}"
                                                 readonly>
                                     </div>
                                 </div>
@@ -329,7 +329,7 @@
                                         <input type="text" 
                                                 name="jenis_alat" 
                                                 class="form-control" 
-                                                value="{{ strtoupper($satu->tlPenggantianPeralatan->peralatanBaru->jenis->nama ?? '-') }}" 
+                                                value="{{ strtoupper($satu->tlPenggantianPeralatan?->peralatanBaru?->jenis->nama ?? '-') }}" 
                                                 readonly>
                                     </div>
                                 </div>
@@ -350,7 +350,7 @@
                                         <input type="text" 
                                                 name="perusahaan" 
                                                 class="form-control" 
-                                                value="{{ strtoupper($satu->tlPenggantianPeralatan->peralatanBaru->perusahaan->nama ?? '-') }}" 
+                                                value="{{ strtoupper($satu->tlPenggantianPeralatan?->peralatanBaru?->perusahaan->nama ?? '-') }}" 
                                                 readonly>
                                     </div>
                                 </div>
@@ -361,7 +361,7 @@
                                         <input type="text" 
                                                 name="perusahaan" 
                                                 class="form-control" 
-                                                value="{{ strtoupper($satu->tlPenggantianPeralatan->peralatanBaru->kondisi() ?? '-') }}" 
+                                                value="{{ strtoupper($satu->tlPenggantianPeralatan?->peralatanBaru?->kondisi() ?? '-') }}" 
                                                 readonly>
                                     </div>
                                 </div>
@@ -394,7 +394,7 @@
                         
 
                         <div class="card-footer">
-                            <a href=""
+                            <a href="{{ route('logbook.laporan.tambah.step2.back.form', ['laporan_id' => $laporan->id]) }}"
                                 class="btn btn-success btn-sm">
                                 <i class="fas fa-angle-left"></i>&nbsp;&nbsp;&nbsp;Kembali
                             </a>

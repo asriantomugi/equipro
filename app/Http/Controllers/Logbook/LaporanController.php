@@ -946,6 +946,9 @@ class LaporanController extends Controller
                 'updated_by' => session()->get('id')
             ]);
 
+            // -------------------------------------------------------------------------
+            //                    JENIS LAPORAN = GANGGUAN PERALATAN
+            // -------------------------------------------------------------------------
             // jika jenis laporan = gangguan peralatan, maka update data ke tabel Gangguan Peralatan
             if($jenis == config('constants.jenis_laporan.gangguan_peralatan')){
 
@@ -954,15 +957,18 @@ class LaporanController extends Controller
                     'peralatan.*.peralatan_id' => 'exists:peralatan,id',
                 ],[
                     // pesan error
-                    'peralatan_id.*.peralatan_id.exists' => 'Peralatan tidak valid.',   
+                    //'peralatan_id.*.peralatan_id.exists' => 'Peralatan tidak valid.',   
+                    'peralatan.*.peralatan_id.exists' => 'Peralatan tidak valid.',
                 ]);
 
+                //dd(collect($peralatan)->pluck('flag_gangguan'));
+
                 // cek dulu apakah minimal ada 1 peralatan yang mengalami gangguan
-                if (!collect($peralatan)->pluck('flag_gangguan')->contains(1)) {
-                    // jika tidak ada, kembalikan ke halaman tambah step 2 dan kirim pesan error
-                    return back()
-                        ->with(['notif', 'gangguan_null'])
-                        ->withInput();
+                if (!collect($peralatan)->pluck('flag_gangguan')->contains('1')) {
+                    // jika tidak ada, kembalikan ke halaman tambah step 2 back dan tampilkan pesan error
+                    return redirect()->to(
+                        url()->previous().'?notif=gangguan_null'
+                    );
                 }
 
                 // ambil daftar gangguan peralatan dari laporan ini
@@ -987,6 +993,9 @@ class LaporanController extends Controller
                         ->where('peralatan_id', $satu['peralatan_id'])
                         ->first();
 
+                    // ambil data jenis tindaklanjut yang lama
+                    $jenisTindaklanjutLama = $dataTlGangguan->jenis;
+
                     // jika ADA data gangguan yang lama
                     if($dataGangguan){
 
@@ -1004,7 +1013,8 @@ class LaporanController extends Controller
                             // jika ADA data tindaklanjut yang lama, update data tindaklanjut
                             if($dataTlGangguan){
 
-                                // dan jika form tindaklanjut ada diisi dan jenis tindaklanjut = PERBAIKAN, update data tindaklanjut yang lama
+                                // dan jika form tindaklanjut ada diisi dan jenis tindaklanjut = PERBAIKAN
+                                // update data tindaklanjut yang lama
                                 if (!empty($satu['jenis_tindaklanjut']) && 
                                     ($satu['jenis_tindaklanjut'] == config('constants.jenis_tindaklanjut_gangguan_peralatan.perbaikan'))){
                                     
@@ -1023,7 +1033,7 @@ class LaporanController extends Controller
                                     // jika ada perubahan jenis tindaklanjut dari PENGGANTIAN ke PERBAIKAN
                                     // hapus data penggantian peralatan sebelumnya
                                     if(
-                                        $dataTlGangguan->jenis == config('constants.jenis_tindaklanjut_gangguan_peralatan.penggantian') && 
+                                        $jenisTindaklanjutLama == config('constants.jenis_tindaklanjut_gangguan_peralatan.penggantian') && 
                                         $satu['jenis_tindaklanjut'] == config('constants.jenis_tindaklanjut_gangguan_peralatan.perbaikan')
                                         ){
 
@@ -1033,11 +1043,22 @@ class LaporanController extends Controller
                                         
                                         // jika ada, hapus data panggantian peralatan
                                         if($dataPenggantian){
+                                            // update flag_layanan menjadi 0, sebagai penanda bahwa peralatan sudah dihapus sebagai peralatan pengganti
+                                            Peralatan::where('id', $dataPenggantian->peralatan_baru_id)
+                                            ->update([
+                                                'flag_layanan' => 0, // peralatan diberi tanda bahwa sudah tidak terpasang di layanan
+                                                'updated_by' => session()->get('id')
+                                            ]);
+
+                                            // hapus data penggantian alat
                                             $dataPenggantian->delete();
                                         }
+                                        
+                                        
                                     }
                                 }
-                                // dan jika form tindaklanjut ADA diisi dan jenis tindaklanjut = PENGGANTIAN, update data tindaklanjut yang lama
+                                // dan jika form tindaklanjut ADA diisi dan jenis tindaklanjut = PENGGANTIAN
+                                // update data tindaklanjut yang lama
                                 else if(!empty($satu['jenis_tindaklanjut']) && 
                                     ($satu['jenis_tindaklanjut'] == config('constants.jenis_tindaklanjut_gangguan_peralatan.penggantian'))){
                                     
@@ -1064,12 +1085,20 @@ class LaporanController extends Controller
                                         
                                         // jika ada, hapus data penggantian peralatannya
                                         if($dataPenggantian){
+                                            // update flag_layanan menjadi 0, sebagai penanda bahwa peralatan sudah dihapus sebagai peralatan pengganti
+                                            Peralatan::where('id', $dataPenggantian->peralatan_baru_id)
+                                            ->update([
+                                                'flag_layanan' => 0, // peralatan diberi tanda bahwa sudah tidak terpasang di layanan
+                                                'updated_by' => session()->get('id')
+                                            ]);
+
+                                            // hapus data penggnatian yang lama
                                             $dataPenggantian->delete();
                                         }
                                     }
                                     // kemudian lakukan penghapusan data tindaklanjut yang lama
                                     $dataTlGangguan->delete();
-                                }     
+                                }    
                             }
 
                             // jika TIDAK ADA data tindaklanjut yang lama
@@ -1110,8 +1139,16 @@ class LaporanController extends Controller
                                 $dataPenggantian = TlPenggantianPeralatan::where('tl_gangguan_id', $dataTlGangguan->id)
                                     ->first();
                                 
-                                // jika ada, hapus data penggantian peralatannya
+                                // jika ada, hapus data panggantian peralatan
                                 if($dataPenggantian){
+                                    // update flag_layanan menjadi 0, sebagai penanda bahwa peralatan sudah dihapus sebagai peralatan pengganti
+                                    Peralatan::where('id', $dataPenggantian->peralatan_baru_id)
+                                    ->update([
+                                        'flag_layanan' => 0, // peralatan diberi tanda bahwa sudah tidak terpasang di layanan
+                                        'updated_by' => session()->get('id')
+                                    ]);
+
+                                    // hapus data penggantian alat
                                     $dataPenggantian->delete();
                                 }
                             }
@@ -1208,6 +1245,9 @@ class LaporanController extends Controller
             }
             // akhir proses simpan ke DB jika jenis gangguan peralatan
 
+            // -------------------------------------------------------------------------
+            //                   JENIS LAPORAN = GANGGUAN NON PERALATAN
+            // -------------------------------------------------------------------------
             // jika jenis laporan = gangguan non peralatan, maka insert data ke tabel Gangguan Non Peralatan
             else if($jenis == config('constants.jenis_laporan.gangguan_non_peralatan')){
 
@@ -1223,14 +1263,14 @@ class LaporanController extends Controller
                     ->where('layanan_id', $layanan->id)
                     ->first();
 
-                // ambil data tindaklanjut gangguan peralatan yang lama
-                $dataTlGangguan = TlGangguanNonPeralatan::where('laporan_id', $laporan->id)
-                    ->where('layanan_id', $layanan->id)
-                    ->where('gangguan_id', $dataGangguan->id)
-                    ->first();
-
                 // jika ADA data gangguan non peralatan yang lama, update data gangguan yang lama
                 if($dataGangguan){
+                    // ambil data tindaklanjut gangguan peralatan yang lama
+                    $dataTlGangguan = TlGangguanNonPeralatan::where('laporan_id', $laporan->id)
+                        ->where('layanan_id', $layanan->id)
+                        ->where('gangguan_id', $dataGangguan->id)
+                        ->first();
+
                     // lakukan update data gangguan non peralatan
                     $dataGangguan->update([
                         'waktu' => $waktu_gangguan,
@@ -1306,6 +1346,24 @@ class LaporanController extends Controller
                 // maka hapus data gangguan peralatan yang lama
                 if(($jenis == config('constants.jenis_laporan.gangguan_non_peralatan')) && 
                     ($jenisLama == config('constants.jenis_laporan.gangguan_peralatan'))){
+                    // ambil data tindaklanjut penggantian yang lama
+                    // ambil semua data peralatan pengganti beserta relasi peralatan baru
+                    $dataPenggantian = $laporan->tlPenggantianPeralatan()
+                        ->with('peralatanBaru')
+                        ->get();
+
+                    // looping data penggantian, update status flag_layanan menjadi 0 jika ada data peralatan baru
+                    foreach ($dataPenggantian as $satu) {
+                        // jika ada peralatan baru
+                        if ($satu->peralatanBaru) {
+                            // update flag_layanan menjadi 0, sebagai penanda bahwa peralatan sudah dihapus sebagai peralatan pengganti
+                            $satu->peralatanBaru->update([
+                                'flag_layanan' => 0, // peralatan diberi tanda bahwa sudah tidak terpasang di layanan
+                                'updated_by' => session()->get('id')
+                            ]);
+                        }
+                    }
+
                     // hapus data penggantian peralatannya
                     $laporan->tlPenggantianPeralatan()->delete();
                     // hapus data tindaklanjut gangguan peralatannya
@@ -1333,9 +1391,9 @@ class LaporanController extends Controller
             DB::rollBack();
             // dd($ex->getMessage());
             // kembali ke halaman tambah step 2 back dan tampilkan pesan error
-            return redirect()
-                ->route('logbook.laporan.tambah.step2.back.form', $laporan->id)
-                ->with('notif', 'tambah_gagal');
+            return redirect()->to(
+                url()->previous().'?notif=tambah_gagal'
+            );
         }
 
         // jika ada tindaklanjut penggantian alat, lanjutkan ke form tambah step 3 (khusus jenis gangguan peralatan)

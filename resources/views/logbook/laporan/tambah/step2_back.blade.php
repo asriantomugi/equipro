@@ -223,6 +223,10 @@
 </div>
 <!-- /.modal -->
 
+<div>
+    notif: {{ session('notif') }}
+</div>
+
 @endsection
 
 
@@ -230,25 +234,27 @@
 
 <!-- javascript untuk pop up notifikasi -->
 <script type="text/javascript">
-  @if (session()->has('notif'))
-    @if (session()->get('notif') == 'tambah_gagal')
-      $(document).Toasts('create', {
+    const notif = "{{ request('notif') }}";
+    
+    if (notif == 'gangguan_null') {
+        $(document).Toasts('create', {
+            class: 'bg-danger',
+            title: 'Error!',
+            body: 'Tidak ada gangguan yang di-input.',
+            autohide: true,
+            delay: 3000
+        });
+    }
+
+    else if(notif == 'tambah_gagal'){
+        $(document).Toasts('create', {
           class: 'bg-danger',
           title: 'Error!',
           body: 'Gagal menambahkan laporan baru.',
           autohide: true,
           delay: 3000
         })
-    @elseif (session()->get('notif') == 'gangguan_null')
-      $(document).Toasts('create', {
-          class: 'bg-danger',
-          title: 'Error!',
-          body: 'Tidak ada gangguan yang di-input.',
-          autohide: true,
-          delay: 3000
-        })
-    @endif
-  @endif
+    }
 </script>
 
 <!-- Javascript untuk menampilkan pilihan form berdasarkan jenis laporan -->
