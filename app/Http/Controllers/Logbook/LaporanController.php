@@ -991,10 +991,7 @@ class LaporanController extends Controller
                     $dataTlGangguan = TlGangguanPeralatan::where('laporan_id', $laporan->id)
                         ->where('layanan_id', $layanan->id)
                         ->where('peralatan_id', $satu['peralatan_id'])
-                        ->first();
-
-                    // ambil data jenis tindaklanjut yang lama
-                    $jenisTindaklanjutLama = $dataTlGangguan->jenis;
+                        ->first();               
 
                     // jika ADA data gangguan yang lama
                     if($dataGangguan){
@@ -1012,6 +1009,9 @@ class LaporanController extends Controller
 
                             // jika ADA data tindaklanjut yang lama, update data tindaklanjut
                             if($dataTlGangguan){
+
+                                // ambil data jenis tindaklanjut yang lama
+                                $jenisTindaklanjutLama = $dataTlGangguan->jenis;
 
                                 // dan jika form tindaklanjut ada diisi dan jenis tindaklanjut = PERBAIKAN
                                 // update data tindaklanjut yang lama
@@ -1433,7 +1433,7 @@ class LaporanController extends Controller
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
-    public function peralatanFilter(Request $request)
+    public function filterPeralatan(Request $request)
     {     
         // buat query untuk mengambil daftar peralatan
         $query = Peralatan::query();
@@ -1482,7 +1482,7 @@ class LaporanController extends Controller
      * @param  peralatan_id
      * @return \Illuminate\Http\Response
      */
-    public function tambahStep3Peralatan(Request $request)
+    public function tambahPeralatan(Request $request)
     {
         // cek apakah peralatan ada
         $peralatan = Peralatan::find($request->peralatan_baru_id);
@@ -1541,6 +1541,79 @@ class LaporanController extends Controller
 
         return response()->json(['success' => true]);
     }
+
+
+    /**
+     * Function untuk menghapus peralatan pengganti di form penggantian.
+     * 
+     * Akses:
+     * - Super Admin
+     * - Admin
+     * 
+     * Method: POST
+     * URL: /logbook/laporan/tambah/step3/peralatan/hapus
+     *
+     * @param  peralatan_id
+     * @param  layanan_id
+     * @return \Illuminate\Http\Response
+     */
+    public function hapusPeralatan(Request $request)
+    {
+        // ambil data layanan sebelumnya berdasarkan id
+        $layanan = Layanan::where('id', $request->layanan_id)
+            ->first();
+        // cek apakah layanan ada
+        if($layanan == null){
+            // jika tidak ada, kembali ke halaman daftar dan tampilkan pesan error
+            // return redirect('/fasilitas/layanan/daftar')->with('notif', 'item_null');
+            return redirect()
+                ->route('fasilitas.layanan.daftar')
+                ->with('notif', 'item_null');
+            
+        }
+        // cek apakah ada data peralatan tsb
+        $peralatan = DaftarPeralatanLayanan::where('layanan_id', $request->layanan_id)
+            ->where('peralatan_id', $request->peralatan_id)
+            ->first();
+        // jika tidak ada
+        if($peralatan == null){
+            // kembali ke ahlaman daftar dan tampilkan pesan error
+             return redirect()->back()->with('notif', 'item_null')->withInput();
+        }
+
+        // mulai transaksi ke database
+        DB::beginTransaction();
+
+        try{
+            // hapus data peralatan di tabel daftar peralatan layanan
+            DaftarPeralatanLayanan::where('layanan_id', $request->layanan_id)
+                ->where('peralatan_id', $request->peralatan_id)
+                ->delete();
+
+            // update flag_layanan di tabel peralatan
+            Peralatan::where('id', $request->peralatan_id)
+            ->update([
+                'flag_layanan' => 0, // peralatan sedang tidak terpasang pada layanan
+                'updated_by' => session()->get('id')
+            ]);
+
+            // simpan transaksi ke database
+            DB::commit();
+        }
+        // jika proses update gagal
+        catch(QueryException $ex){
+            // batalkan semua transaksi ke database
+            DB::rollBack();
+            //dd($ex->getMessage());
+            // kembali ke halaman daftar dan tampilkan pesan error
+            return redirect()->back()->with('notif', 'hapus_gagal');
+        }
+
+        // jika proses update berhasil
+        // kembali ke halaman daftar dan tampilkan pesan sukses
+        return redirect()->back()->with('notif', 'hapus_sukses');
+    }
+
 
 }
         

@@ -375,12 +375,19 @@
                                             data-gangguan-id="{{ $satu->gangguan_id }}"
                                             data-tl-gangguan-id="{{ $satu->id }}"
                                             data-peralatan-lama-id="{{ $satu->peralatan_id }}">
-                                            <i class="fas fa-plus"></i>&nbsp;&nbsp;&nbsp;Pilih</button>
+                                            <i class="fas fa-plus"></i>&nbsp;&nbsp;&nbsp;Pilih
+                                        </button>
 
-                                        <a href=""
-                                            class="btn btn-danger btn-sm float-right">
-                                            <i class="fas fa-trash-alt"></i>&nbsp;&nbsp;&nbsp;Hapus
-                                        </a>
+                                @if($satu->tlPenggantianPeralatan?->peralatanBaru)
+
+                                        <button type="button" 
+                                                class="btn btn-danger btn-sm float-right" 
+                                                onclick="hapus('{{ $satu->peralatan->id }}', '{{ $satu->gangguan_id }}')"
+                                                title="Hapus Peralatan">
+                                                <i class="fas fa-trash-alt"></i>&nbsp;&nbsp;&nbsp;Hapus
+                                        </button>
+
+                                @endif
                                     </div>
                                 </div>
 
@@ -390,7 +397,7 @@
                         <!-- row -->
 
                         <hr class="my-4" style="border-top: 3px solid #a8a5a5;">
-@endforeacH
+@endforeach
                         
 
                         <div class="card-footer">
@@ -402,11 +409,6 @@
                                 class="btn btn-success btn-sm float-right">
                                 Lanjut&nbsp;&nbsp;&nbsp;<i class="fas fa-angle-right"></i>
                             </a>
-                            <!--
-                            <button type="submit" class="btn btn-success btn-sm float-right" id="btn-submit">
-                                Lanjut&nbsp;<i class="fas fa-angle-right"></i>
-                            </button>
-                            -->
                         </div>
 
                     </div>

@@ -859,7 +859,7 @@ Route::prefix('/logbook')->name('logbook.')
      * Name: logbook.laporan.peralatan.filter
      * URL: /logbook/laporan/peralatan/filter
      */
-    Route::post('/laporan/peralatan/filter', [LaporanController::class, 'peralatanFilter'])->name('laporan.peralatan.filter');
+    Route::post('/laporan/peralatan/filter', [LaporanController::class, 'filterPeralatan'])->name('laporan.peralatan.filter');
 
     /**
      * Memproses penambahan peralatan baru pada form penggantian peralatan
@@ -867,7 +867,15 @@ Route::prefix('/logbook')->name('logbook.')
      * Name: logbook.laporan.tambah.step3.peralatan.tambah
      * URL: /logbook/laporan/tambah/step3/peralatan/tambah
      */
-    Route::post('/laporan/tambah/step3/peralatan/tambah', [LaporanController::class, 'tambahStep3Peralatan'])->name('laporan.tambah.step3.peralatan.tambah');
+    Route::post('/laporan/tambah/step3/peralatan/tambah', [LaporanController::class, 'tambahPeralatan'])->name('laporan.tambah.step3.peralatan.tambah');
+
+    /**
+     * Memproses penghapusan peralatan baru pada form penggantian peralatan
+     * Method: POST
+     * Name: logbook.laporan.tambah.step3.peralatan.hapus
+     * URL: /logbook/laporan/tambah/step3/peralatan/hapus
+     */
+    Route::post('/laporan/tambah/step3/peralatan/hapus', [LaporanController::class, 'hapusPeralatan'])->name('laporan.tambah.step3.peralatan.tambah');
 
     /**
      * Menampilkan form tambah laporan step 4
