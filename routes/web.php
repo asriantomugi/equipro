@@ -875,7 +875,7 @@ Route::prefix('/logbook')->name('logbook.')
      * Name: logbook.laporan.tambah.step3.peralatan.hapus
      * URL: /logbook/laporan/tambah/step3/peralatan/hapus
      */
-    Route::post('/laporan/tambah/step3/peralatan/hapus', [LaporanController::class, 'hapusPeralatan'])->name('laporan.tambah.step3.peralatan.tambah');
+    Route::post('/laporan/tambah/step3/peralatan/hapus', [LaporanController::class, 'hapusPeralatan'])->name('laporan.tambah.step3.peralatan.hapus');
 
     /**
      * Menampilkan form tambah laporan step 4

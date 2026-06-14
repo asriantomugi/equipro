@@ -1559,26 +1559,44 @@ class LaporanController extends Controller
      */
     public function hapusPeralatan(Request $request)
     {
-        // ambil data layanan sebelumnya berdasarkan id
-        $layanan = Layanan::where('id', $request->layanan_id)
+        // ambil laporan dengan status DRAFT berdasarkan id
+        $laporan = Laporan::where('id', $laporan_id)
+            ->where('status', config('constants.status_laporan.draft'))
             ->first();
-        // cek apakah layanan ada
-        if($layanan == null){
-            // jika tidak ada, kembali ke halaman daftar dan tampilkan pesan error
-            // return redirect('/fasilitas/layanan/daftar')->with('notif', 'item_null');
+
+        // jika layanan dengan id dan status tersebut tidak ada
+        if(! $laporan){
+            // kembali ke halaman daftar dan tampilkan pesan error
             return redirect()
-                ->route('fasilitas.layanan.daftar')
-                ->with('notif', 'item_null');
-            
+                ->route('logbook.laporan.daftar')
+                ->with('notif', 'laporan_null');
         }
-        // cek apakah ada data peralatan tsb
-        $peralatan = DaftarPeralatanLayanan::where('layanan_id', $request->layanan_id)
-            ->where('peralatan_id', $request->peralatan_id)
+
+        // ambil data layanan dengan status aktif dengan kondisi serviceable
+        $layanan = Layanan::with(['daftarPeralatanLayanan.peralatan'])
+            ->where('id', $laporan->layanan_id)
+            ->where('status', config('constants.status_layanan.aktif'))
+            ->whereIn('kondisi', [config('constants.kondisi_layanan.serviceable')])
             ->first();
+
+        // jika layanan dengan id dan status tersebut tidak ada
+        if(! $layanan){
+            // kembali ke halaman daftar dan tampilkan pesan error
+            return redirect()
+                ->route('logbook.laporan.daftar')
+                ->with('notif', 'laporan_null');
+        }
+
+        // cek apakah ada penggantian peralatan
+        $penggantian = $laporan->tlGangguanPeralatan
+            ->contains('jenis', 2);
+
         // jika tidak ada
-        if($peralatan == null){
-            // kembali ke ahlaman daftar dan tampilkan pesan error
-             return redirect()->back()->with('notif', 'item_null')->withInput();
+        if(! $penggantian){
+            // kembali ke halaman daftar dan tampilkan pesan error
+            return redirect()
+                ->route('logbook.laporan.daftar')
+                ->with('notif', 'laporan_null');
         }
 
         // mulai transaksi ke database
