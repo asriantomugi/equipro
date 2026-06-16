@@ -26,8 +26,15 @@ class Peralatan extends Model
      * Atribut yang ditambahkan ke JSON.
      */
     protected $appends = [
+        'terbit_sertifikasi_formatted',
+        'exp_sertifikasi_formatted',
         'created_at_formatted',
         'updated_at_formatted',
+    ];
+
+    protected $casts = [
+        'terbit_sertifikasi' => 'date',
+        'exp_sertifikasi' => 'date',
     ];
 
     /**
@@ -124,6 +131,21 @@ class Peralatan extends Model
         return $this->hasOne(User::class, 'id', 'updated_by');
     }
 
+    /**
+     * Function untuk mendapatkan tanggal terbit sertifikasi dalam format yang diinginkan untuk tampilan
+     */
+    public function getTerbitSertifikasiFormattedAttribute()
+    {
+        return $this->terbit_sertifikasi ? $this->terbit_sertifikasi->format('d/m/Y') : null;
+    }
+
+    /**
+     * Function untuk mendapatkan tanggal kadaluarsa sertifikasi dalam format yang diinginkan untuk tampilan
+     */
+    public function getExpSertifikasiFormattedAttribute()
+    {
+        return $this->exp_sertifikasi ? $this->exp_sertifikasi->format('d/m/Y') : null;
+    }
 
     /**
      * Function untuk mendapatkan created_at dalam format yang diinginkan untuk tampilan

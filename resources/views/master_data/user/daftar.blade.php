@@ -158,7 +158,7 @@
       $(document).Toasts('create', {
           class: 'bg-danger',
           title: 'Error!',
-          body: 'Gagal menampilkan data user'
+          body: 'Data user tidak ditemukan'
         })
     @endif
   @endif

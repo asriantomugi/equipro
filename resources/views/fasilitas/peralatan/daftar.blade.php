@@ -163,7 +163,7 @@
       $(document).Toasts('create', {
           class: 'bg-danger',
           title: 'Error!',
-          body: 'Gagal menampilkan data peralatan',
+          body: 'Data peralatan tidak ditemukan',
           autohide: true,
           delay: 3000
         })
@@ -268,6 +268,30 @@
               row += "<tr><th>Keterangan</th><td>:</td><td>"+ data.peralatan.keterangan.toUpperCase(); +"</td></tr>";
           }else{
               row += "<tr><th>Keterangan</th><td>:</td><td></td></tr>";
+          }
+
+          if(data.peralatan.no_sertifikasi != null){
+              row += "<tr><th>No. Sertifikasi</th><td>:</td><td>"+ data.peralatan.no_sertifkasi; +"</td></tr>";
+          }else{
+              row += "<tr><th>No. Sertifikasi</th><td>:</td><td></td></tr>";
+          }
+
+          if(data.peralatan.terbit_sertifikasi != null){
+              row += "<tr><th>Tgl Terbit Sertifikasi</th><td>:</td><td>"+ data.peralatan.terbit_sertifikasi_formatted +"</td></tr>";
+          }else{
+              row += "<tr><th>Tgl Terbit Sertifikasi</th><td>:</td><td></td></tr>";
+          }
+
+          if(data.peralatan.exp_sertifikasi != null){
+              row += "<tr><th>Tgl Kadaluarsa Sertifikasi</th><td>:</td><td>"+ data.peralatan.exp_sertifikasi_formatted +"</td></tr>";
+          }else{
+              row += "<tr><th>Tgl Kadaluarsa Sertifikasi</th><td>:</td><td></td></tr>";
+          }
+
+          if(data.peralatan.lembaga_sertifikasi != null){
+              row += "<tr><th>Lembaga Sertifikasi</th><td>:</td><td>"+ data.peralatan.lembaga_sertifkasi; +"</td></tr>";
+          }else{
+              row += "<tr><th>Lembaga Sertifikasi</th><td>:</td><td></td></tr>";
           }
 
           if(data.peralatan.status == 1){

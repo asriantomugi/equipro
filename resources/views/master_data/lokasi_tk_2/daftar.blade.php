@@ -139,7 +139,7 @@
       $(document).Toasts('create', {
           class: 'bg-danger',
           title: 'Error!',
-          body: 'Gagal menampilkan data Lokasi Tingkat II'
+          body: 'Data Lokasi Tingkat II tidak ditemukan'
         })
     @endif
   @endif

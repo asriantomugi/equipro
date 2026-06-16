@@ -26,7 +26,7 @@
 @endif
 
         <div class="row">
-          <div class="col-lg-7 col-6">
+          <div class="col-lg-8 col-6">
             
             <div class="card">
               <div class="card-header">
@@ -221,6 +221,46 @@
                       <option value="3" {{ old('kondisi', $peralatan->kondisi ?? '') == '3' ? 'selected' : '' }}>RUSAK</option>
                     </select>
                     <div class="invalid-feedback">Kondisi wajib dipilih.</div>
+                  </div>
+                </div>
+
+                <div class="form-group row">
+                  <label class="col-sm-4 col-form-label">No. Sertifikasi</label>
+                  <div class="col-sm-8">
+                    <input type="text" 
+                           name="no_sertifikasi" 
+                           class="form-control"
+                           value="{{ strtoupper(old('no_sertifikasi', $peralatan->no_sertifikasi ?? '')) }}">
+                  </div>
+                </div>
+
+                <div class="form-group row">
+                  <label class="col-sm-4 col-form-label">Tanggal Terbit Sertifikasi</label>
+                  <div class="col-sm-8">
+                      <input type="date" 
+                            name="terbit_sertifikasi" 
+                            class="form-control"
+                            value="{{ old('terbit_sertifikasi', $peralatan->terbit_sertifikasi ? date('Y-m-d', strtotime($peralatan->terbit_sertifikasi)) : '') }}">         
+                  </div>
+                </div>
+
+                <div class="form-group row">
+                  <label class="col-sm-4 col-form-label">Tanggal kadaluarsa Sertifikasi</label>
+                  <div class="col-sm-8">
+                      <input type="date" 
+                            name="exp_sertifikasi" 
+                            class="form-control"
+                            value="{{ old('exp_sertifikasi', $peralatan->exp_sertifikasi ? date('Y-m-d', strtotime($peralatan->exp_sertifikasi)) : '') }}">          
+                  </div>
+                </div>
+
+                <div class="form-group row">
+                  <label class="col-sm-4 col-form-label">Lembaga Sertifikasi</label>
+                  <div class="col-sm-8">
+                    <input type="text" 
+                           name="lembaga_sertifikasi" 
+                           class="form-control"
+                           value="{{ strtoupper(old('lembaga_sertifikasi', $peralatan->lembaga_sertifikasi ?? '')) }}">
                   </div>
                 </div>
 

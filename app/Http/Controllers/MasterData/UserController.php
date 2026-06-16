@@ -233,7 +233,7 @@ class UserController extends Controller
         // jika user dengan id tersebut tidak ada
         if($user == null){
             // kembali ke halaman daftar dan kirim notif
-            return redirect('/master-data/user/daftar')->with('notif', 'user_null');
+            return redirect('master_data.user.daftar')->with('notif', 'user_null');
         }
 
         // ambil daftar role untuk form edit user

@@ -145,7 +145,7 @@
       $(document).Toasts('create', {
           class: 'bg-danger',
           title: 'Error!',
-          body: 'Gagal menampilkan data fasilitas',
+          body: 'Data fasilitas tidak ditemukan',
           autohide: true,
           delay: 3000
         })

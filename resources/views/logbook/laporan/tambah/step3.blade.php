@@ -386,6 +386,7 @@
                                                 data-hapus-gangguan-id="{{ $satu->gangguan_id }}"
                                                 data-hapus-tl-gangguan-id="{{ $satu->id }}"
                                                 data-hapus-tl-penggantian-id="{{ $satu->tlPenggantianPeralatan->id }}"
+                                                data-hapus-peralatan-lama-id="{{ $satu->peralatan_id }}"
                                                 data-hapus-peralatan-baru-id="{{ $satu->tlPenggantianPeralatan->peralatanBaru->id }}">
                                                 <i class="fas fa-trash-alt"></i>&nbsp;&nbsp;&nbsp;Hapus
                                         </button>
@@ -538,9 +539,10 @@
                 <input type="hidden" id="hapus_gangguan_id" name="gangguan_id">
                 <input type="hidden" id="hapus_tl_gangguan_id" name="tl_gangguan_id">
                 <input type="hidden" id="hapus_tl_penggantian_id" name="tl_penggantian_id">
+                <input type="hidden" id="hapus_peralatan_lama_id" name="peralatan_lama_id">
                 <input type="hidden" id="hapus_peralatan_baru_id" name="peralatan_baru_id">
 
-                <p><center>Ingin menghapus draft layanan ini?</center></p>
+                <p><center>Ingin menghapus peralatan ini sebagai peralatan pengganti?</center></p>
                 
             </div>
             <!-- modal-body -->
@@ -619,7 +621,7 @@
   @endif
 </script>
 
-<!-- javascript untuk pop up khusus notifikasi tambah berhasil -->
+<!-- javascript untuk pop up khusus notifikasi tambah peralatan baru berhasil -->
 <script>
     $(document).ready(function () {
         if (localStorage.getItem('tambah_sukses') === 'true') {
@@ -742,17 +744,15 @@
         })
         // apabila proses tambah berhasil
         .done(function () {
-            // Tutup modal
-            $('#modalPeralatan').modal('hide');
-            // Simpan flag sukses ke localStorage agar tetap ada setelah reload
-            localStorage.setItem('tambah_sukses', 'true');
-            // Reload halaman
+            // Tutup modal 
+            $('#modalPeralatan').modal('hide'); 
+            // Simpan flag sukses ke localStorage agar tetap ada setelah reload 
+            localStorage.setItem('tambah_sukses', 'true'); 
+            // Reload halaman 
             location.reload();
         })
         // apabila proses tambah gagal, tampilkan pesan error
         .fail(function (xhr) {
-            let errorMsg = 'Gagal menyimpan peralatan baru.';
-            
             if (xhr.responseJSON) {
                 if (xhr.responseJSON.reason) {
                     errorMsg = xhr.responseJSON.reason;
@@ -760,7 +760,6 @@
                     errorMsg = xhr.responseJSON.message;
                 }
             }
-
             // Tutup modal
             $('#modalPeralatan').modal('hide');
 
@@ -788,12 +787,14 @@
             var gangguanId = btn.attr('data-hapus-gangguan-id');
             var tlGangguanId = btn.attr('data-hapus-tl-gangguan-id');
             var tlPenggantianId = btn.attr('data-hapus-tl-penggantian-id');
+            var peralatanLamaId = btn.attr('data-hapus-peralatan-lama-id');
             var peralatanBaruId = btn.attr('data-hapus-peralatan-baru-id');
 
             // isi hidden input
             $('#hapus_gangguan_id').val(gangguanId);
             $('#hapus_tl_gangguan_id').val(tlGangguanId);
             $('#hapus_tl_penggantian_id').val(tlPenggantianId);
+            $('#hapus_peralatan_lama_id').val(peralatanLamaId);
             $('#hapus_peralatan_baru_id').val(peralatanBaruId);
 
         });

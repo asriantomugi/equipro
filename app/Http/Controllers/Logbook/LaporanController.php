@@ -1533,12 +1533,11 @@ class LaporanController extends Controller
         catch(QueryException $ex){
              // batalkan semua transaksi ke database
             DB::rollBack();
-            // kirim pesan error ke file storage/logs/laravel.log
             //dd($ex->getMessage());
-            // kirim pesan gagal melalui JSON
+            // kirim pesan gagal melalui JSON, kode 400 agar masuk ke function .fail di AJAX
             return response()->json(['success' => false, 'reason' => 'Gagal menyimpan peralatan'], 400);
         }
-
+        // kirim pesan berhasil dan masuk ke function .done di AJAX
         return response()->json(['success' => true]);
     }
 
@@ -1561,6 +1560,7 @@ class LaporanController extends Controller
     {
         // ambil data gangguan peralatan berdasarkan ID
         $gangguan = GangguanPeralatan::where('id', $request->gangguan_id)
+            ->where('peralatan_id', $request->peralatan_lama_id)
             ->first();
         
         // jika gangguan tidak ada
@@ -1569,6 +1569,14 @@ class LaporanController extends Controller
             return redirect()
                 ->route('logbook.laporan.daftar')
                 ->with('notif', 'gangguan_null');
+        }
+
+        // pastikan ID laporan sama
+        if(! ($gangguan->laporan_id == $request->laporan_id)){
+            // kembali ke halaman daftar dan tampilkan pesan error
+            return redirect()
+                ->route('logbook.laporan.daftar')
+                ->with('notif', 'laporan_null');
         }
 
         // ambil laporan dengan status OPEN atau DRAFT berdasarkan ID
@@ -1600,12 +1608,41 @@ class LaporanController extends Controller
                 ->with('notif', 'layanan_null');
         }
 
-        // cek apakah ada penggantian peralatan
-        $penggantian = $laporan->tlGangguanPeralatan
-            ->contains('jenis', 2);
+        // ambil data tindaklanjut gangguan
+        $tlGangguan = TlGangguanPeralatan::where('id', $request->tl_gangguan_id)
+            ->where('gangguan_id', $gangguan->id)
+            ->where('laporan_id', $laporan->id)
+            ->where('layanan_id', $layanan->id)
+            ->where('peralatan_id', $request->peralatan_lama_id)
+            ->first();
+        
+        // jika tindaklanjut tidak ada
+        if(! $tlGangguan){
+            // kembali ke halaman daftar dan tampilkan pesan error
+            return redirect()
+                ->route('logbook.laporan.daftar')
+                ->with('notif', 'laporan_null');
+        }
 
-        // jika tidak ada
-        if(! $penggantian){
+        // pastikan apakah jenis tindaklanjut gangguan tsb merupakan PENGGANTIAN
+        if(! ($tlGangguan->jenis == config('constants.jenis_tindaklanjut_gangguan_peralatan.penggantian'))){
+            // kembali ke halaman daftar dan tampilkan pesan error
+            return redirect()
+                ->route('logbook.laporan.daftar')
+                ->with('notif', 'laporan_null');
+        }
+
+        // ambil data penggantian peralatan
+        $tlPenggantian = TlPenggantianPeralatan::where('id', $request->tl_penggantian_id)
+            ->where('laporan_id', $laporan->id)
+            ->where('layanan_id', $layanan->id)
+            //->where('tl_gangguan_id', $tlGangguan->id)
+            //->where('peralatan_lama_id', $request->peralatan_lama_id)
+            //->where('peralatan_baru_id', $request->peralatan_baru_id)
+            ->first();
+
+        // jka tidak ada data
+        if(! $tlPenggantian){
             // kembali ke halaman daftar dan tampilkan pesan error
             return redirect()
                 ->route('logbook.laporan.daftar')
@@ -1613,7 +1650,7 @@ class LaporanController extends Controller
         }
 
         // ambil data peralatan yang akan dihapus
-        $peralatanHapus = Peralatan::where('id', $request->peralatan_baru_id)
+        $peralatanHapus = Peralatan::where('id', $tlPenggantian->peralatan_baru_id)
             ->first();
 
         // jika peralatan tsb tidak ada
@@ -1624,13 +1661,6 @@ class LaporanController extends Controller
                 ->with('notif', 'peralatan_null');
         }
 
-        // ambil data penggantian peralatan
-        $tlPenggantian = TlPenggantianPeralatan::where('id', $request->tl_gangguan_id)
-            ->where('laporan_id', $laporan->id)
-            ->where('layanan_id', $layanan->id)
-            ->where('peralatan_baru_id', $peralatanHapus->id)
-            ->first();
-
         // mulai transaksi ke database
         DB::beginTransaction();
 
@@ -1639,15 +1669,13 @@ class LaporanController extends Controller
             $tlPenggantian->delete();
 
             // update flag_layanan menjadi 0, sebagai penanda bahwa peralatan sudah dihapus dari layanan
-            Peralatan::where('id', $peralatanHapus->id)
-            ->update([
+            $peralatanHapus->update([
                 'flag_layanan' => 0, // peralatan diberi tanda bahwa sedang tidak terpasang di layanan
                 'updated_by' => session()->get('id')
             ]);
 
             // update data kondisi di tabel tl_gangguan_peralatan
-            TlGangguanPeralatan::where('id', $request->tl_gangguan_id)
-            ->update([
+            $tlGangguan->update([
                 'kondisi' => null, // status 
                 'updated_by' => session()->get('id')
             ]);

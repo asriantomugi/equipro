@@ -145,7 +145,7 @@
       $(document).Toasts('create', {
           class: 'bg-danger',
           title: 'Error!',
-          body: 'Gagal menampilkan data jenis alat',
+          body: 'Data jenis alat tidak ditemukan',
           autohide: true,
           delay: 3000
         })
