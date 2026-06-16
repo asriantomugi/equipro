@@ -33,9 +33,11 @@ class TlPenggantianPeralatan extends Model
     /**
      * Function untuk memanggil tl gangguan 
      */
-    public function gangguan()
+    public function tlGangguanPeralatan()
     {
-        return $this->belongsTo(TlGangguanPeralatan::class, 'tl_gangguan_id');
+        return $this->belongsTo(TlGangguanPeralatan::class, 'tl_gangguan_id', 'id');
+        // tl_gangguan_id = foreign key di tabel ini
+        // id = primary key di tabel tujuan
     }
 
 

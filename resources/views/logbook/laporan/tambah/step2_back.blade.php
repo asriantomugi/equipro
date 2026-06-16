@@ -1069,6 +1069,30 @@
 
                 row += "<tr><th>Perusahaan Pemilik</th><td>:</td><td>"+ data.perusahaan.nama.toUpperCase(); +"</td></tr>";
 
+            if(data.peralatan.no_sertifikasi != null){
+                row += "<tr><th>No. Sertifikasi</th><td>:</td><td>"+ data.peralatan.no_sertifikasi; +"</td></tr>";
+            }else{
+                row += "<tr><th>No. Sertifikasi</th><td>:</td><td></td></tr>";
+            }
+
+            if(data.peralatan.terbit_sertifikasi != null){
+                row += "<tr><th>Tgl Terbit Sertifikasi</th><td>:</td><td>"+ data.peralatan.terbit_sertifikasi_formatted +"</td></tr>";
+            }else{
+                row += "<tr><th>Tgl Terbit Sertifikasi</th><td>:</td><td></td></tr>";
+            }
+
+            if(data.peralatan.exp_sertifikasi != null){
+                row += "<tr><th>Tgl Kadaluarsa Sertifikasi</th><td>:</td><td>"+ data.peralatan.exp_sertifikasi_formatted +"</td></tr>";
+            }else{
+                row += "<tr><th>Tgl Kadaluarsa Sertifikasi</th><td>:</td><td></td></tr>";
+            }
+
+            if(data.peralatan.lembaga_sertifikasi != null){
+                row += "<tr><th>Lembaga Sertifikasi</th><td>:</td><td>"+ data.peralatan.lembaga_sertifikasi; +"</td></tr>";
+            }else{
+                row += "<tr><th>Lembaga Sertifikasi</th><td>:</td><td></td></tr>";
+            }
+            
             if(data.peralatan.keterangan != null){
                 row += "<tr><th>Keterangan</th><td>:</td><td>"+ data.peralatan.keterangan.toUpperCase(); +"</td></tr>";
             }else{

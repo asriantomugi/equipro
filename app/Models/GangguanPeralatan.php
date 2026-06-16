@@ -58,7 +58,7 @@ class GangguanPeralatan extends Model
     /**
      * Function untuk memanggil kondisi peralatan saat gangguan.
      */
-    public function kondisiText()
+    public function kondisi()
     {
         if ($this->kondisi === 0) return 'RUSAK';
         if ($this->kondisi === 1) return 'NORMAL';
@@ -69,7 +69,7 @@ class GangguanPeralatan extends Model
     /**
      * Function untuk memanggil kondisi peralatan sebelum gangguan.
      */
-    public function kondisiAwalText()
+    public function kondisiAwal()
     {
         if ($this->kondisi === 0) return 'RUSAK';
         if ($this->kondisi === 1) return 'NORMAL';

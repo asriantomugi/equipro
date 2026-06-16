@@ -368,7 +368,7 @@ class LaporanController extends Controller
         $kondisi_layanan_open = $request->kondisi_layanan_open;
         $kondisi_layanan_temp = $request->kondisi_layanan_tindaklanjut;
 
-        //dd($request->all());
+        //dd($peralatan);
 
         // mulai transaksi ke database
         DB::beginTransaction();
@@ -624,7 +624,7 @@ class LaporanController extends Controller
         }
 
         // ambil daftar peralatan yang dilakukan penggantian saja
-        $daftarPeralatan = TlGangguanPeralatan::with(['tlPenggantianPeralatan'])
+        $daftarPeralatan = TlGangguanPeralatan::with(['gangguanPeralatan','Peralatan', 'tlPenggantianPeralatan'])
             ->where('laporan_id', $laporan->id)
             ->where('jenis', config('constants.jenis_tindaklanjut_gangguan_peralatan.penggantian'))
             ->get();
@@ -725,7 +725,7 @@ class LaporanController extends Controller
 
             // cek apakah ada tindaklanjut penggantian alat
             $penggantian = $laporan->tlGangguanPeralatan
-                ->contains('jenis', 2);
+                ->contains('jenis', config('constants.jenis_tindaklanjut_gangguan_peralatan.penggantian'));
 
             // jika ada penggantian alat
             if($penggantian){
@@ -735,7 +735,7 @@ class LaporanController extends Controller
                 if(! $sudahGantiAlat){
                     // kembali ke halaman form tambah step 3 dan tampilkan pesan error
                     return redirect()
-                        ->route('logbook.laporan.tambah.step3', ['laporan_id' => $laporan->id])
+                        ->route('logbook.laporan.tambah.step3.form', ['laporan_id' => $laporan->id])
                         ->with('notif', 'ganti_null');
                 }
                 // isi variabel jenis tindaklanjut
@@ -931,7 +931,7 @@ class LaporanController extends Controller
         // ambil data jenis laporan lama
         $jenisLama = $laporan->jenis;
 
-        //dd($request->all());
+        //dd($peralatan);
 
         // mulai transaksi ke database
         DB::beginTransaction();

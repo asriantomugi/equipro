@@ -35,9 +35,11 @@ class TlGangguanPeralatan extends Model
     /**
      * Function untuk memanggil gangguan peralatan dari tl gangguan peralatan.
      */
-    public function GangguanPeralatan()
+    public function gangguanPeralatan()
     {
-        return $this->belongsTo(GangguanPeralatann::class);
+        return $this->belongsTo(GangguanPeralatan::class, 'gangguan_id', 'id'); 
+        // gangguan_id = foreign key di tabel ini
+        // id = primary key di tabel tujuan
     }
 
 
@@ -63,6 +65,17 @@ class TlGangguanPeralatan extends Model
     public function peralatan()
     {
         return $this->belongsTo(Peralatan::class);
+    }
+
+    /**
+     * Function untuk memanggil kondisi.
+     */
+    public function kondisi()
+    {
+        if ($this->kondisi === 0) return 'RUSAK';
+        if ($this->kondisi === 1) return 'NORMAL';
+        if ($this->kondisi === 2) return 'NORMAL SEBAGIAN';
+        return '-';
     }
 
     /**

@@ -845,14 +845,6 @@ Route::prefix('/logbook')->name('logbook.')
     Route::get('/laporan/tambah/step3/{laporan_id}', [LaporanController::class, 'formTambahStep3'])->name('laporan.tambah.step3.form');
 
     /**
-     * Memproses form tambah laporan step 3
-     * Method: POST
-     * Name: logbook.laporan.tambah.step3
-     * URL: /logbook/laporan/tambah/step3
-     */
-    Route::post('/laporan/tambah/step3', [LaporanController::class, 'tambahStep3'])->name('laporan.tambah.step3');
-
-    /**
      * Menampilkan daftar peralatan tersedia pada form penggantian peralatan
      * berdasarkan pilihan filter.
      * Method: POST

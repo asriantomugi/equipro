@@ -320,7 +320,6 @@ class LayananController extends Controller
             DB::rollBack();
             // dd($ex->getMessage());
             // kembali ke halaman daftar dan tampilkan pesan error
-            // return redirect('/fasilitas/layanan/daftar')->with('notif', 'tambah_gagal');
             return redirect()
                 ->route('fasilitas.layanan.daftar')
                 ->with('notif', 'tambah_gagal');
@@ -328,7 +327,6 @@ class LayananController extends Controller
 
         // jika proses insert berhasil
         // diteruskan ke halaman tambah step 2 dan tampilkan pesan sukses
-        // return redirect('/fasilitas/layanan/tambah/step2/'.$layanan->id)->with('notif', 'simpan_sukses');
         return redirect()
             ->route('fasilitas.layanan.tambah.step2.form', $layanan->id)
             ->with('notif', 'simpan_sukses');
@@ -369,7 +367,7 @@ class LayananController extends Controller
             // jika ada, cek apakah kode yang baru sudah terdaftar
             $cekKode = Layanan::where('kode', strtoupper($request->kode))->first();
             // jika kode sudah terdaftar
-            if($cekKode != null){
+            if($cekKode){
                 // kembali ke halaman edit dan tampilkan pesan error
                 return redirect()->back()->with('notif', 'kode_terdaftar');
             }
@@ -381,8 +379,7 @@ class LayananController extends Controller
 
         try{
             // update data layanan di tabel layanan
-            Layanan::where('id', $request->id)
-            ->update([
+            $layanan->update([
                 'kode' => strtoupper($request->kode),
                 'nama' => strtoupper($request->nama),
                 'fasilitas_id' => $request->fasilitas,
@@ -400,7 +397,6 @@ class LayananController extends Controller
             DB::rollBack();
             //dd($ex->getMessage());
             // kembali ke halaman tambah step 1 back dan tampilkan pesan error
-            // return redirect('/fasilitas/layanan/tambah/step1/back/'.$layanan->id)->with('notif', 'simpan_gagal');
             return redirect()
                 ->route('fasilitas.layanan.tambah.step1.back.form', $layanan->id)
                 ->with('notif', 'simpan_gagal');
@@ -408,7 +404,6 @@ class LayananController extends Controller
 
         // jika proses update berhasil dan tampilkan pesan sukses
         // diteruskan ke halaman tambah step 2
-        // return redirect('/fasilitas/layanan/tambah/step2/'.$layanan->id)->with('notif', 'simpan_sukses');
         return redirect()
             ->route('fasilitas.layanan.tambah.step2.form', $layanan->id)
             ->with('notif', 'simpan_sukses');
@@ -430,21 +425,18 @@ class LayananController extends Controller
     public function formTambahStep2($id)
     {
         // ambil data layanan dengan status draft dari form tambah 1
-        $layanan = Layanan::where('id', $id)
+        $layanan = Layanan::with('daftarPeralatanLayanan')
+            ->where('id', $id)
             ->where('status', config('constants.status_layanan.draft'))
             ->first();
 
         // jika layanan dengan id dan status tersebut tidak ada
-        if($layanan == null){
+        if(! $layanan){
             // kembali ke halaman daftar dan tampilkan pesan error
             return redirect()
                 ->route('fasilitas.layanan.daftar')
                 ->with('notif', 'item_null');
         }
-
-        // ambil daftar peralatan dari layanan tersebut
-        $daftar_peralatan = DaftarPeralatanLayanan::where('layanan_id', $layanan->id)
-            ->get();
 
         // ambil daftar perusahaan yang aktif
         $perusahaan = Perusahaan::where('status', 1)->get();
@@ -467,7 +459,6 @@ class LayananController extends Controller
         ->with('menu_url', $menu_url)
         ->with('submenu', $submenu)
         ->with('layanan', $layanan)
-        ->with('daftar_peralatan', $daftar_peralatan)
         ->with('jenis', $jenis)
         ->with('perusahaan', $perusahaan)
         ;
@@ -489,24 +480,21 @@ class LayananController extends Controller
     public function formTambahStep3($id)
     {
         // ambil data layanan dengan status draft dari form tambah 2
-        $layanan = Layanan::where('id', $id)
+        $layanan = Layanan::with('daftarPeralatanLayanan')
+            ->where('id', $id)
             ->where('status', config('constants.status_layanan.draft'))
             ->first();
 
         // jika layanan dengan id dan status tersebut tidak ada
-        if($layanan == null){
+        if(! $layanan){
             // kembali ke halaman daftar dan tampilkan pesan error
             return redirect()
                 ->route('fasilitas.layanan.daftar')
                 ->with('notif', 'item_null');
         }
 
-        // ambil daftar peralatan dari layanan tersebut
-        $daftar_peralatan = DaftarPeralatanLayanan::where('layanan_id', $layanan->id)
-            ->get();
-
         // jika daftar peralatan masih kosong
-        if($daftar_peralatan->isEmpty()){
+        if($layanan->daftarPeralatanLayanan->isEmpty()){
             // kembali ke halaman layanan tambah step 2 dan tampilkan pesan error
             return redirect()
                 ->route('fasilitas.layanan.tambah.step2.form', $layanan->id)
@@ -528,7 +516,6 @@ class LayananController extends Controller
         ->with('menu_url', $menu_url)
         ->with('submenu', $submenu)
         ->with('layanan', $layanan)
-        ->with('daftar_peralatan', $daftar_peralatan)
         ;
     }
 
@@ -554,19 +541,15 @@ class LayananController extends Controller
             ->first();
 
         // jika layanan dengan id dan status tersebut tidak ada
-        if($layanan == null){
+        if(! $layanan){
             // kembali ke halaman daftar dan tampilkan pesan error
             return redirect()
                 ->route('fasilitas.layanan.daftar')
                 ->with('notif', 'item_null');
         }
 
-        // ambil daftar peralatan dari layanan tersebut
-        $daftar_peralatan = DaftarPeralatanLayanan::where('layanan_id', $layanan->id)
-            ->get();
-
         // jika daftar peralatan masih kosong
-        if($daftar_peralatan->isEmpty()){
+        if($layanan->daftarPeralatanLayanan->isEmpty()){
             // kembali ke halaman layanan tambah step 2 dan tampilkan pesan error
             return redirect()
                 ->route('fasilitas.layanan.tambah.step2.form', $layanan->id)
@@ -578,8 +561,7 @@ class LayananController extends Controller
 
         try{
             // update status layanan di tabel layanan
-            Layanan::where('id', $request->id)
-            ->update([
+            $layanan->update([
                 'status' => config('constants.status_layanan.aktif'), // status layanan = aktif
                 'kondisi' => config('constants.kondisi_layanan.serviceable'), // kondisi layanan = serviceable
                 'updated_by' => session()->get('id')
@@ -600,7 +582,6 @@ class LayananController extends Controller
             DB::rollBack();
             //dd($ex->getMessage());
             // kembali ke halaman daftar dan tampilkan pesan error
-            // return redirect('/fasilitas/layanan/tambah/step3/'.$layanan->id)->with('notif', 'tambah_gagal');
             return redirect()
                 ->route('fasilitas.layanan.tambah.step3.form', $layanan->id)
                 ->with('notif', 'aktif_gagal');
@@ -608,7 +589,6 @@ class LayananController extends Controller
 
         // jika proses update berhasil
         // kembali ke halaman daftar dan tampilkan pesan sukses
-        // return redirect('/fasilitas/layanan/daftar')->with('notif', 'tambah_sukses');
         return redirect()
             ->route('fasilitas.layanan.daftar')
             ->with('notif', 'aktif_sukses');
@@ -750,7 +730,7 @@ class LayananController extends Controller
             ->first();
 
         // jika layanan dengan id dan status tersebut tidak ada
-        if($layanan == null){
+        if(! $layanan){
             // kembali ke halaman daftar dan tampilkan pesan error
             return redirect()
                 ->route('fasilitas.layanan.daftar')
@@ -816,7 +796,7 @@ class LayananController extends Controller
             ->where('status', '!=', config('constants.status_layanan.draft'))
             ->first();
         // jika layanan dengan id dan status tersebut tidak ada
-        if($layanan == null){
+        if(! $layanan){
             // kembali ke halaman daftar dan tampilkan pesan error
             return redirect()
                 ->route('fasilitas.layanan.daftar')
@@ -841,14 +821,12 @@ class LayananController extends Controller
 
         try{
             // update data layanan di tabel layanan
-            Layanan::where('id', $request->id)
-            ->update([
+            $layanan->update([
                 'kode' => strtoupper($request->kode),
                 'nama' => strtoupper($request->nama),
                 'lokasi_tk_1_id' => $request->lokasi_tk_1,
                 'lokasi_tk_2_id' => $request->lokasi_tk_2,
                 'lokasi_tk_3_id' => $request->lokasi_tk_3,
-                'status' => $request->status,
                 'updated_by' => session()->get('id')
             ]);
 
@@ -861,7 +839,6 @@ class LayananController extends Controller
             DB::rollBack();
             // dd($ex->getMessage());
             // kembali ke halaman edit step 1 dan tampilkan pesan error
-            // return redirect('/fasilitas/layanan/edit/step1/'.$layanan->id)->with('notif', 'simpan_gagal');
             return redirect()
                 ->route('fasilitas.layanan.edit.step1.form', $layanan->id)
                 ->with('notif', 'simpan_gagal');
@@ -869,7 +846,6 @@ class LayananController extends Controller
 
         // jika proses update berhasil
         // kembali ke halaman edit step 2 dan tampilkan pesan sukses
-        // return redirect('/fasilitas/layanan/edit/step2/'.$layanan->id)->with('notif', 'simpan_sukses');
         return redirect()
             ->route('fasilitas.layanan.edit.step2.form', $layanan->id)
             ->with('notif', 'simpan_sukses');
@@ -891,22 +867,19 @@ class LayananController extends Controller
     public function formEditStep2($id)
     {
         // ambil data layanan dengan status aktif atau tidak aktif dari form tambah 1
-        $layanan = Layanan::where('id', $id)
+        $layanan = Layanan::with('daftarPeralatanLayanan')
+            ->where('id', $id)
             ->where('status', '!=', config('constants.status_layanan.draft'))
             ->first();
 
         // jika layanan dengan id dan status tersebut tidak ada
-        if($layanan == null){
+        if(! $layanan){
             // kembali ke halaman daftar dan tampilkan pesan error
             // return redirect('/fasilitas/layanan/daftar')->with('notif', 'item_null');
             return redirect()
                 ->route('fasilitas.layanan.daftar')
                 ->with('notif', 'item_null');
         }
-
-        // ambil daftar peralatan dari layanan tersebut
-        $daftar_peralatan = DaftarPeralatanLayanan::where('layanan_id', $layanan->id)
-            ->get();
 
         // ambil daftar perusahaan yang aktif
         $perusahaan = Perusahaan::where('status', 1)->get();
@@ -929,7 +902,6 @@ class LayananController extends Controller
         ->with('menu_url', $menu_url)
         ->with('submenu', $submenu)
         ->with('layanan', $layanan)
-        ->with('daftar_peralatan', $daftar_peralatan)
         ->with('perusahaan', $perusahaan)
         ->with('jenis', $jenis)
         ;
@@ -951,25 +923,21 @@ class LayananController extends Controller
     public function formEditStep3($id)
     {
         // ambil data layanan dengan status aktif atau tidak aktif dari form tambah 2
-        $layanan = Layanan::where('id', $id)
+        $layanan = Layanan::with('daftarPeralatanLayanan')
+            ->where('id', $id)
             ->where('status', '!=', config('constants.status_layanan.draft'))
             ->first();
 
         // jika layanan dengan id dan status tersebut tidak ada
-        if($layanan == null){
+        if(! $layanan){
             // kembali ke halaman daftar dan tampilkan pesan error
-            // return redirect('/fasilitas/layanan/daftar')->with('notif', 'item_null');
             return redirect()
                 ->route('fasilitas.layanan.daftar')
                 ->with('notif', 'item_null');
         }
 
-        // ambil daftar peralatan dari layanan tersebut
-        $daftar_peralatan = DaftarPeralatanLayanan::where('layanan_id', $layanan->id)
-            ->get();
-
         // jika daftar peralatan kosong
-        if($daftar_peralatan->isEmpty()){
+        if($layanan->daftarPeralatanLayanan->isEmpty()){
             // dan status layanan aktif
             if($layanan->status == config('constants.status_layanan.aktif')){
                 // kembali ke halaman layanan tambah step 2 dan tampilkan pesan error
@@ -994,7 +962,6 @@ class LayananController extends Controller
         ->with('menu_url', $menu_url)
         ->with('submenu', $submenu)
         ->with('layanan', $layanan)
-        ->with('daftar_peralatan', $daftar_peralatan)
         ;
     }
 
@@ -1022,16 +989,14 @@ class LayananController extends Controller
             ->first();
 
         // jika layanan dengan id dan status tersebut tidak ada
-        if($layanan == null){
+        if(! $layanan){
             // kembali ke halaman daftar dan tampilkan pesan error
-            // return redirect('/fasilitas/layanan/daftar')->with('notif', 'item_null');
             return redirect()
                 ->route('fasilitas.layanan.daftar')
                 ->with('notif', 'item_null');
         }
 
         // kembali ke halaman daftar dan tampilkan pesan sukses
-        // return redirect('/fasilitas/layanan/daftar')->with('notif', 'simpan_sukses');
         return redirect()
             ->route('fasilitas.layanan.daftar')
             ->with('notif', 'simpan_sukses');
@@ -1102,14 +1067,14 @@ class LayananController extends Controller
     {
         // cek apakah peralatan ada
         $peralatan = Peralatan::find($request->peralatan_id);
-        if ($peralatan == null) {
+        if (! $peralatan) {
            // kirim pesan gagal melalui JSON
            return response()->json(['success' => false, 'reason' => 'Peralatan tidak terdaftar'], 400);
         }
 
         // cek apakah status peralatan aktif
         $status = $peralatan->status;
-        if (!$status || $status == 0) {
+        if (! $status) {
            // kirim pesan gagal melalui JSON
            return response()->json(['success' => false, 'reason' => 'Peralatan tidak aktif'], 400);
         }
@@ -1127,8 +1092,7 @@ class LayananController extends Controller
             ]);
 
             // update flag_layanan menjadi 1, sebagai penanda bahwa peralatan sudah ditambahkan ke layanan
-            Peralatan::where('id', $request->peralatan_id)
-            ->update([
+            $peralatan->update([
                 'flag_layanan' => 1, // peralatan diberi tanda bahwa sedang terpasang di layanan
                 'updated_by' => session()->get('id')
             ]);
@@ -1140,12 +1104,10 @@ class LayananController extends Controller
         catch(QueryException $ex){
              // batalkan semua transaksi ke database
             DB::rollBack();
-            // kirim pesan error ke file storage/logs/laravel.log
-            // \Log::error('Gagal tambah peralatan ke layanan: '.$ex->getMessage());
-            // kirim pesan gagal melalui JSON
+            // kirim status false dan pesan gagal melalui JSON, kode 400 menandakan akan diarahkan ke function .fail di AJAX
             return response()->json(['success' => false, 'reason' => 'Gagal menambahkan peralatan'], 400);
         }
-
+        // kirim status success jika berhasil
         return response()->json(['success' => true]);
     }
 
@@ -1168,14 +1130,14 @@ class LayananController extends Controller
     {
         // cek apakah peralatan ada
         $peralatan = Peralatan::find($request->peralatan_id);
-        if ($peralatan == null) {
+        if (! $peralatan) {
            // kirim pesan gagal melalui JSON
            return response()->json(['success' => false, 'reason' => 'Peralatan tidak terdaftar'], 400);
         }
 
         // cek apakah status peralatan aktif
         $status = $peralatan->status;
-        if (!$status || $status == 0) {
+        if (! $status) {
            // kirim pesan gagal melalui JSON
            return response()->json(['success' => false, 'reason' => 'Peralatan tidak aktif'], 400);
         }
@@ -1193,8 +1155,7 @@ class LayananController extends Controller
             ]);
 
             // update flag_layanan menjadi 1, sebagai penanda bahwa peralatan sudah ditambahkan ke layanan
-            Peralatan::where('id', $request->peralatan_id)
-            ->update([
+            $peralatan->update([
                 'flag_layanan' => 1, // peralatan diberi tanda bahwa sedang terpasang di layanan
                 'updated_by' => session()->get('id')
             ]);
@@ -1206,12 +1167,10 @@ class LayananController extends Controller
         catch(QueryException $ex){
             // batalkan semua transaksi ke database
             DB::rollBack();
-            // kirim pesan error ke file storage/logs/laravel.log
-            // \Log::error('Gagal tambah peralatan ke layanan: '.$ex->getMessage());
-            // kirim pesan gagal melalui JSON
+            // kirim status false dan pesan gagal melalui JSON, kode 400 menandakan akan diarahkan ke function .fail di AJAX
             return response()->json(['success' => false, 'reason' => 'Gagal menambahkan peralatan'], 400);
         }
-
+        // kirim status success jika berhasil
         return response()->json(['success' => true]);
     }
 
@@ -1236,22 +1195,33 @@ class LayananController extends Controller
         $layanan = Layanan::where('id', $request->layanan_id)
             ->first();
         // cek apakah layanan ada
-        if($layanan == null){
+        if(! $layanan){
             // jika tidak ada, kembali ke halaman daftar dan tampilkan pesan error
-            // return redirect('/fasilitas/layanan/daftar')->with('notif', 'item_null');
             return redirect()
                 ->route('fasilitas.layanan.daftar')
                 ->with('notif', 'item_null');
             
         }
-        // cek apakah ada data peralatan tsb
-        $peralatan = DaftarPeralatanLayanan::where('layanan_id', $request->layanan_id)
-            ->where('peralatan_id', $request->peralatan_id)
+        // cek apakah ada peralatan dengan ID tsb dan statusnya terpasang di Layanan
+        $peralatan = Peralatan::where('id', $request->peralatan_id)
+            ->where('flag_layanan', 1)
             ->first();
+        
         // jika tidak ada
-        if($peralatan == null){
-            // kembali ke ahlaman daftar dan tampilkan pesan error
-             return redirect()->back()->with('notif', 'item_null')->withInput();
+        if(! $peralatan){
+            // kembali ke halaman daftar dan tampilkan pesan error
+            return redirect()->back()->with('notif', 'item_null')->withInput();
+        } 
+
+        // cek apakah ada peralatan tsb di daftar peralatan layanan
+        $peralatanLayanan = DaftarPeralatanLayanan::where('layanan_id', $request->layanan_id)
+            ->where('peralatan_id', $peralatan->id)
+            ->first();
+
+        // jika tidak ada
+        if(! $peralatanLayanan){
+            // kembali ke halaman daftar dan tampilkan pesan error
+            return redirect()->back()->with('notif', 'item_null')->withInput();
         }
 
         // mulai transaksi ke database
@@ -1259,13 +1229,10 @@ class LayananController extends Controller
 
         try{
             // hapus data peralatan di tabel daftar peralatan layanan
-            DaftarPeralatanLayanan::where('layanan_id', $request->layanan_id)
-                ->where('peralatan_id', $request->peralatan_id)
-                ->delete();
+            $peralatanLayanan->delete();
 
             // update flag_layanan di tabel peralatan
-            Peralatan::where('id', $request->peralatan_id)
-            ->update([
+            $peralatan->update([
                 'flag_layanan' => 0, // peralatan sedang tidak terpasang pada layanan
                 'updated_by' => session()->get('id')
             ]);
@@ -1308,8 +1275,9 @@ class LayananController extends Controller
         $peralatan = DaftarPeralatanLayanan::where('id', $request->id)
             ->where('peralatan_id', $request->peralatan_id)
             ->first();
+
         // jika tidak ada
-        if($peralatan == null){
+        if(! $peralatan){
             // kembali ke halaman sebelumnya dan tampilkan pesan error
             return redirect()->back()->with('notif', 'item_null');
         }
@@ -1319,8 +1287,7 @@ class LayananController extends Controller
 
         try{
             // update data peralatan di tabel peralatan layanan
-            DaftarPeralatanLayanan::where('id', $request->id)
-            ->update([
+            $peralatan->update([
                 'ip_address' => $request->ip_address,
                 'updated_by' => session()->get('id')
             ]);

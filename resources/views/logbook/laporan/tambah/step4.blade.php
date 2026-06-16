@@ -214,7 +214,7 @@
             {{-- Looping Data Gangguan Peralatan untuk Jenis Gangguan Peralatan --}}
 
 @if($laporan->jenis == config('constants.jenis_laporan.gangguan_peralatan'))
-      @foreach ($laporan->gangguanPeralatan as $index => $satu)
+    @foreach ($laporan->gangguanPeralatan as $index => $satu)
             <table border='0' cellpadding='5px'>        
               <tr><th>Kode</th><td>:</td><td>{{ strtoupper($satu->peralatan?->kode) }}</td></tr>
               <tr><th>Nama</th><td>:</td><td>{{ strtoupper($satu->peralatan?->nama) }}</td></tr>
@@ -246,42 +246,56 @@
                   <th class="text-center">JENIS</th>
                   <th class="text-center" style="width: 500px">DESKRIPSI</th>
                   <th class="text-center">KONDISI AKHIR</th>
+                  <th class="text-center">DETAIL</th>
                 </tr>
               </thead>
               <tbody>
               {{-- Looping Data Peralatan --}}
-          @foreach ($laporan->TlgangguanPeralatan as $index => $satu)
+        @foreach ($laporan->tlGangguanPeralatan as $index => $satu)
                 <tr class="table-condensed">
-                  <td class="text-center">{{ $index + 1 }}</td>
-                  <td class="text-center">{{ strtoupper($satu->waktu_mulai_formatted) }}</td>
-                  <td class="text-center">{{ strtoupper($satu->waktu_selesai_formatted) }}</td>
+                    <td class="text-center">{{ $index + 1 }}</td>
+                    <td class="text-center">{{ strtoupper($satu->waktu_mulai_formatted) }}</td>
+                    <td class="text-center">{{ strtoupper($satu->waktu_selesai_formatted) }}</td>
 
-              @if($satu->jenis === config('constants.jenis_tindaklanjut_gangguan_peralatan.perbaikan'))
-                  <td class="text-center"><span class="badge bg-warning">PERBAIKAN</span></td>
-              @elseif($satu->jenis === config('constants.jenis_tindaklanjut_gangguan_peralatan.penggantian'))
-                  <td class="text-center"><span class="badge bg-warning">PENGGANTIAN</span></td>
-              @else
-                  <td class="text-center">-</td>
-              @endif
+                @if($satu->jenis === config('constants.jenis_tindaklanjut_gangguan_peralatan.perbaikan'))
+                    <td class="text-center"><span class="badge bg-warning">PERBAIKAN</span></td>
+                @elseif($satu->jenis === config('constants.jenis_tindaklanjut_gangguan_peralatan.penggantian'))
+                    <td class="text-center"><span class="badge bg-warning">PENGGANTIAN</span></td>
+                @else
+                    <td class="text-center">-</td>
+                @endif
 
-                  <td>{{ strtoupper($satu->deskripsi) }}</td>
-  
-                  {{-- Kondisi Peralatan Setelah Tindaklanjut --}}
-              @if($satu->kondisi === config('constants.kondisi_peralatan.normal'))
-                  <td class="text-center"><span class="badge bg-success">NORMAL</span></td>
-              @elseif($satu->kondisi === config('constants.kondisi_peralatan.normal_sebagian'))
-                  <td class="text-center"><span class="badge bg-warning">NORMAL SEBAGIAN</span></td>
-              @elseif($satu->kondisi === config('constants.kondisi_peralatan.rusak'))
-                  <td class="text-center"><span class="badge bg-danger">RUSAK</span></td>
-              @else
-                  <td class="text-center">-</td>
-              @endif
+                    <td>{{ strtoupper($satu->deskripsi) }}</td>
+
+                    {{-- Kondisi Peralatan Setelah Tindaklanjut --}}
+                @if($satu->kondisi === config('constants.kondisi_peralatan.normal'))
+                    <td class="text-center"><span class="badge bg-success">NORMAL</span></td>
+                @elseif($satu->kondisi === config('constants.kondisi_peralatan.normal_sebagian'))
+                    <td class="text-center"><span class="badge bg-warning">NORMAL SEBAGIAN</span></td>
+                @elseif($satu->kondisi === config('constants.kondisi_peralatan.rusak'))
+                    <td class="text-center"><span class="badge bg-danger">RUSAK</span></td>
+                @else
+                    <td class="text-center">-</td>
+                @endif
+
+                @if($satu->jenis === config('constants.jenis_tindaklanjut_gangguan_peralatan.penggantian'))
+                    <td class="text-center">
+                        <button class="btn btn-secondary btn-sm" 
+                                onclick="detail('{{ $satu->tlPenggantianPeralatan->peralatan_baru_id }}')"
+                                title="Detail Peralatan Pengganti">
+                                <i class="fas fa-exchange-alt"></i>
+                        </button>
+                  </td>
+                @else
+                    <td>-</td>
+                @endif
+
                 </tr>
-          @endforeach                   
+        @endforeach                   
               </tbody>
             </table>
             <hr class="my-4" style="border-top: 3px solid #a8a5a5;">
-      @endforeach
+    @endforeach
 
 
           {{-- Data Gangguan Peralatan untuk Jenis Gangguan Non Peralatan --}}
@@ -477,6 +491,30 @@
               row += "<tr><th>Status</th><td>:</td><td><span class='badge bg-warning'>NORMAL SEBAGIAN</span></td></tr>";
           }else{
               row += "<tr><th>Status</th><td>:</td><td><span class='badge bg-danger'>TIDAK AKTIF</span></td></tr>";
+          }
+
+          if(data.peralatan.no_sertifikasi != null){
+              row += "<tr><th>No. Sertifikasi</th><td>:</td><td>"+ data.peralatan.no_sertifikasi; +"</td></tr>";
+          }else{
+              row += "<tr><th>No. Sertifikasi</th><td>:</td><td></td></tr>";
+          }
+
+          if(data.peralatan.terbit_sertifikasi != null){
+              row += "<tr><th>Tgl Terbit Sertifikasi</th><td>:</td><td>"+ data.peralatan.terbit_sertifikasi_formatted +"</td></tr>";
+          }else{
+              row += "<tr><th>Tgl Terbit Sertifikasi</th><td>:</td><td></td></tr>";
+          }
+
+          if(data.peralatan.exp_sertifikasi != null){
+              row += "<tr><th>Tgl Kadaluarsa Sertifikasi</th><td>:</td><td>"+ data.peralatan.exp_sertifikasi_formatted +"</td></tr>";
+          }else{
+              row += "<tr><th>Tgl Kadaluarsa Sertifikasi</th><td>:</td><td></td></tr>";
+          }
+
+          if(data.peralatan.lembaga_sertifikasi != null){
+              row += "<tr><th>Lembaga Sertifikasi</th><td>:</td><td>"+ data.peralatan.lembaga_sertifikasi; +"</td></tr>";
+          }else{
+              row += "<tr><th>Lembaga Sertifikasi</th><td>:</td><td></td></tr>";
           }
           
           if(data.peralatan.keterangan != null){

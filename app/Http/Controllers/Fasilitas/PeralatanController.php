@@ -234,7 +234,6 @@ class PeralatanController extends Controller
         // jika peralatan dengan id tersebut tidak ada
         if($peralatan == null){
             // kembali ke halaman daftar dan kirim notif
-            // return redirect('/fasilitas/peralatan/daftar')->with('notif', 'item_null');
             return redirect()
                 ->route('fasilitas.peralatan.daftar')
                 ->with('notif', 'item_null');
@@ -321,8 +320,7 @@ class PeralatanController extends Controller
         
         try{
             // update data peralatan di tabel peralatan
-            Peralatan::where('id', $request->id)
-            ->update([
+            $peralatan->update([
                 'kode' => strtoupper($request->kode),
                 'nama' => strtoupper($request->nama),
                 'merk' => strtoupper($request->merk),
@@ -340,7 +338,6 @@ class PeralatanController extends Controller
                 'sewa' => $request->sewa,
                 'jenis_id' => $request->jenis,
                 'perusahaan_id' => $request->perusahaan,
-                'kondisi' => $request->kondisi,
                 'updated_by' => session()->get('id')
             ]);
             // simpan transaksi ke database
@@ -352,14 +349,12 @@ class PeralatanController extends Controller
             DB::rollBack();
             //dd($ex->getMessage());
             // kembali ke halaman daftar dan tampilkan pesan error
-            // return redirect('/fasilitas/peralatan/daftar')->with('notif', 'edit_gagal');
             return redirect()
                 ->route('fasilitas.peralatan.daftar')
                 ->with('notif', 'edit_gagal');
         }
 
         // jika proses update berhasil
-        // return redirect('/fasilitas/peralatan/daftar')->with('notif', 'edit_sukses');
         return redirect()
             ->route('fasilitas.peralatan.daftar')
             ->with('notif', 'edit_sukses');

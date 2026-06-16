@@ -210,17 +210,16 @@
                 </div>
 
                 <div class="form-group row">
-                  <label class="col-sm-4 col-form-label required">Kondisi</label>
+                  <label class="col-sm-4 col-form-label">Kondisi</label>
                   <div class="col-sm-8">
                     <select name="kondisi" 
                             class="form-control" 
-                            required>
+                            disabled>
                       <option value="">- Pilih -</option>
                       <option value="1" {{ old('kondisi', $peralatan->kondisi ?? '') == '1' ? 'selected' : '' }}>NORMAL</option>
                       <option value="2" {{ old('kondisi', $peralatan->kondisi ?? '') == '2' ? 'selected' : '' }}>NORMAL SEBAGIAN</option>
                       <option value="3" {{ old('kondisi', $peralatan->kondisi ?? '') == '3' ? 'selected' : '' }}>RUSAK</option>
                     </select>
-                    <div class="invalid-feedback">Kondisi wajib dipilih.</div>
                   </div>
                 </div>
 
@@ -270,6 +269,19 @@
                     <textarea name="keterangan" 
                               class="form-control"
                               rows="2">{{ strtoupper(old('keterangan', $peralatan->keterangan ?? '')) }}</textarea>
+                  </div>
+                </div>
+
+                <div class="form-group row">
+                  <label class="col-sm-4 col-form-label">Status</label>
+                  <div class="col-sm-8">
+                    <select name="status" 
+                            class="form-control" 
+                            disabled>
+                      <option value="">- Pilih -</option>
+                      <option value="1" {{ old('status', $peralatan->status ?? '') == 1 ? 'selected' : '' }}>AKTIF</option>
+                      <option value="0" {{ old('status', $peralatan->status ?? '') == 0 ? 'selected' : '' }}>TIDAK AKTIF</option>
+                    </select>
                   </div>
                 </div>
 

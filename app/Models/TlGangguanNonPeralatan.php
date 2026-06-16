@@ -35,9 +35,11 @@ class TlGangguanNonPeralatan extends Model
     /**
      * Function untuk memanggil gangguan peralatan dari tl gangguan non peralatan.
      */
-    public function GangguanNonPeralatan()
+    public function gangguanNonPeralatan()
     {
-        return $this->belongsTo(GangguanNonPeralatann::class);
+        return $this->belongsTo(GangguanNonPeralatann::class, 'gangguan_id', 'id');
+        // gangguan_id = foreign key di tabel ini
+        // id = primary key di tabel tujuan
     }
 
 

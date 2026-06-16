@@ -208,7 +208,7 @@
                                         <input type="text" 
                                                 name="perusahaan" 
                                                 class="form-control" 
-                                                value="{{ strtoupper($satu->peralatan->kondisi() ?? '-') }}" 
+                                                value="{{ strtoupper($satu->gangguanPeralatan->kondisi() ?? '-') }}" 
                                                 readonly>
                                     </div> 
                                 </div>
@@ -216,12 +216,12 @@
                             </div>
                             <!-- col-sm-6 -->
 
-                            <!-- =============== kolom peralatan baru ============= -->
+                            <!-- =============== kolom peralatan pengganti ============= -->
                             <div class="col-sm-6">
 
                                 <div class="form-group row">
                                     <label class="col-sm-1 col-form-label"></label>
-                                    <label class="col-sm-8 col-form-label"><center>PERALATAN BARU</center></label>
+                                    <label class="col-sm-8 col-form-label"><center>PERALATAN PENGGANTI</center></label>
                                 </div>
 
                                 <div class="form-group row">
@@ -573,7 +573,7 @@
       $(document).Toasts('create', {
           class: 'bg-danger',
           title: 'Error!',
-          body: 'Gagal menambahkan peralatan baru.',
+          body: 'Gagal menambahkan peralatan pengganti.',
           autohide: true,
           delay: 3000
         })
@@ -581,7 +581,7 @@
       $(document).Toasts('create', {
           class: 'bg-danger',
           title: 'Error!',
-          body: 'Gagal menghapus peralatan baru.',
+          body: 'Gagal menghapus peralatan pengganti.',
           autohide: true,
           delay: 3000
         })
@@ -597,7 +597,7 @@
       $(document).Toasts('create', {
           class: 'bg-success',
           title: 'Sukses!',
-          body: 'Peralatan baru telah berhasil ditambahkan.',
+          body: 'Peralatan pengganti telah berhasil ditambahkan.',
           autohide: true,
           delay: 3000
         })
@@ -605,7 +605,7 @@
       $(document).Toasts('create', {
           class: 'bg-success',
           title: 'Sukses!',
-          body: 'Peralatan baru telah berhasil dihapus.',
+          body: 'Peralatan pengganti telah berhasil dihapus.',
           autohide: true,
           delay: 3000
         })
@@ -613,7 +613,7 @@
       $(document).Toasts('create', {
           class: 'bg-danger',
           title: 'Error!',
-          body: 'Peralatan baru belum diisi.',
+          body: 'Peralatan pengganti belum dipilih',
           autohide: true,
           delay: 3000
         })
@@ -629,7 +629,7 @@
             $(document).Toasts('create', {
                 class: 'bg-success',
                 title: 'Berhasil!',
-                body: 'Peralatan baru telah berhasil disimpan',
+                body: 'Peralatan pengganti telah berhasil disimpan',
                 autohide: true,
                 delay: 5000
             });
