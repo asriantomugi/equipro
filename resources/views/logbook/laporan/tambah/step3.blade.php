@@ -370,20 +370,23 @@
                                     <div class="col-sm-1"></div>
                                     <div class="col-sm-8">
                                         <button class="btn btn-success btn-sm" 
-                                            data-toggle="modal" 
-                                            data-target="#modalPeralatan"
-                                            data-gangguan-id="{{ $satu->gangguan_id }}"
-                                            data-tl-gangguan-id="{{ $satu->id }}"
-                                            data-peralatan-lama-id="{{ $satu->peralatan_id }}">
-                                            <i class="fas fa-plus"></i>&nbsp;&nbsp;&nbsp;Pilih
+                                                data-toggle="modal" 
+                                                data-target="#modalTambahPeralatan"
+                                                data-tambah-gangguan-id="{{ $satu->gangguan_id }}"
+                                                data-tambah-tl-gangguan-id="{{ $satu->id }}"
+                                                data-tambah-peralatan-lama-id="{{ $satu->peralatan_id }}">
+                                                <i class="fas fa-plus"></i>&nbsp;&nbsp;&nbsp;Pilih
                                         </button>
 
                                 @if($satu->tlPenggantianPeralatan?->peralatanBaru)
 
-                                        <button type="button" 
-                                                class="btn btn-danger btn-sm float-right" 
-                                                onclick="hapus('{{ $satu->peralatan->id }}', '{{ $satu->gangguan_id }}')"
-                                                title="Hapus Peralatan">
+                                        <button class="btn btn-danger btn-sm float-right" 
+                                                data-toggle="modal" 
+                                                data-target="#modalHapusPeralatan"
+                                                data-hapus-gangguan-id="{{ $satu->gangguan_id }}"
+                                                data-hapus-tl-gangguan-id="{{ $satu->id }}"
+                                                data-hapus-tl-penggantian-id="{{ $satu->tlPenggantianPeralatan->id }}"
+                                                data-hapus-peralatan-baru-id="{{ $satu->tlPenggantianPeralatan->peralatanBaru->id }}">
                                                 <i class="fas fa-trash-alt"></i>&nbsp;&nbsp;&nbsp;Hapus
                                         </button>
 
@@ -420,10 +423,10 @@
 
 <!-- Modal untuk pilih peralatan -->
 <div class="modal fade" 
-     id="modalPeralatan" 
+     id="modalTambahPeralatan" 
      tabindex="-1" 
      role="dialog" 
-     aria-labelledby="modalPeralatanLabel" 
+     aria-labelledby="modalTambahPeralatanLabel" 
      aria-hidden="true">
 
     <div class="modal-dialog modal-xl" role="document">
@@ -440,16 +443,16 @@
 
 <form id="filter-form">
     @csrf
-
                 <input type="hidden" name="laporan_id" value="{{ $laporan->id }}">
-                <input type="hidden" id="tl_gangguan_id" name="tl_gangguan_id">
-                <input type="hidden" id="peralatan_lama_id" name="peralatan_lama_id">
-                <input type="hidden" name="layanan_id" value="{{ $laporan->layanan->id }}">
+                <input type="hidden" name="layanan_id" value="{{ $layanan->id }}">
+                <input type="hidden" id="tambah_gangguan_id" name="gangguan_id">
+                <input type="hidden" id="tambah_tl_gangguan_id" name="tl_gangguan_id">
+                <input type="hidden" id="tambah_peralatan_lama_id" name="peralatan_lama_id">
 
                 <div class="row">
 
                     <div class="col-lg-4">
-                        <label for="jenis" class="form-label">Jenis Alat</label>
+                        <label class="form-label">Jenis Alat</label>
                         <select name="jenis" class="form-control">
                             <option value="">- ALL -</option>
                             @foreach($jenis as $satu)
@@ -459,7 +462,7 @@
                     </div>
 
                     <div class="col-lg-4">
-                        <label for="sewa" class="form-label">Status Kepemilikan</label>
+                        <label class="form-label">Status Kepemilikan</label>
                         <select name="sewa" class="form-control">
                             <option value="">- ALL -</option>
                             <option value="1">SEWA</option>
@@ -468,7 +471,7 @@
                     </div>
 
                     <div class="col-lg-4">
-                        <label for="perusahaan" class="form-label">Perusahaan Pemilik</label>
+                        <label class="form-label">Perusahaan Pemilik</label>
                         <select name="perusahaan" class="form-control">
                             <option value="">- ALL -</option>
                             @foreach($perusahaan as $satu)
@@ -486,7 +489,8 @@
                     <div class="col-lg-4">
                         <button type="submit" 
                                 class="btn btn-primary btn-sm float-right">
-                                <i class="fas fa-filter"></i>&nbsp;&nbsp;&nbsp;Filter Data</button>
+                                <i class="fas fa-filter"></i>&nbsp;&nbsp;&nbsp;Filter Data
+						</button>
                     </div>
                 </div>
                 <!-- row -->
@@ -496,14 +500,57 @@
                 <br>
                 <div class="row">
                     <div class="col-lg-12">
-                    <div id="daftar-peralatan-tabel">
-                        <!-- AJAX content will be inserted here -->
+						<div id="daftar-peralatan-tabel">
+							<!-- AJAX content will be inserted here -->
 
-                    </div>
+						</div>
+					</div> <!-- col-lg-12 -->
                 </div><!-- row -->
                 
             </div>
             <!-- modal-body -->
+        </div>
+        <!-- modal-content -->
+    </div>
+    <!-- modal-dialog -->
+</div>
+<!-- modal fade -->
+<!-- Akhir dari Modal untuk tambah peralatan -->
+
+<!-- modal untuk menghapus peralatan -->
+<div class="modal fade" 
+     id="modalHapusPeralatan" 
+     tabindex="-1" 
+     role="dialog" 
+     aria-labelledby="modalHapusPeralatanLabel" 
+     aria-hidden="true">
+
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+
+<form action="{{ route('logbook.laporan.tambah.step3.peralatan.hapus') }}"
+      method="post" 
+      novalidate>
+    @csrf
+            <div class="modal-body">
+
+                <input type="hidden" name="laporan_id" value="{{ $laporan->id }}">
+                <input type="hidden" id="hapus_gangguan_id" name="gangguan_id">
+                <input type="hidden" id="hapus_tl_gangguan_id" name="tl_gangguan_id">
+                <input type="hidden" id="hapus_tl_penggantian_id" name="tl_penggantian_id">
+                <input type="hidden" id="hapus_peralatan_baru_id" name="peralatan_baru_id">
+
+                <p><center>Ingin menghapus draft layanan ini?</center></p>
+                
+            </div>
+            <!-- modal-body -->
+
+            <div class="modal-footer justify-content-between">
+                <button type="button" class="btn btn-default btn-sm" data-dismiss="modal">Tidak</button>
+                <button type="submit" class="btn btn-danger btn-sm float-right">Ya, hapus</button>
+            </div> <!-- modal footer --> 
+</form>
+<!-- form -->
 
         </div>
         <!-- modal-content -->
@@ -511,8 +558,8 @@
     <!-- modal-dialog -->
 </div>
 <!-- modal fade -->
+<!-- Akhir dari Modal untuk hapus peralatan -->
 
-<!-- Akhir dari Modal untuk tambah peralatan -->
 @endsection
 
 @section('tail')
@@ -593,22 +640,22 @@
 
 <!-- javascript untuk mengirimkan data ID gangguan dan ID peralatan lama ke modal pilih peralatan -->
 <script>
-$(document).ready(function(){
-    $('#modalPeralatan').on('show.bs.modal', function (e) {
+    $(document).ready(function(){
+        $('#modalTambahPeralatan').on('show.bs.modal', function (e) {
 
-        var btn = $(e.relatedTarget);
+            var btn = $(e.relatedTarget);
 
-        var gangguanId = btn.data('gangguanId');
-        var tlGangguanId = btn.data('tlGangguanId');
-        var peralatanLamaId = btn.data('peralatanLamaId');
+            var gangguanId = btn.attr('data-tambah-gangguan-id');
+            var tlGangguanId = btn.attr('data-tambah-tl-gangguan-id');
+            var peralatanLamaId = btn.attr('data-tambah-peralatan-lama-id');
 
-        // isi hidden input
-        $('#gangguan_id').val(gangguanId);
-        $('#tl_gangguan_id').val(tlGangguanId);
-        $('#peralatan_lama_id').val(peralatanLamaId);
+            // isi hidden input
+            $('#tambah_gangguan_id').val(gangguanId);
+            $('#tambah_tl_gangguan_id').val(tlGangguanId);
+            $('#tambah_peralatan_lama_id').val(peralatanLamaId);
 
+        });
     });
-});
 </script>
 
 
@@ -730,6 +777,29 @@ $(document).ready(function(){
     // akhir dari proses tambah peralatan di modal daftar peralatan tersedia
 });
 </script>
+
+<!-- javascript untuk mengirimkan data ID gangguan dan ID peralatan baru ke modal hapus peralatan -->
+<script>
+    $(document).ready(function(){
+        $('#modalHapusPeralatan').on('show.bs.modal', function (e) {
+
+            var btn = $(e.relatedTarget);
+
+            var gangguanId = btn.attr('data-hapus-gangguan-id');
+            var tlGangguanId = btn.attr('data-hapus-tl-gangguan-id');
+            var tlPenggantianId = btn.attr('data-hapus-tl-penggantian-id');
+            var peralatanBaruId = btn.attr('data-hapus-peralatan-baru-id');
+
+            // isi hidden input
+            $('#hapus_gangguan_id').val(gangguanId);
+            $('#hapus_tl_gangguan_id').val(tlGangguanId);
+            $('#hapus_tl_penggantian_id').val(tlPenggantianId);
+            $('#hapus_peralatan_baru_id').val(peralatanBaruId);
+
+        });
+    });
+</script>
+
 
 @endsection
 <!-- /. section tail -->

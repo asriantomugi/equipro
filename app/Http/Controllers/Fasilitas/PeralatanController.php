@@ -333,7 +333,6 @@ class PeralatanController extends Controller
                 'jenis_id' => $request->jenis,
                 'perusahaan_id' => $request->perusahaan,
                 'kondisi' => $request->kondisi,
-                'status' => $request->status,
                 'updated_by' => session()->get('id')
             ]);
             // simpan transaksi ke database

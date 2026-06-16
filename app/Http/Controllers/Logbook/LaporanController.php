@@ -1534,7 +1534,7 @@ class LaporanController extends Controller
              // batalkan semua transaksi ke database
             DB::rollBack();
             // kirim pesan error ke file storage/logs/laravel.log
-            // \Log::error('Gagal tambah peralatan ke layanan: '.$ex->getMessage());
+            //dd($ex->getMessage());
             // kirim pesan gagal melalui JSON
             return response()->json(['success' => false, 'reason' => 'Gagal menyimpan peralatan'], 400);
         }
@@ -1559,9 +1559,24 @@ class LaporanController extends Controller
      */
     public function hapusPeralatan(Request $request)
     {
-        // ambil laporan dengan status DRAFT berdasarkan id
-        $laporan = Laporan::where('id', $laporan_id)
-            ->where('status', config('constants.status_laporan.draft'))
+        // ambil data gangguan peralatan berdasarkan ID
+        $gangguan = GangguanPeralatan::where('id', $request->gangguan_id)
+            ->first();
+        
+        // jika gangguan tidak ada
+        if(! $gangguan){
+            // kembali ke halaman daftar dan tampilkan pesan error
+            return redirect()
+                ->route('logbook.laporan.daftar')
+                ->with('notif', 'gangguan_null');
+        }
+
+        // ambil laporan dengan status OPEN atau DRAFT berdasarkan ID
+        $laporan = Laporan::where('id', $request->laporan_id)
+            ->whereIn('status', [
+                config('constants.status_laporan.draft'),
+                config('constants.status_laporan.open')
+            ])
             ->first();
 
         // jika layanan dengan id dan status tersebut tidak ada
@@ -1572,11 +1587,9 @@ class LaporanController extends Controller
                 ->with('notif', 'laporan_null');
         }
 
-        // ambil data layanan dengan status aktif dengan kondisi serviceable
-        $layanan = Layanan::with(['daftarPeralatanLayanan.peralatan'])
-            ->where('id', $laporan->layanan_id)
+        // ambil data layanan dengan status aktif
+        $layanan = Layanan::where('id', $laporan->layanan_id)
             ->where('status', config('constants.status_layanan.aktif'))
-            ->whereIn('kondisi', [config('constants.kondisi_layanan.serviceable')])
             ->first();
 
         // jika layanan dengan id dan status tersebut tidak ada
@@ -1584,7 +1597,7 @@ class LaporanController extends Controller
             // kembali ke halaman daftar dan tampilkan pesan error
             return redirect()
                 ->route('logbook.laporan.daftar')
-                ->with('notif', 'laporan_null');
+                ->with('notif', 'layanan_null');
         }
 
         // cek apakah ada penggantian peralatan
@@ -1599,19 +1612,43 @@ class LaporanController extends Controller
                 ->with('notif', 'laporan_null');
         }
 
+        // ambil data peralatan yang akan dihapus
+        $peralatanHapus = Peralatan::where('id', $request->peralatan_baru_id)
+            ->first();
+
+        // jika peralatan tsb tidak ada
+        if(! $peralatanHapus){
+            // kembali ke halaman daftar dan tampilkan pesan error
+            return redirect()
+                ->route('logbook.laporan.daftar')
+                ->with('notif', 'peralatan_null');
+        }
+
+        // ambil data penggantian peralatan
+        $tlPenggantian = TlPenggantianPeralatan::where('id', $request->tl_gangguan_id)
+            ->where('laporan_id', $laporan->id)
+            ->where('layanan_id', $layanan->id)
+            ->where('peralatan_baru_id', $peralatanHapus->id)
+            ->first();
+
         // mulai transaksi ke database
         DB::beginTransaction();
 
         try{
-            // hapus data peralatan di tabel daftar peralatan layanan
-            DaftarPeralatanLayanan::where('layanan_id', $request->layanan_id)
-                ->where('peralatan_id', $request->peralatan_id)
-                ->delete();
+            // hapus data penggantian peralatan
+            $tlPenggantian->delete();
 
-            // update flag_layanan di tabel peralatan
-            Peralatan::where('id', $request->peralatan_id)
+            // update flag_layanan menjadi 0, sebagai penanda bahwa peralatan sudah dihapus dari layanan
+            Peralatan::where('id', $peralatanHapus->id)
             ->update([
-                'flag_layanan' => 0, // peralatan sedang tidak terpasang pada layanan
+                'flag_layanan' => 0, // peralatan diberi tanda bahwa sedang tidak terpasang di layanan
+                'updated_by' => session()->get('id')
+            ]);
+
+            // update data kondisi di tabel tl_gangguan_peralatan
+            TlGangguanPeralatan::where('id', $request->tl_gangguan_id)
+            ->update([
+                'kondisi' => null, // status 
                 'updated_by' => session()->get('id')
             ]);
 

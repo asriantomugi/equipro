@@ -250,7 +250,7 @@
     </div>
     <!-- /.modal -->
 
-    <!-- isi modal tombol hapus -->
+  <!-- isi modal tombol hapus -->
   <div class="modal fade" id="modal_hapus">
     <div class="modal-dialog">
       <div class="modal-content" id="isi_modal_hapus">
@@ -478,7 +478,7 @@
 <script type="text/javascript">
   function hapus(layanan_id) {
     //alert(id);
-    $('#isi_modal_hapus').empty();;
+    $('#isi_modal_hapus').empty();
 
       var html = '<form action="{{ route('fasilitas.layanan.hapus') }}" method="post">';
           html += '@csrf';
@@ -488,7 +488,7 @@
           html += '</div>';
           html += '<div class="modal-footer justify-content-between">';
           html += '<button type="button" class="btn btn-default btn-sm" data-dismiss="modal">Tidak</button>';
-          html += '<button type="submit" class="btn btn-danger btn-sm float-right">Hapus</button>';
+          html += '<button type="submit" class="btn btn-danger btn-sm float-right">Ya, hapus</button>';
           html += '</div>';
           html += '</form>';
 

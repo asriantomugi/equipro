@@ -195,7 +195,7 @@
       $(document).Toasts('create', {
           class: 'bg-danger',
           title: 'Error!',
-          body: 'Gagal menampilkan data laporan',
+          body: 'Data laporan tidak ditemukan',
           autohide: true,
           delay: 3000
         })
@@ -203,7 +203,7 @@
       $(document).Toasts('create', {
           class: 'bg-danger',
           title: 'Error!',
-          body: 'Gagal menampilkan data layanan',
+          body: 'Data layanan tidak ditemukan',
           autohide: true,
           delay: 3000
         })
@@ -211,7 +211,7 @@
       $(document).Toasts('create', {
           class: 'bg-danger',
           title: 'Error!',
-          body: 'Gagal menampilkan data gangguan',
+          body: 'Data gangguan tidak ditemukan',
           autohide: true,
           delay: 3000
         })
@@ -227,7 +227,7 @@
       $(document).Toasts('create', {
           class: 'bg-danger',
           title: 'Error!',
-          body: 'Daftar peralatan layanan tidak ditemukan.',
+          body: 'Data peralatan tidak ditemukan.',
           autohide: true,
           delay: 3000
         })
