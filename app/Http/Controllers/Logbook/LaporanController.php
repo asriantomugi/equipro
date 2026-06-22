@@ -480,12 +480,26 @@ class LaporanController extends Controller
                 // -------------------------------------------------------------------------
 
                 // lakukan pengisian data waktu layanan itu mulai terhitung DOWN di data laporan
-                // ambil waktu terawal dari daftar gangguan peralatan
+                // ambil waktu mulai terawal dari daftar gangguan peralatan
                 $waktuAwalGangguan = GangguanPeralatan::where('laporan_id', $laporan->id)
                     ->min('waktu_mulai');
+
+                // buat variabel untuk mengisi waktu_layanan_close
+                $waktuAkhirGangguan = null;
+                // refresh object laporan
+                $laporan->refresh();
+                // ambil waktu selesai terakhir dari daftar tindaklanjut gangguan apabila status kondisi_layanan_temp = SERVICEABLE
+                if($laporan->kondisi_layanan_temp == config('constants.kondisi_layanan.serviceable')){
+                    // ambil waktu selesai terakhir
+                    $waktuAkhirGangguan = TlGangguanPeralatan::where('laporan_id', $laporan->id)
+                        ->whereIn('kondisi', [config('constants.kondisi_peralatan.normal'), config('constants.kondisi_peralatan.normal_sebagian')])
+                        ->max('waktu_selesai');
+                }
+
                 // masukkan ke variable waktu_layanan_open di tabel Laporan, sebagai waktu awal layanan gangguan
                 $laporan->update([
                         'waktu_layanan_open' => $waktuAwalGangguan,
+                        'waktu_layanan_close' => $waktuAkhirGangguan,
                         'updated_by' => session()->get('id')
                     ]);
             }
@@ -519,12 +533,25 @@ class LaporanController extends Controller
                     ]);
                 }
 
+                // buat variabel untuk mengisi waktu_layanan_close
+                $waktuAkhirGangguan = null;
+                // refresh object laporan
+                $laporan->refresh();
+                // ambil waktu selesai terakhir dari daftar tindaklanjut gangguan apabila status kondisi_layanan_temp = SERVICEABLE
+                if($laporan->kondisi_layanan_temp == config('constants.kondisi_layanan.serviceable')){
+                    // ambil waktu selesai terakhir
+                    $waktuAkhirGangguan = TlGangguanNonPeralatan::where('laporan_id', $laporan->id)
+                        ->where('kondisi', config('constants.kondisi_layanan.serviceable'))
+                        ->max('waktu_selesai');
+                }
+
                 // masukkan waktu mulai gangguan sebagai waktu mulai layanan dalam status
                 // sesuai dengan status kondisi_layanan_open
                 $laporan->update([
                         'waktu_layanan_open' => $gangguan->waktu,
+                        'waktu_layanan_close' => $waktuAkhirGangguan,
                         'updated_by' => session()->get('id')
-                    ]);
+                    ]);   
             }
             // akhir proses simpan ke DB jika jenis gangguan non peralatan
 
@@ -713,7 +740,7 @@ class LaporanController extends Controller
             // kembali ke halaman daftar dan tampilkan pesan error
             return redirect()
                 ->route('logbook.laporan.daftar')
-                ->with('notif', 'laporan_null');
+                ->with('notif', 'layanan_null');
         }
 
         // buat variable awal
@@ -761,6 +788,92 @@ class LaporanController extends Controller
             ->with('laporan', $laporan)
             ->with('jenis_tindaklanjut', $jenis_tindaklanjut)
             ;
+    }
+
+
+    /**
+     * Function untuk memproses form tambah step 4 (form review).
+     * Pada function ini terjadi proses:
+     * - Pengecekan kondisi terakhir layanan
+     * - Penentuan status laporan berdasarkan kondisi terakhir dari layanan (SERVICEABLE = CLOSE, UNSERVICEABLE = OPEN) 
+     * - Pengisian data waktu_layanan_close apabila kondisi terakhir dari layanan adalah SERVICEABLE
+     * - Proses CLOSE paksa laporan apabila layanan tidak dapat diperbaiki dan akan dinonaktfikan
+     * 
+     * Akses:
+     * - Super Admin
+     * - Admin
+     * 
+     * Method: POST
+     * URL: /logbook/laporan/tambah/step4/{laporan_id}
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @return \Illuminate\Http\Response
+     */
+    public function tambahStep4(Request $request)
+    {
+        // ambil laporan dengan status DRAFT berdasarkan id
+        $laporan = Laporan::where('id', $request->laporan_id)
+            ->where('status', config('constants.status_laporan.draft'))
+            ->first();
+
+        // jika layanan dengan id dan status tersebut tidak ada
+        if(! $laporan){
+            // kembali ke halaman daftar dan tampilkan pesan error
+            return redirect()
+                ->route('logbook.laporan.daftar')
+                ->with('notif', 'laporan_null');
+        }
+
+        // ambil data layanan dengan status aktif dengan kondisi serviceable
+        $layanan = Layanan::where('id', $laporan->layanan_id)
+            ->where('status', config('constants.status_layanan.aktif'))
+            ->whereIn('kondisi', [config('constants.kondisi_layanan.serviceable')])
+            ->first();
+
+        // jika layanan dengan id dan status tersebut tidak ada
+        if(! $layanan){
+            // kembali ke halaman daftar dan tampilkan pesan error
+            return redirect()
+                ->route('logbook.laporan.daftar')
+                ->with('notif', 'layanan_null');
+        }
+
+        // mulai transaksi ke database
+        DB::beginTransaction();
+
+        try{
+            // update status layanan di tabel layanan
+            $layanan->update([
+                'status' => config('constants.status_layanan.aktif'), // status layanan = aktif
+                'kondisi' => config('constants.kondisi_layanan.serviceable'), // kondisi layanan = serviceable
+                'updated_by' => session()->get('id')
+            ]);
+
+            // update data peralatan dari yang baru ditambahkan
+            /*
+            $daftar_peralatan_id = DaftarPeralatanLayanan::where('layanan_id', $request->id)
+                ->update(['kondisi' => config('constants.kondisi_peralatan.normal')]); // kondisi normal
+            */
+            
+            // simpan transaksi ke database
+            DB::commit();
+        }
+        // jika proses update gagal
+        catch(QueryException $ex){
+            // batalkan semua transaksi ke database
+            DB::rollBack();
+            //dd($ex->getMessage());
+            // kembali ke halaman daftar dan tampilkan pesan error
+            return redirect()
+                ->route('fasilitas.layanan.tambah.step3.form', $layanan->id)
+                ->with('notif', 'aktif_gagal');
+        }
+
+        // jika proses update berhasil
+        // kembali ke halaman daftar dan tampilkan pesan sukses
+        return redirect()
+            ->route('fasilitas.layanan.daftar')
+            ->with('notif', 'aktif_sukses');
     }
 
 
@@ -1237,9 +1350,23 @@ class LaporanController extends Controller
                 // ambil waktu terawal dari daftar gangguan peralatan
                 $waktuAwalGangguan = GangguanPeralatan::where('laporan_id', $laporan->id)
                     ->min('waktu');
+
+                // buat variable untuk mengisi waktu_layanan_close
+                $waktuAkhirGangguan = null;
+                // refresh object laporan
+                $laporan->refresh();
+                // ambil waktu selesai terakhir dari daftar tindaklanjut gangguan apabila status kondisi_layanan_temp = SERVICEABLE
+                if($laporan->kondisi_layanan_temp == config('constants.kondisi_layanan.serviceable')){
+                    // ambil waktu selesai terakhir
+                    $waktuAkhirGangguan = TlGangguanPeralatan::where('laporan_id', $laporan->id)
+                        ->whereIn('kondisi', [config('constants.kondisi_peralatan.normal'), config('constants.kondisi_peralatan.normal_sebagian')])
+                        ->max('waktu_selesai');
+                }
+
                 // masukkan ke variable waktu_layanan_open di tabel Laporan, sebagai waktu awal layanan gangguan
                 $laporan->update([
                         'waktu_layanan_open' => $waktuAwalGangguan,
+                        'waktu_layanan_close' => $waktuAkhirGangguan,
                         'updated_by' => session()->get('id')
                     ]);
             }
@@ -1252,6 +1379,7 @@ class LaporanController extends Controller
             else if($jenis == config('constants.jenis_laporan.gangguan_non_peralatan')){
 
                 // ambil data dari form gangguan
+                $deskripsi_gangguan = $request->deskripsi_gangguan;
                 // ubah format waktu ke format yang bisa disimpan oleh DB
                 $waktu_gangguan = Carbon::createFromFormat('d-m-Y H:i', $request->waktu_gangguan)->format('Y-m-d H:i');
 
@@ -1274,7 +1402,7 @@ class LaporanController extends Controller
                     // lakukan update data gangguan non peralatan
                     $dataGangguan->update([
                         'waktu' => $waktu_gangguan,
-                        'deskripsi'=> $request->deskripsi_gangguan,
+                        'deskripsi'=> $deskripsi_gangguan,
                         'updated_by' => session()->get('id')
                     ]);
 
@@ -1372,10 +1500,23 @@ class LaporanController extends Controller
                     $laporan->gangguanPeralatan()->delete();
                 }
 
-                // lakukan pengisian data waktu layanan itu mulai terhitung DOWN di data laporan
-                // ambil waktu gangguan dari form gangguan peralatan
+                // buat variabel untuk mengisi waktu_layanan_close
+                $waktuAkhirGangguan = null;
+                // refresh object laporan
+                $laporan->refresh();
+                // ambil waktu selesai terakhir dari daftar tindaklanjut gangguan apabila status kondisi_layanan_temp = SERVICEABLE
+                if($laporan->kondisi_layanan_temp == config('constants.kondisi_layanan.serviceable')){
+                    // ambil waktu selesai terakhir
+                    $waktuAkhirGangguan = TlGangguanNonPeralatan::where('laporan_id', $laporan->id)
+                        ->where('kondisi', config('constants.kondisi_layanan.serviceable'))
+                        ->max('waktu_selesai');
+                }
+
+                // masukkan waktu mulai gangguan sebagai waktu mulai layanan dalam status
+                // sesuai dengan status kondisi_layanan_open
                 $laporan->update([
                         'waktu_layanan_open' => $waktu_gangguan,
+                        'waktu_layanan_close' => $waktuAkhirGangguan,
                         'updated_by' => session()->get('id')
                     ]);
             }

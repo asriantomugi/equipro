@@ -331,7 +331,7 @@
       $(document).Toasts('create', {
           class: 'bg-danger',
           title: 'Error!',
-          body: 'Gagal menampilkan data layanan',
+          body: 'Data layanan tidak ditemukan',
           autohide: true,
           delay: 3000
         })

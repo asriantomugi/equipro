@@ -362,15 +362,11 @@
             </a>
       @endif
             
-            <a href="{{ route('logbook.laporan.tambah.step4', ['laporan_id' => $laporan->id]) }}"
-                class="btn btn-primary btn-sm float-right">
-                Submit&nbsp;&nbsp;&nbsp;<i class="fas fa-check"></i>
-            </a>
-            <!--
-            <button type="submit" class="btn btn-success btn-sm float-right" id="btn-submit">
-                Lanjut&nbsp;<i class="fas fa-angle-right"></i>
+            <button class="btn btn-primary btn-sm float-right" 
+                    data-toggle="modal" 
+                    data-target="#modalSubmit">
+                    Submit&nbsp;&nbsp;&nbsp;<i class="fas fa-check"></i>
             </button>
-            -->
         </div>
         </div>
         <!-- /.card -->
@@ -399,6 +395,46 @@
 
 
 @section('tail')
+
+<!-- modal untuk submit laporan -->
+<div class="modal fade" 
+     id="modalSubmit" 
+     tabindex="-1" 
+     role="dialog" 
+     aria-labelledby="modalSubmitLabel" 
+     aria-hidden="true">
+
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+
+<form action="{{ route('logbook.laporan.tambah.step4') }}"
+      method="post" 
+      novalidate>
+    @csrf
+            <div class="modal-body">
+
+                <input type="hidden" name="laporan_id" value="{{ $laporan->id }}">
+
+                <p><center>Ingin melakukan submit Laporan?</center></p>
+                <em><center>Laporan yang telah di-submit akan berubah status dari DRAFT menjadi OPEN atau CLOSE</center></em>
+                
+            </div>
+            <!-- modal-body -->
+
+            <div class="modal-footer justify-content-between">
+                <button type="button" class="btn btn-default btn-sm" data-dismiss="modal">Tidak</button>
+                <button type="submit" class="btn btn-primary btn-sm float-right">Ya, submit</button>
+            </div> <!-- modal footer --> 
+</form>
+<!-- form -->
+
+        </div>
+        <!-- modal-content -->
+    </div>
+    <!-- modal-dialog -->
+</div>
+<!-- modal fade -->
+<!-- Akhir dari Modal untuk submit laporan -->
 
 <!-- javascript untuk menampilkan modal detail -->
 <script type="text/javascript">
